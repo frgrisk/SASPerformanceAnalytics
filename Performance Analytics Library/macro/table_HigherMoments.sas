@@ -127,4 +127,5 @@ run;
 proc datasets lib= work nolist;
 delete M3 M4 betaM2 betaM3 betaM4 n;
 run;
+quit;
 %mend;

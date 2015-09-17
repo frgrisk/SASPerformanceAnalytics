@@ -218,5 +218,6 @@ run;
 proc datasets lib= work nolist;
 delete names;
 run;
+quit;
 %mend;
 

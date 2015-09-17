@@ -116,4 +116,5 @@ run;
 proc datasets lib= work nolist;
 delete outBeta annualized_returns;
 run;
+quit;
 %mend;

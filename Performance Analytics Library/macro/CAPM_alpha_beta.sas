@@ -118,4 +118,5 @@ drop &vars z;
 proc datasets lib= work nolist;
 delete _tempRP _tempBetas tempNames;
 run;
+quit;
 %mend;

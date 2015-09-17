@@ -1,12 +1,13 @@
 %let stocks=IBM GE DOW GOOGL SPY;
 
-%let dir=C:\Users\dpazzula\Documents\VOR\SASPerformanceAnalytics\Performance Analytics Library;
+/*%let dir=C:\Users\dpazzula\Documents\VOR\SASPerformanceAnalytics\Performance Analytics Library;*/
+%let dir= C:\Users\CJohnston\Documents\SASPerformanceAnalytics\Performance Analytics Library;
 
 %include "&dir\macro\*.sas" /nosource;
 
 libname out "&dir\test";
 
-%get_Stocks(&stocks,from=31DEC2004,to=01JAN2015,keepPrice=1)
+%get_Stocks(&stocks,from=31DEC2004,to=01JAN2015,keepPrice=1, priceColumn= adj_close)
 
 proc export outfile="&dir\test\prices.csv"
 	        data=prices

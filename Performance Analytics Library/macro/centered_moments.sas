@@ -116,4 +116,5 @@ run;
 proc datasets lib= work nolist;
 delete cent_var cent_skew cent_kurt centered_returns;
 run;
+quit;
 %mend;

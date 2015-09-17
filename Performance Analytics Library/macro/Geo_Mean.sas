@@ -72,4 +72,5 @@ run;
 proc datasets lib= work nolist;
 delete &returns _temp;
 run;
+quit;
 %mend;
