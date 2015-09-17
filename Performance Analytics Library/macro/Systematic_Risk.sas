@@ -96,5 +96,6 @@ run;
 proc datasets lib= work nolist;
 delete annualized_StdDev market_risk alphas_and_betas betas;
 run;
+quit;
 
 %mend;

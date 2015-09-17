@@ -89,4 +89,5 @@ run;
 proc datasets lib= work nolist;
 delete cent_ret DateColumn;
 run;
+quit;
 %mend;

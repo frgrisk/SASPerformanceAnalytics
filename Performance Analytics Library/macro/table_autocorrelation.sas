@@ -77,4 +77,6 @@ run;
 
 proc datasets lib= work nolist;
 delete _temp pval;
+run;
+quit;
 %mend;

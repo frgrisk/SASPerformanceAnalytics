@@ -3,14 +3,14 @@ ods listing close;
 
 options mprint notes;
 
-%let dir=C:\\SVN\\SAS_Perf_Anly;
+%let dir= C:\Users\CJohnston\Documents\SASPerformanceAnalytics\Performance Analytics Library;
 *%let dir=C:\\Users\\dpazzula\\Documents\\VOR\\SAS_Perf_Anly;
 
 
 libname input "&dir";
 
 /*Include SASPerformanceAnalytics*/
-%include "&dir\macros\*.sas" /nosource;
+%include "&dir\macro\*.sas" /nosource;
 
 /*Include test macros*/
 %include "&dir\test\macros\*.sas" /nosource;
