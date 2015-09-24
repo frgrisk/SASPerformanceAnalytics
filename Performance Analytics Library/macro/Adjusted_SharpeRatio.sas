@@ -32,90 +32,74 @@
 								outAdjSharpe= adjusted_SharpeRatio);
 
 
-%local ret minRf nv i aa ab ac ad ae af ag;
-%let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%local ret nv i j k Skew_Kurt_Table Chained_Ex_Ret Ann_StD SR;
+/*Find all variable names excluding the date column and risk free variable*/
+%let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
 %put RET IN Adjusted_SharpeRatio: (&ret);
-%let minRf= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
-%put minRf IN Adjusted_SharpeRatio: (&minRf);
-%let nv = %sysfunc(countw(&minRf));
-%let aa= %ranname();
-%let ab= %ranname();
-%let ac= %ranname();
-%let ad= %ranname();
-%let ae= %ranname();
-%let af= %ranname();
-%let ag= %ranname();
+/*Find number of columns in the data set*/
+%let nv = %sysfunc(countw(&ret));
+/*Define counters for array operations*/
+%let i= %ranname();
+%let j= %ranname();
+%let k= %ranname();
+/*Define temporary data set names with random names*/
+%let Skew_Kurt_Table= %ranname();
+%let Chained_Ex_Ret= %ranname();
+%let Ann_StD= %ranname();
+%let SR= %ranname();
 
-/*%let lib = %scan(&returns,1,%str(.));*/
-/*%let ds = %scan(&returns,2,%str(.));*/
-/*%if "&ds" = "" %then %do;*/
-/*	%let ds=&lib;*/
-/*	%let lib=work;*/
-/*%end;*/
-/*%put lib:&lib ds:&ds;*/
-/**/
-/*proc sql noprint;*/
-/*select name*/
-/*	into :z separated by ' '*/
-/*	from sashelp.vcolumn*/
-/*	where libname = upcase("&lib")*/
-/*	  and memname = upcase("&ds")*/
-/*	  and type = "num"*/
-/*	  and upcase(name) ^= upcase("&dateColumn");*/
-/*quit;*/
-
-proc transpose data=&returns out=&aa;
+proc transpose data=&returns out=&Skew_Kurt_Table;
 by &dateColumn;
 var &ret;
 run;
 
-proc sort data=&aa;
+proc sort data=&Skew_Kurt_Table;
 by _name_;
 run;
 
-proc univariate data=&aa noprint vardef=N;
+proc univariate data=&Skew_Kurt_Table noprint vardef=N;
 var COL1;
 by _NAME_;
-output out=&aa
+output out=&Skew_Kurt_Table
 	SKEW=Skewness
 	KURT=Kurtosis;
 run;
 
-proc transpose data=&aa out=&aa(drop=_label_ rename=(_name_=_stat_));
+proc transpose data=&Skew_Kurt_Table out=&Skew_Kurt_Table(drop=_label_ rename=(_name_=_stat_));
 id _name_;
 run;
 
-data &aa(drop=&ab so);
+data &Skew_Kurt_Table(drop=&i so);
 format _stat_ $32. &ret;
-set &aa;
+set &Skew_Kurt_Table;
 array vars[*] &ret;
 so = 10 + _n_;
 if _stat_ = "Kurtosis" then do;
-	do &ab=1 to dim(vars);
-		vars[&ab] = vars[&ab] + 3;
+	do &i=1 to dim(vars);
+		vars[&i] = vars[&i] + 3;
 	end;	
 	output;
 	so = so + 1;
 	_stat_ = Excess_kurtosis;
-	do &ab=1 to dim(vars);
-		vars[&ab] = vars[&ab] - 3;
+	do &i=1 to dim(vars);
+		vars[&i] = vars[&i] - 3;
 	end;	
 end;
 output;
 run;
 
-proc transpose data= &aa out= &aa;
+proc transpose data= &Skew_Kurt_Table out= &Skew_Kurt_Table;
 id _stat_;
 run;
 
-data &aa;
-set &aa;
+data &Skew_Kurt_Table;
+set &Skew_Kurt_Table;
 adjSkew= Skewness/6;
 adjKurt= (Kurtosis-3)/24;
 drop Skewness Excess_kurtosis Kurtosis;
 run;
 
-proc transpose data= &aa out= &aa;
+proc transpose data= &Skew_Kurt_Table out= &Skew_Kurt_Table;
 id _name_;
 run;
 
@@ -137,42 +121,42 @@ run;
 /*array prod[&nv] _temporary_;*/
 /**/
 /*if _n_ = 1 then do;*/
-/*	do &ae=1 to &nv;*/
-/*		prod[&ae] = 1;*/
+/*	do &j=1 to &nv;*/
+/*		prod[&j] = 1;*/
 /**/
 /*	end;*/
 /*	delete;*/
 /*end;*/
 /**/
-/*do &ae=1 to &nv;*/
-/*	prod[&ae] = prod[&ae] * (1+(ret[&ae]/100))**(&scale);*/
+/*do &j=1 to &nv;*/
+/*	prod[&j] = prod[&j] * (1+(ret[&j]/100))**(&scale);*/
 /*end;*/
 /*output &af;*/
 /**/
 /*if last then do;*/
-/*	do &ae=1 to &nv;*/
+/*	do &j=1 to &nv;*/
 /**/
-/*		ret[&ae] =100*((prod[&ae])**(1/(nobs-1)) - 1);*/
+/*		ret[&j] =100*((prod[&j])**(1/(nobs-1)) - 1);*/
 /*	end;*/
-/*	output &ag;*/
+/*	output &Chained_Ex_Ret;*/
 /*end;*/
 /*run;*/
-%return_annualized(&returns, scale= &scale, method= &method, outReturnAnnualized= &ac);
-%return_excess(&ac, Rf= &Rf, dateColumn= &dateColumn, outReturn= &ac);
+%return_annualized(&returns, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);
+%return_excess(&Chained_Ex_Ret, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);
 
 %Standard_Deviation(&returns, 
 							annualized= TRUE, 
 							scale= &scale,
 							dateColumn= &dateColumn,
-							outStdDev= &ad);
+							outStdDev= &Ann_StD);
 
-data &ae (drop= &af);
-set &ac &ad (in=s);
-drop &ae Date;
-array minRf[&nv] &minRf;
+data &SR (drop= &j);
+set &Chained_Ex_Ret &Ann_StD (in=s);
+drop Date;
+array minRf[&nv] &ret;
 
-do &af=1 to &nv;
-	minRf[&af] = lag(minRf[&af])/minRf[&af];
+do &j=1 to &nv;
+	minRf[&j] = lag(minRf[&j])/minRf[&j];
 end;
 
 if s;
@@ -181,12 +165,13 @@ run;
 quit;
 
 
-data &outAdjSharpe(drop= &ag rename= (_name_= _STAT_));
+data &outAdjSharpe(drop= &k rename= (_name_= _STAT_));
+keep &ret;
 format _NAME_ $char16.;
-set &aa &ae;
-array vars[*] &minRf;
-do &ag= 1 to dim(vars);
-vars[&ag]= vars[&ag]*(1+((lag2(vars[&ag]))*vars[&ag])-((lag(vars[&ag]))*(vars[&ag]**2)));
+set &Skew_Kurt_Table &SR;
+array vars[*] &ret;
+do &k= 1 to &nv;
+vars[&k]= vars[&k]*(1+((lag2(vars[&k]))*vars[&k])-((lag(vars[&k]))*(vars[&k]**2)));
 end;
 
 if _NAME_= 'adjSkew' then delete;
@@ -194,9 +179,8 @@ if _NAME_= 'adjKurt' then delete;
 _NAME_= '_Adj_SharpeRatio';
 run;
 
-
 proc datasets lib=work nolist;
-delete &aa &ac &ad &ae;
+delete &Skew_Kurt_Table &SR &Ann_StD &Chained_Ex_Ret;
 run;
 quit;
 
