@@ -370,5 +370,6 @@ run;
 proc datasets lib= work nolist;
 delete anova M3 M4 names BetaCoSkewness BetaCoVariance BetaCoKurtosis;
 run;
+quit;
 
 %mend;

@@ -85,6 +85,7 @@ proc datasets lib=work nolist;
 	delete _tempRP _tempStd _meanRet1 Sharpe_Ratio annualized_returns 
 			_tempStd1 _tempTable2 _tempTable3 charTable;
 run;
+quit;
 
 %mend;
 

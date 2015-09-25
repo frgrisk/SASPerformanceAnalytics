@@ -91,6 +91,7 @@ run;
 proc datasets lib= work nolist;
 delete vars_returns systematic_risk specific_risk total_risk;
 run;
+quit;
 
 %mend;
 

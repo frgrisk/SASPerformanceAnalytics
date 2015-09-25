@@ -103,4 +103,5 @@ run;
 proc datasets lib= work nolist;
 delete systematic_risk new_StdDev vars_returns;
 run;
+quit;
 %mend;

@@ -213,4 +213,5 @@ proc datasets lib= work nolist;
 delete _tempRP tempNames alphas_and_betas _temp _temp2 _temp3 
 		real_t outEps1 betaVal_t _meanRet1;
 run;
+quit;
 %mend;

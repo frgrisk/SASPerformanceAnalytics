@@ -125,6 +125,7 @@ run;
 proc datasets lib= work nolist;
 delete year_month;
 run;
+quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
 proc print data= &outCalendarReturns noobs;
