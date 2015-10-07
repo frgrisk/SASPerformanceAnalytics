@@ -109,7 +109,7 @@ set &outCalendarReturns;
 array mths[12] JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC;
 total = 0;
 do i=1 to 12;
-TOTAL = (1+TOTAL) * (1+mths[i]) - 1;
+TOTAL = (1+TOTAL) * (1+sum(0,mths[i])) - 1;
 end;
 run;
 
