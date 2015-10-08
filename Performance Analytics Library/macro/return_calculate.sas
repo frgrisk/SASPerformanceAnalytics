@@ -19,6 +19,7 @@
 *
 * MODIFIED:
 * 5/5/2015 – DP - Initial Creation
+* 10/2/2015 - CJ - Replaced PROC SQL with %get_number_column_names
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -29,32 +30,14 @@
 						updateInPlace=TRUE,
 						outReturn=returns);
 
-%local lib ds vars;
-
-/***********************************
-*Figure out 2 level ds name of PRICES
-************************************/
-%let lib = %scan(&prices,1,%str(.));
-%let ds = %scan(&prices,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
-
-
-/*******************************
-*Get numeric fields in data set
-*******************************/
-proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
+%local vars nv i;
+/*Find all variable names excluding the date column and risk free variable*/
+%let vars= %get_number_column_names(_table= &prices, _exclude= &dateColumn); 
+%put VARS IN return_calculate: (&vars);
+/*Find number of columns in the data set*/
+%let nv= %sysfunc(countw(&vars));
+/*Define counters for array operations*/
+%let i= %ranname();
 
 /*****************
 * Calculate Return
@@ -66,15 +49,15 @@ data
 	%else %do;
 		&outReturn
 	%end;
-	(drop=i);
+	(drop=&i);
 set &prices;
 array vars[*] &vars;
-do i=1 to dim(vars);
+do &i=1 to &nv;
 	%if %upcase(&method) = LOG %then %do;
-		vars[i] = log(vars[i]/lag(vars[i]));
+		vars[&i] = log(vars[&i]/lag(vars[&i]));
 	%end;
 	%else %if %upcase(&method) = DISCRETE %then %do;
-		vars[i] = vars[i]/lag(vars[i]) - 1;
+		vars[&i] = vars[&i]/lag(vars[&i]) - 1;
 	%end;
 	%else %do;
 		%put ERROR: Invalid value in METHOD=&method.  Please use LOG, or DISCRETE;

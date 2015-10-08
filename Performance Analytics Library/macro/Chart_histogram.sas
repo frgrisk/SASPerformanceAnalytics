@@ -27,6 +27,7 @@
 								density=0,
 								dateColumn= Date);
 
+%local lib ds;
 /***********************************
 *Figure out 2 level ds name of RETURNS
 ************************************/

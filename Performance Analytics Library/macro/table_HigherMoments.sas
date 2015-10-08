@@ -11,6 +11,8 @@
 * printTable- option to print the data set. {PRINT, NOPRINT} [Default= PRINT]
 * MODIFIED:
 * 7/6/2015 – CJ - Initial Creation
+* 10/1/2015 - CJ - Modified to accomodate edits from %CoMoments and replace temporary variable 
+*				   names with random names.
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -20,102 +22,112 @@
 								outHigherMoments= Higher_Moments,
 								printTable= NOPRINT);
 
+%local BetaCoVar_Matrix BetaCoSkew_Matrix BetaCoKurt_Matrix Skew_Matrix Kurt_Matrix new_names Higher_Moments n_data n;
+/*Name temporary data sets used to format table*/
+%let BetaCoVar_Matrix= %ranname();
+%let BetaCoSkew_Matrix= %ranname();
+%let BetaCoKurt_Matrix= %ranname(); 
+%let Skew_Matrix= %ranname();
+%let Kurt_Matrix= %ranname();
+%let new_names= %ranname();
+%let Higher_Moments= %ranname();
+%let n_data= %ranname();
+/* Define n, a dummy variable which will keep the order of variables as they are read in the &returns data set*/
+%let n= %ranname();
 /*Call macros comoments and BetaCoMoments*/
-%BetaCoMoments(&returns);
-%comoments(&returns);
+%BetaCoMoments(&returns, outBetaCoVar= &BetaCoVar_Matrix, outBetaCoSkew= &BetaCoSkew_Matrix, outBetaCoKurt= &BetaCoKurt_Matrix);
+%comoments(&returns, outCoSkew= &Skew_Matrix, outCoKurt= &Kurt_Matrix );
 
-data M3;
-set M3;
-n= _n_;
+data &BetaCoVar_Matrix;
+set &BetaCoVar_Matrix;
+&n= _n_;
 run;
 
-data M4;
-set M4;
-n= _n_;
+data &Kurt_Matrix;
+set &Kurt_Matrix;
+&n= _n_;
 run;
 
-data betaM2;
-set betaM2;
-n= _n_;
+data &BetaCoSkew_Matrix;
+set &BetaCoSkew_Matrix;
+&n= _n_;
 run;
 
-data betaM3;
-set betaM3;
-n= _n_;
+data &BetaCoKurt_Matrix;
+set &BetaCoKurt_Matrix;
+&n= _n_;
 run;
 
-data betaM4;
-set betaM4;
-n= _n_;
+data &Skew_Matrix;
+set &Skew_Matrix;
+&n= _n_;
 run;
-
-
 
 /*Format table*/
 data &outHigherMoments;
-set M3 M4 betaM2 betaM3 betaM4;
+set &Skew_Matrix &Kurt_Matrix &BetaCoVar_Matrix &BetaCoSkew_Matrix &BetaCoKurt_Matrix ;
 run;
 
 proc sort data= &outHigherMoments;
-by n;
+by &n;
 run;
 
-data n;
+data &n_data;
 set &outHigherMoments;
-keep name n;
-rename name= Higher_moments;
+keep Names &n;
+rename Names= &Higher_moments;
 run;
 
 data &outHigherMoments;
 set &outHigherMoments;
-drop n;
+drop &n;
 run;
 
-proc transpose data= &outHigherMoments name= Higher_moments out= &outHigherMoments;
-by name notsorted;
+proc transpose data= &outHigherMoments name= &Higher_moments out= &outHigherMoments;
+by Names notsorted;
 run;
 
 data &outHigherMoments;
 set &outHigherMoments;
-new_names= catx('_', Higher_moments,"to", name );
+&new_names= catx('_', &Higher_moments,"to", Names );
 run;
 
-proc sort data= n;
-by Higher_moments;
+proc sort data= &n_data;
+by &Higher_moments;
 run;
 
 proc sort data= &outHigherMoments;
-by Higher_moments;
+by &Higher_moments;
 run;
 
 data &outHigherMoments;
-merge &outHigherMoments n;
-by Higher_moments;
+merge &outHigherMoments &n_data;
+by &Higher_moments;
 run;
 
 proc sort data= &outHigherMoments;
-by n;
+by &n;
 run;
 
 data &outHigherMoments;
 set &outHigherMoments;
-drop n;
+drop &n;
 run;
 
 proc transpose data= &outHigherMoments name= names out= &outHigherMoments;
-id new_names;
+id &new_names;
 run;
 
-data &outHigherMoments;
+data &outHigherMoments(rename= var= _STAT_);
 retain var;
 set &outHigherMoments;
-n= _n_;
-if n=5 then var= 'BetaM4';
-if n=1 then var= 'M3';
-if n=2 then var= 'M4';
-if n=3 then var= 'BetaM2';
-if n=4 then var= 'BetaM3';
-drop n;
+&n= _n_;
+if &n=5 then var= 'BetaM4';
+if &n=1 then var= 'M3';
+if &n=2 then var= 'M4';
+if &n=3 then var= 'BetaM2';
+if &n=4 then var= 'BetaM3';
+drop &n;
 drop names;
 run;
 
@@ -125,7 +137,7 @@ run;
 %end;
 
 proc datasets lib= work nolist;
-delete M3 M4 betaM2 betaM3 betaM4 n;
+delete &BetaCoVar_Matrix &BetaCoSkew_Matrix &BetaCoKurt_Matrix &Skew_Matrix &Kurt_Matrix &n &n_data;
 run;
 quit;
 %mend;

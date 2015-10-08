@@ -13,6 +13,8 @@
 * outMSquared - output Data Set of MSquared.  Default= "MSquared".
 * MODIFIED:
 * 7/24/2015 – DP - Initial Creation
+* 10/2/2015 - CJ - Replaced PROC SQL with %get_number_column_names
+*				   Renamed temporary data sets with %ranname
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -25,30 +27,38 @@
 						dateColumn= Date,
 						outMSquared= MSquared);
 
+%local _temp_sr _temp_std vars;
 
-%SharpeRatio_annualized(&returns,scale=&scale,Rf=&rf,outSharpe=__temp_sr,method=&method,dateColumn=&dateColumn)
-%StdDev_annualized(&returns,scale=&scale,outStdDev= __temp_std,dateColumn=&dateColumn)
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &BM &Rf); 
+%put VARS IN CoMoments: (&vars);
+
+%let _temp_std= %ranname();
+%let _temp_sr= %ranname();
+
+%let i= %ranname();
+
+%SharpeRatio_annualized(&returns,scale=&scale,Rf=&rf,outSharpe=&_temp_sr,method=&method,dateColumn=&dateColumn)
+%StdDev_annualized(&returns,scale=&scale,outStdDev= &_temp_std,dateColumn=&dateColumn)
 
 data _null_;
-set __temp_std;
+set &_temp_std;
 call symputx("sb",put(&Bm,best32.),"l");
 run;
 
-data &outMSquared(drop=i);
+data &outMSquared(drop=&i);
 format _STAT_ $32.;
-set __temp_sr(drop=&bm);
-array vars[*] _numeric_;
+set &_temp_sr(drop=&bm);
+array vars[*] &vars;
 
 _STAT_ = "MSquared";
 
-do i=1 to dim(vars);
-	vars[i] = vars[i]*&sb + (1+&rf)**&scale - 1;
+do &i=1 to dim(vars);
+	vars[&i] = vars[&i]*&sb + (1+&rf)**&scale - 1;
 end;
 run;
 
 proc datasets lib=work nolist;
-delete __temp_std __temp_sr
-_tempRP _tempStd _meanRet1;
+delete &_temp_std &_temp_sr;
 run;
 quit;
 

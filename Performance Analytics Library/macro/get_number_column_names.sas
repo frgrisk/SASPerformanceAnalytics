@@ -39,5 +39,5 @@
 
    %let rc = %sysfunc(close(&dsid));
    
-   &vars;
+   &vars
 %mend get_number_column_names;

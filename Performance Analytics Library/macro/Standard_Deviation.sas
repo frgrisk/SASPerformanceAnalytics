@@ -25,41 +25,38 @@
 						scale=1, 
 						dateColumn= DATE, 
 						outStdDev= StdDev);
-%local outStd stdDev;
+%local stdDev;
 
-%let outStd = %ranname();
+%let i= %ranname();
 
 proc means data= &returns noprint;
-output out= &outSTD;
+output out= &outStdDev;
 run;
 
 
-%let stdDev=%get_number_column_names(_table=&outSTD,_exclude=&dateColumn _type_ _freq_);
+%let stdDev=%get_number_column_names(_table=&outStdDev,_exclude=&dateColumn _type_ _freq_);
 
 
 data &outStdDev;
-set &outSTD;
-drop i _freq_ _stat_ _type_ Date;
+set &outStdDev;
 where _stat_= 'STD';
+drop &i _freq_ _type_ _stat_;
 
 array stdDev[*] &stdDev;
-do i= 1 to dim(stdDev);
+do &i= 1 to dim(stdDev);
 
 %if %upcase(&annualized) = TRUE %then %do;
-		stdDev[i] = stdDev[i]*SQRT(&scale);
+		stdDev[&i] = stdDev[&i]*SQRT(&scale);
 	%end;
 	%else %if %upcase(&annualized) = FALSE %then %do;
-		stdDev[i]= stdDev[i];
+		stdDev[&i]= stdDev[&i];
 	%end;
 	%else %do;
 		%put ERROR: Invalid value in ANNUALIZED=&annualized.  Please use TRUE, or FALSE;
 		stop;
 	%end;
 end;
-
-proc datasets lib=work nolist;
-	delete &outSTD;
-quit;
+run;
 %mend;
 
 	

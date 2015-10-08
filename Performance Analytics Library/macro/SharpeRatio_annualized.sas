@@ -26,108 +26,82 @@
 					  				 dateColumn= date, 
 					  				 outSharpe= Annualized_SharpeRatio);
 
-
-%local lib ds nv;
-
-%return_excess(&returns, 
-					 	Rf= &Rf, 
-						dateColumn= &dateColumn, 
-						outReturn= _tempRP);
-
-/***********************************
-*Figure out 2 level ds name of RETURNS
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-%let ds=&lib;
-%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
-
-proc sql noprint;
-select name
-into :ret separated by ' '
-     from sashelp.vcolumn
-where libname = upcase("&lib")
- and memname = upcase("&ds")
- and type = "num"
- and upcase(name) ^= upcase("&dateColumn")
-and upcase(name) ^= upcase("&Rf");
-quit;
-
+%local ret nv j Chained_Ex_Ret Ann_StD SR;
+/*Find all variable names excluding the date column and risk free variable*/
+%let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
+%put RET IN Adjusted_SharpeRatio: (&ret);
+/*Find number of columns in the data set*/
 %let nv = %sysfunc(countw(&ret));
+/*Define counters for array operations*/
+%let j= %ranname();
+/*Define temporary data set names with random names*/
+%let Chained_Ex_Ret= %ranname();
+%let Ann_StD= %ranname();
 
-/*Create a series for taking STDev and Calculate Mean*/
-data _tempRP(drop=i) _meanRet1(drop=i);
-set _tempRP end=last nobs=nobs;
+%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);
+%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);
 
-array ret[&nv] &ret;
-array prod[&nv] _temporary_;
+%Standard_Deviation(&returns, 
+							annualized= TRUE, 
+							scale= &scale,
+							dateColumn= &dateColumn,
+							outStdDev= &Ann_StD);
 
-if _n_ = 1 then do;
-	do i=1 to &nv;
-		/*Geometric*/
-%if %upcase(&method) = GEOMETRIC %then %do;
-		prod[i] = 1;
-%end;
+data &outSharpe (drop= &j);
+retain _STAT_;
+format _STAT_ $32.;
+set &Chained_Ex_Ret &Ann_StD (in=s);
+drop &dateColumn;
+_STAT_= 'Sharpe_Ratio';
+array minRf[&nv] &ret;
 
-		/*Arithmetic*/
-%else %if %upcase(&method) = ARITHMETIC %then %do;
-		prod[i] = 0;
-%end;
-	end;
-	delete;
-end;
-
-do i=1 to &nv;
-	/*Geometric*/
-%if %upcase(&method) = GEOMETRIC %then %do;
-	prod[i] = prod[i] * (1+ret[i])**(&scale);
-	
-%end;
-	/*Arithmetic*/
-%else %if %upcase(&method) = ARITHMETIC %then %do;
-	prod[i] = prod[i] + ret[i]*sqrt(&scale);
-	ret[i] = ret[i] * sqrt(&scale);
-%end;
-end;
-output _tempRp;
-
-if last then do;
-	do i=1 to &nv;
-	%if %upcase(&method) = GEOMETRIC %then %do;
-
-		ret[i] =(prod[i])**(1/(nobs-1)) - 1;
-		ret[i]= ret[i]/(&scale);
-	%end;
-
-		/*Arithmetic*/
-	%else %if %upcase(&method) = ARITHMETIC %then %do;
-		ret[i] = prod[i]/(nobs-1);
-	%end;
-	ret[i] = ret[i] * sqrt(&scale);
-	end;
-	output _meanRet1;
-end;
-run;
-
-proc summary data=_tempRp;
-var &ret;
-output out=_tempStd(drop=_type_ _freq_) std=;
-run;
-
-data &outSharpe;
-set _meanRet1 _tempStd (in=s);
-drop i Date;
-array ret[&nv] &ret;
-
-do i=1 to &nv;
-	ret[i] = lag(ret[i])/ret[i];
+do &j=1 to &nv;
+	minRf[&j] = lag(minRf[&j])/minRf[&j];
 end;
 
 if s;
 run;
 
-quit; 
+quit;
+/*%local vars nv _tempRP _tempStd _tempRPStd;*/
+/**/
+/*/*Find all variable names excluding the date column and risk free variable*/*/
+/*%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf); */
+/*%put VARS IN SharpeRatio_annualized: (&vars);*/
+/**/
+/*%let nv = %sysfunc(countw(&vars));*/
+/**/
+/*%let _tempRP= %ranname();*/
+/*%let _tempStd= %ranname();*/
+/*%let Ann_St= %ranname();*/
+/**/
+/*%let i= %ranname();*/
+/**/
+/*%return_annualized(&returns, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);*/
+/*%return_excess(&Chained_Ex_Ret, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);*/
+/*%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outStdDev= &Ann_StD);*/
+/**/
+/*data &outSharpe;*/
+/*set RP Std (in=s);*/
+/*drop &i &dateColumn;*/
+/*array vars[&nv] &vars;*/
+/**/
+/*do &i=1 to &nv;*/
+/*	vars[&i] = lag(vars[&i])/vars[&i];*/
+/*end;*/
+
+if s;
+/*run;*/
+
+/*quit; */
+
+/*proc datasets lib= work nolist;*/
+/*delete &_tempRP &_tempStd;*/
+/*run;*/
+/*quit;*/
+
+proc datasets lib=work nolist;
+delete &Ann_StD &Chained_Ex_Ret;
+run;
+quit;
 %mend;
