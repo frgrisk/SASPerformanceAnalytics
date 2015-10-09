@@ -23,45 +23,25 @@
 									printTable= NoPrint,
 									name=);
 
-%local lib ds ret nvar name;
+%local ret nvar name;
 
 
-/***********************************
-*Figure out 2 level ds name of RETURNS
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-%let ds=&lib;
-%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%put RET IN Specific_Risk: (&ret);
 
-/************************** 
-Calculate Cumulative Return
-***************************/
-proc sql noprint;
-select name
-into :ret separated by ' '
-     from sashelp.vcolumn
-where libname = upcase("&lib")
- and memname = upcase("&ds")
- and type = "num"
- and upcase(name) ^= upcase("&dateColumn");
-quit;
+%let nvar = %sysfunc(countw(&ret));
 
-data year_month;
+%let year_month= %ranname();
+
+data &year_month;
 set &returns;
 
 year= year(date);
 month= month(date);
 run;
 
-%let nvar = %sysfunc(countw(&ret));
-
-
-data year_month(drop=i);
-	set year_month;
+data &year_month(drop=i);
+	set &year_month;
 	by year month;
 array ret[*] &ret;
 array cprod [&nvar] _temporary_;
@@ -92,12 +72,12 @@ do i=1 to dim(ret);
 	if last.month;
 	run;
 
-data year_month;
-set year_month(rename=(month=month_n));
+data &year_month;
+set &year_month(rename=(month=month_n));
 month = put(date,monname3.);
 run;
 
-proc transpose data=year_month out=&outCalendarReturns;
+proc transpose data=&year_month out=&outCalendarReturns;
 by year;
 var &ret;
 id month;
@@ -109,7 +89,7 @@ set &outCalendarReturns;
 array mths[12] JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC;
 total = 0;
 do i=1 to 12;
-TOTAL = (1+TOTAL) * (1+sum(0,mths[i])) - 1;
+TOTAL = (1+TOTAL) * (1+ sum(0,mths[i])) - 1;
 end;
 run;
 
@@ -123,12 +103,13 @@ if _name_ = 'Date' then delete;
 run;
 
 proc datasets lib= work nolist;
-delete year_month;
+delete &year_month;
 run;
 quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
 proc print data= &outCalendarReturns noobs;
+		title 'Aggregated Monthly Returns';
  		where _name_= "&name";
 run; 
 %end;

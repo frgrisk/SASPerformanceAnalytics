@@ -14,109 +14,58 @@
 * outBeta - output Data Set of asset Alphas and Betas.  Default= "alphas_and_betas".
 * MODIFIED:
 * 6/17/2015 – DP - Initial Creation
+* 9/25/2015 - CJ - Assigned random names to temporary variables and data sets.
+*				   Replaced PROC SQL statement with %get_number_column_names macro.
+*				   Deleted macro %renamer that converted character to numeric variables, replaced with PROC TRANSPOSE
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro CAPM_alpha_beta(returns, 
-						BM= 0, 
+						BM=, 
 						Rf= 0,
 						dateColumn= DATE,  
 						outBeta= alphas_and_betas);
 
-/***********************************
-*Figure out 2 level ds name of RETURNS
-************************************/
-%local lib ds vars rename;
-
-%let lib= %scan(&returns, 1, %str(.));
-%let ds= %scan(&returns, 2, %str(.));
-%if &ds= "" %then %do;
-%let ds= &lib;
-%let lib= work;
-%end;
-%put lib:&lib ds:&ds;
-
+%local vars RP Betas Names;
+/*Find all variable names excluding the date column, benchmark, and risk free variables*/
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
+%put VARS IN CAPM_alpha_beta: (&vars);
+/*Define temporary data set names with random names*/
+%let RP= %ranname();
+%let Betas= %ranname();
+%let Names= %ranname();
 %return_excess(&returns, 
 					 	Rf= &Rf, 
 						dateColumn= &dateColumn, 
-						outReturn= _tempRP);
+						outReturn= &RP);
 
-proc sql noprint;
-select name
-	into :vars separated by ' '
-     from sashelp.vcolumn
-		where libname = upcase("work")
- 		and memname = upcase("_tempRP")
- 		and type = "num"
-		and upcase(name) ^= upcase("&dateColumn")
-		and upcase(name) ^= upcase("&Rf")
-		and upcase(name) ^= upcase("&BM");
-quit;
 
 /***************************************
 *Use proc reg to compute alpha and beta
 ****************************************/
-proc reg data= _tempRP OUTEST= _tempBetas noprint;
-model &vars= &BM /B;
-run;
 
-data _tempBetas;
-set _tempBetas;
+proc reg data= &RP OUTEST= &Betas noprint;
+model &vars = &BM;
+run;
+ 
+data &Betas;
+set &Betas;
 drop &vars _model_ _type_ _rmse_;
 rename Intercept= alphas;
 rename &BM= betas;
 run;
 
-proc transpose data= _tempBetas out= _tempBetas name= alphas_and_betas;
-var _all_;
+proc transpose data= &Betas out=&outBeta  name= _STAT_;
+id _depvar_;
 run;
 
-data _tempBetas;
-set _tempBetas;
-drop _label_;
-
-proc transpose data= _tempBetas(obs= 1) out= tempNames;
-var _all_;
-run; 
-
-proc sql noprint;
-select catx('=', _name_, col1)
-	into :rename separated by ' '
-		from tempNames;
-quit;
-
-data _tempBetas;
-	set _tempBetas(rename= (&rename));
-run;
-
-data &outBeta;
-	set _tempBetas;
-	drop _label_;
-	if _depvar_= '_DEPVAR_' then delete;
-	if _depvar_= 'Stocks' then delete;
-	rename _depvar_= alphas_and_betas;
-run;
-
-%let nvars= %sysfunc(countw(&vars));
-
-%macro renamer;
- %do z=1 %to &nvars;
- rename x&z = %scan(&vars,&z) ;
- %end;
-%mend;
-data &outBeta;
+data &outBeta(drop= _label_);
 set &outBeta;
-array charx{&nvars} &vars;
-array x{&nvars};
-do z=1 to &nvars;
- x{z}=input(charx{z},best12.);
-end;
-drop &vars z;
-%renamer
+run;
 
 proc datasets lib= work nolist;
-delete _tempRP _tempBetas tempNames;
+delete &RP &Betas &Names;
 run;
 quit;
 %mend;
