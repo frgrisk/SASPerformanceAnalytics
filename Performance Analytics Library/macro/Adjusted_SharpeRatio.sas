@@ -48,6 +48,24 @@
 %let Ann_StD= %ranname();
 %let SR= %ranname();
 
+%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);
+%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);
+%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outStdDev= &Ann_StD);
+
+data &SR (drop= &j);
+set &Chained_Ex_Ret &Ann_StD (in=s);
+drop Date;
+array minRf[&nv] &ret;
+
+do &j=1 to &nv;
+	minRf[&j] = lag(minRf[&j])/minRf[&j];
+end;
+
+if s;
+run;
+
+quit;
+
 proc transpose data=&returns out=&Skew_Kurt_Table;
 by &dateColumn;
 var &ret;
@@ -80,7 +98,7 @@ if _stat_ = "Kurtosis" then do;
 	end;	
 	output;
 	so = so + 1;
-	_stat_ = Excess_kurtosis;
+	_stat_ = "Excess_kurtosis";
 	do &i=1 to dim(vars);
 		vars[&i] = vars[&i] - 3;
 	end;	
@@ -141,32 +159,9 @@ run;
 /*	output &Chained_Ex_Ret;*/
 /*end;*/
 /*run;*/
-%return_annualized(&returns, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);
-%return_excess(&Chained_Ex_Ret, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);
-
-%Standard_Deviation(&returns, 
-							annualized= TRUE, 
-							scale= &scale,
-							dateColumn= &dateColumn,
-							outStdDev= &Ann_StD);
-
-data &SR (drop= &j);
-set &Chained_Ex_Ret &Ann_StD (in=s);
-drop Date;
-array minRf[&nv] &ret;
-
-do &j=1 to &nv;
-	minRf[&j] = lag(minRf[&j])/minRf[&j];
-end;
-
-if s;
-run;
-
-quit;
 
 
 data &outAdjSharpe(drop= &k rename= (_name_= _STAT_));
-keep &ret;
 format _NAME_ $char16.;
 set &Skew_Kurt_Table &SR;
 array vars[*] &ret;
@@ -176,7 +171,7 @@ end;
 
 if _NAME_= 'adjSkew' then delete;
 if _NAME_= 'adjKurt' then delete;
-_NAME_= '_Adj_SharpeRatio';
+_NAME_= 'Adj_SharpeRatio';
 run;
 
 proc datasets lib=work nolist;
@@ -185,3 +180,4 @@ run;
 quit;
 
 %mend;
+ 

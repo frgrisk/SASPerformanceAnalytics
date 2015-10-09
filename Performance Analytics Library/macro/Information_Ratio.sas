@@ -51,7 +51,7 @@ quit;
 */
 
 %let ret = %get_number_column_names(_table=&returns,_exclude=&dateColumn &bm);
-%put RET IN Information_Ratio: &ret;
+%put RET IN Information_Ratio: (&ret);
 
 %let nv = %sysfunc(countw(&ret));
 %let te = %ranname();
