@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------
 * NAME: centered_moments.sas
 *
-* PURPOSE: calculate centered returns.
+* PURPOSE: calculate the first three centered moments.
 *
 * NOTES: The n-th centered moment is calculated as moment^n(R)= E[(r-E(R))^n];
 *
@@ -14,6 +14,8 @@
 *
 * MODIFIED:
 * 7/8/2015 – DP - Initial Creation
+* 9/29/2015 - CJ - Replaced PROC SQL with %get_number_column_names.
+*				   Renamed temporary data sets with %ranname().
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -24,33 +26,21 @@
 						outCenteredSkew= centered_Skew,
 						outCenteredKurt= centered_Kurt);
 
-%local lib ds vars;
+%local vars;
 
-/***********************************
-*Figure out 2 level ds name of PRICES
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+/*Define temporary data set names with random names*/
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
+%put VARS IN CAPM_alpha_beta: (&vars);
+/*Name temporary data sets*/
+%let centered_returns= %ranname();
+%let cent_var= %ranname();
+%let cent_skew= %ranname();
+%let cent_kurt= %ranname();
 
-proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
-
-%return_centered(&returns);
+%return_centered(&returns, outCentered= &centered_returns);
 
 proc iml;
-use centered_returns;
+use &centered_returns;
 read all var {&vars} into cm[colname= names];
 close &returns;
 
@@ -61,60 +51,63 @@ CKurt= mean(cm#cm#cm#cm);
 CVar= CVar`;
 names= names`;
 
-create cent_var from CVar[rowname= names];
+create &cent_var from CVar[rowname= names];
 append from CVar[rowname= names];
-close cent_var;
+close &cent_var;
 
 CSkew= CSkew`;
 names= names`;
 
-create cent_skew from CSkew[rowname= names];
+create &cent_skew from CSkew[rowname= names];
 append from CSkew[rowname= names];
-close cent_skew;
+close &cent_skew;
 
 CKurt= CKurt`;
 names= names`;
 
-create cent_kurt from CKurt[rowname= names];
+create &cent_kurt from CKurt[rowname= names];
 append from CKurt[rowname= names];
-close cent_kurt;
+close &cent_kurt;
 quit;
 
-proc transpose data= cent_var out= cent_var;
+proc transpose data= &cent_var out= &cent_var;
 id names;
 run;
 
-data &outCenteredVar;
-set cent_var;
+data &outCenteredVar(rename= _name_= _STAT_);
+format _name_ $32.;
+set &cent_var;
 n= _n_;
-if n= 1 then _name_= 'Var';
+if n= 1 then _name_= 'Centered_Variance';
 drop n;
 run;
 
-proc transpose data= cent_skew out= cent_skew;
+proc transpose data= &cent_skew out= &cent_skew;
 id names;
 run;
 
-data &outCenteredSkew;
-set cent_skew;
+data &outCenteredSkew(rename= _name_= _STAT_);
+format _name_ $32.;
+set &cent_skew;
 n= _n_;
-if n= 1 then _name_= 'Skew';
+if n= 1 then _name_= 'Centered_Skewness';
 drop n;
 run;
 
-proc transpose data= cent_kurt out= cent_kurt;
+proc transpose data= &cent_kurt out= &cent_kurt;
 id names;
 run;
 
-data &outCenteredKurt;
-set cent_kurt;
+data &outCenteredKurt(rename= _name_= _STAT_);
+format _name_ $32.;
+set &cent_kurt;
 n= _n_;
-if n= 1 then _name_= 'Kurt';
+if n= 1 then _name_= 'Centered_Kurtosis';
 drop n;
 run;
 
 proc datasets lib= work nolist;
-delete cent_var cent_skew cent_kurt centered_returns;
+delete &cent_var &cent_skew &cent_kurt &centered_returns;
 run;
 quit;
 %mend;

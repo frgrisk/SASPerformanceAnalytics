@@ -23,56 +23,36 @@
 							dateColumn=DATE,
 							outReturn=cumulative_returns);
 
-%local lib ds ret nvar;
-
-
-/***********************************
-*Figure out 2 level ds name of RETURNS
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-%let ds=&lib;
-%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
-
-/************************** 
-Calculate Cumulative Return
-***************************/
-proc sql noprint;
-select name
-into :ret separated by ' '
-     from sashelp.vcolumn
-where libname = upcase("&lib")
- and memname = upcase("&ds")
- and type = "num"
- and upcase(name) ^= upcase("&dateColumn");
-quit;
+%local ret nvar;
+/*Find all variable names excluding the date column and risk free variable*/
+%let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
+%put RET IN return_cumulative: (&ret);
 
 %let nvar = %sysfunc(countw(&ret));
 
-data &outReturn(drop=i);
+%let i= %ranname();
+
+data &outReturn(drop=&i);
 	set &returns ;
 array ret[*] &ret;
 array cprod [&nvar] _temporary_;
 
-do i=1 to dim(ret);
+do &i=1 to dim(ret);
 
-	if ret[i] = . then 
-		ret[i] = 0;
+	if ret[&i] = . then 
+		ret[&i] = 0;
 
-	if cprod[i]= . then
-		cprod[i]= 0;
+	if cprod[&i]= . then
+		cprod[&i]= 0;
 
 %if %upcase(&method) = GEOMETRIC %then %do;
-	cprod[i]= (1+ret[i])*(1+cprod[i])-1;
-	ret[i]= cprod[i];
+	cprod[&i]= (1+ret[&i])*(1+cprod[&i])-1;
+	ret[&i]= cprod[&i];
 %end;
 
 %else %if %upcase(&method) = ARITHMETIC %then %do;
-	cprod[i]= sum(cprod[i], ret[i]); 
-	ret[i]= cprod[i];
+	cprod[&i]= sum(cprod[&i], ret[&i]); 
+	ret[&i]= cprod[&i];
 %end;
 
 %else %do;

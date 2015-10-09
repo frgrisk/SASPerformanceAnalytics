@@ -33,20 +33,15 @@
 								outAppraisalRatio= Appraisal_Ratio);
 
 %local nv Jensen_Alpha divisor vars i;
-/*%local lib ds nv;*/
-
-/*/************************************/
-/**Figure out 2 level ds name of RETURNS*/
-/*************************************/*/
-/*%let lib = %scan(&returns,1,%str(.));*/
-/*%let ds = %scan(&returns,2,%str(.));*/
-/*%if "&ds" = "" %then %do;*/
-/*%let ds=&lib;*/
-/*%let lib=work;*/
-/*%end;*/
-%put lib:&lib ds:&ds;
-
+/*Assign random names to temporary data sets*/
 %let Jensen_Alpha= %ranname();
+%let divisor= %ranname();
+/*Find and count all variable names excluding date column, risk free and benchmark variables*/
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
+%put VARS IN Appraisal_Ratio: (&vars);
+%let nv= %sysfunc(countw(&vars));
+/*Assign random name to counter*/
+%let i= %ranname();
 
 %CAPM_JensenAlpha(&returns, 
 							BM= &BM, 
@@ -56,7 +51,7 @@
 							dateColumn= &dateColumn, 
 							outJensen= &Jensen_Alpha);
 
-%let divisor= %ranname();
+
 
 %if %upcase (&option)= APPRAISAL %then %do;
 %Specific_Risk(&returns, 
@@ -89,21 +84,6 @@ run;
 						outSR= &divisor);
 %end;
 
-/*proc sql noprint;*/
-/*select name*/
-/*into :vars separated by ' '*/
-/*     from sashelp.vcolumn*/
-/*where libname = upcase("&lib")*/
-/* and memname = upcase("&ds")*/
-/* and type = "num"*/
-/* and upcase(name) ^= upcase("&dateColumn")*/
-/* and upcase(name) ^= upcase("&Rf")*/
-/* and upcase(name) ^= upcase("&BM");*/
-/*quit;*/
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
-%put VARS IN Appraisal_Ratio: (&vars);
-%let nv= %sysfunc(countw(&vars));
-%let i= %ranname();
 
 data &outAppraisalRatio(drop= &i);
 set &divisor &Jensen_Alpha;
@@ -115,10 +95,10 @@ vars[&i]= vars[&i]/lag(vars[&i]);
 end;
 run;
 
-data &outAppraisalRatio;
+data &outAppraisalRatio(rename= _name_= _STAT_);
 retain _name_;
 set &outAppraisalRatio;
-rename _name_= _STAT_;
+
 %if %upcase(&option)= APPRAISAL %then %do;
 if stat= 'SpecRisk' then delete;
 drop stat;
@@ -134,10 +114,10 @@ drop stat;
 run;
 
 data &outAppraisalRatio;
-format AppraisalRatio $32.;
+format _STAT_ $32.;
 set &outAppraisalRatio;
 _STAT_= upcase("&option");
-drop &Jensen_Alpha;
+drop Jensen_Alpha;
 run;
 
 proc datasets lib= work nolist;
