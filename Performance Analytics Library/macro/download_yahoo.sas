@@ -1,4 +1,4 @@
-%macro download(symbol,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
+%macro download_yahoo(symbol,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
 /*Builde URL for CSV from Yahoo! Finance*/
 data _null_;
 format s $128.;
