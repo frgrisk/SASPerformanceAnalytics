@@ -1,12 +1,8 @@
-%macro download(symbol,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
-options validvarname= v7;
-/*Build URL for CSV from Yahoo! Finance*/
+%macro download_yahoo(symbol,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
+/*Builde URL for CSV from Yahoo! Finance*/
 data _null_;
 format s $128.;
 
-<<<<<<< HEAD
-%macro get_stocks(stocks,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close, outReturns=returns);
-=======
 %if "&from" ^= "" %then %do;
 	from = "&from"d;
 %end;
@@ -75,40 +71,4 @@ set &symbol_name;
 	&symbol_name = &symbol_name/lag(&symbol_name) - 1;
 %end;
 run;
-%mend;
-%macro get_stocks(stocks,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
->>>>>>> upstream/master
-%local i n;
-%let n= %sysfunc(countw(&stocks));
-options nosource nonotes nosource2;
-%do i=1 %to &n;
-	%download_yahoo(%scan(&stocks,&i,%str( )),&from,&to,keepPrice=&keepPrice,LogReturn=&LogReturn,PriceColumn=&PriceColumn);
-%end;
-options source notes source2;
-
-data &outReturns;
-merge &stocks;
-by date;
-run;
-
-%if &keepPrice %then %do;
-   data prices;
-   merge
-   %do i=1 %to &n;
-      %scan(&stocks,&i)_p
-   %end;
-   ;
-   by date;
-   run;
-%end;
-
-proc datasets lib=work nolist;
-delete &stocks 
-%if &keepPrice %then %do;
-   %do i=1 %to &n;
-      %scan(&stocks,&i)_p
-   %end;
-%end;
-;
-quit;
 %mend;

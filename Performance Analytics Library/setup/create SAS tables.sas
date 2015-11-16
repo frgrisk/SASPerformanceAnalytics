@@ -1,7 +1,13 @@
 %let stocks=IBM GE DOW GOOGL SPY;
 
+<<<<<<< HEAD
+%let dir=C:\Users\dpazzula\Documents\VOR\PerformanceAnalyticsGitHub\SAS-Performance-Analytics\Performance Analytics Library;
+
+%include "&dir\macro\*.sas" /nosource;
+=======
 /*%let dir=C:\Users\dpazzula\Documents\VOR\SASPerformanceAnalytics\Performance Analytics Library;*/
 %let dir= C:\Users\CJohnston\Documents\SASPerformanceAnalytics\Performance Analytics Library;
+>>>>>>> upstream/master
 
 %include "&dir\macro\*.sas" /nosource;
 
