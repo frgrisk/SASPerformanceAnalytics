@@ -1,6 +1,5 @@
 
 %macro download_ff3(outData=ff3);
-   
 %local fn rsp ff;
 
 %let fn = %ranname()._zip;
