@@ -1,6 +1,5 @@
 
 %macro get_stocks(stocks,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
->>>>>>> upstream/master
 %local i n;
 %let n= %sysfunc(countw(&stocks));
 options nosource nonotes nosource2;
