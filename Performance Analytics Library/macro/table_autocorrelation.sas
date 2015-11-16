@@ -74,7 +74,4 @@ run;
 proc print data= &outAutoCorr noobs;
 run; 
 %end;
-
-proc datasets lib= work nolist;
-delete _temp pval;
 %mend;

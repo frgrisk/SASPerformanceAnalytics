@@ -77,14 +77,14 @@ if last then do;
 	%if %upcase(&method) = GEOMETRIC %then %do;
 
 		ret[i] =(prod[i])**(1/(nobs-1)) - 1;
-		ret[i]= ret[i]/sqrt(&scale);
 	%end;
 
 		/*Arithmetic*/
 	%else %if %upcase(&method) = ARITHMETIC %then %do;
 		ret[i] = prod[i]/(nobs-1);
+		ret[i] = ret[i] *sqrt(&scale);
 	%end;
-	ret[i] = ret[i] *sqrt(&scale);
+	
 	end;
 	output &outReturnAnnualized;
 end;

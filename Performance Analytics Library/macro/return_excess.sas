@@ -23,20 +23,23 @@
 						dateColumn=DATE,
 						outReturn=risk_premium);
 
-%local ret;
+%local ret i;
 
 
 %let ret=%get_number_column_names(_table=&returns,_exclude=&dateColumn &Rf);
+%put RET IN return_excess: (&ret);
 
-data &outReturn(drop=i);
+%let i= %ranname();
+
+data &outReturn(drop=&i);
 	set &returns ;
 	array ret[*] &ret;
 
-	do i=1 to dim(ret);
+	do &i=1 to dim(ret);
 
-	if ret[i] = . then 
-		ret[i] = 0;
-	ret[i]= ret[i] -&Rf;
+	if ret[&i] = . then 
+		ret[&i] = 0;
+	ret[&i]= ret[&i] -&Rf;
 	end;
 run;
 %mend;

@@ -18,6 +18,9 @@ and is in effect the exess return adjusted for systematic risk.
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation
+* 9/25/2015 - CJ - Renamed temporary data sets using macro %ranname.
+*				   Replaced PROC SQL with %get_number_column_names.
+*				   Renamed Jensen_Alpha "_STAT_".
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -31,30 +34,26 @@ and is in effect the exess return adjusted for systematic risk.
 							outJensen= Jensen_Alpha);
 
 
-%local lib ds nv;
-
-/***********************************
-*Figure out 2 level ds name of RETURNS
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-%let ds=&lib;
-%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%local _tempBeta _tempRAnn _tempRAnn_ex ;
+/*Find number of variables in data set excluding the date column, benchmark, and risk free variables*/
+/*Define temporary data set names with random names*/
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
+%put VARS IN CAPM_alpha_beta: (&vars);
+/*Name temporary data sets*/
+%let _tempBeta= %ranname();
+%let _tempRAnn_ex= %ranname();
 
 
 %return_annualized(&returns, 
 							scale=&scale,
 							method= &method,
 							dateColumn= &dateColumn, 
-							outReturnAnnualized= annualized_returns);
+							outReturnAnnualized= &_tempRAnn_ex);
 
-%return_excess(annualized_returns, 
+%return_excess(&_tempRAnn_ex, 
 								Rf= &Rf, 
 								dateColumn= &dateColumn,
-								outReturn= annualized_returns);
+								outReturn= &_tempRAnn_ex);
 
 
 
@@ -62,37 +61,25 @@ and is in effect the exess return adjusted for systematic risk.
 						BM= &BM, 
 						Rf= &Rf,
 						dateColumn= &dateColumn,  
-						outBeta= outBeta);
+						outBeta= &_tempBeta);
 
-data outBeta;
-set outBeta;
-if alphas_and_betas= 'alphas' then delete;
+data &_tempBeta;
+set &_tempBeta;
+if _STAT_= 'alphas' then delete;
 run;
 
-proc sql noprint;
-select name
-into :ret separated by ' '
-     from sashelp.vcolumn
-where libname = upcase("&lib")
- and memname = upcase("&ds")
- and type = "num"
- and upcase(name) ^= upcase("&dateColumn")
- and upcase(name) ^= upcase("&Rf")
- and upcase(name) ^= upcase("&BM");
-quit;
-
 proc iml;
-use outBeta;
+use &_tempBeta;
 read all var _num_ into x;
-close outBeta;
+close &_tempBeta;
 
-use annualized_returns;
-read all var {&ret} into y[colname= names];
-close annualized_returns;
+use &_tempRAnn_ex;
+read all var {&vars} into y[colname= names];
+close &_tempRAnn_ex;
 
-use annualized_returns;
+use &_tempRAnn_ex;
 read all var {&BM} into z;
-close annualized_returns;
+close &_tempRAnn_ex;
 jensen= y-(x#z);
 
 jensen= jensen`;
@@ -103,17 +90,18 @@ append from jensen[rowname= names];
 close &outJensen;
 quit;
 
-proc transpose data= &outJensen out= &outJensen name= Jensen_Alpha;
+proc transpose data= &outJensen out= &outJensen name= _STAT_;
 id names;
 run;
 
 data &outJensen;
-format Jensen_Alpha $32.;
+format _STAT_ $32.;
 set &outJensen;
-Jensen_Alpha= 'Jensen_Alpha';
+_STAT_= 'Jensen_Alpha';
 run;
 
 proc datasets lib= work nolist;
-delete outBeta annualized_returns;
+delete &_tempBeta &_tempRAnn_ex;
 run;
+quit;
 %mend;

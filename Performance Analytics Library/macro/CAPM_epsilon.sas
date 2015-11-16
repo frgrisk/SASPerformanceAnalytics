@@ -10,11 +10,15 @@
 * returns - required.  Data Set containing returns with option to include risk free rate variable.
 * BM- required.  Names variable containing returns of benchmark asset from returns data set. 
 * Rf- required.  Either a value or variable representing the Risk Free Rate of Return.
-* Scale- Required. Specifies the number of periods in one year.  [Daily= 252, Weekly= 52, Monthly= 12, Quarterly= 4] 
+* Scale- Required. Specifies the number of periods in one year.  [Daily= 252, Weekly= 52, Monthly= 12, Quarterly= 4]
+* method- Specifies whether to use geometric or arithmetic chaining in calculating returns. 
 * dateColumn - Date column in Data Set. Default=DATE
 * outEpsilon - output Data Set of asset's Epsilon.  Default="Epsilon".
 * MODIFIED:
 * 6/17/2015 – DP - Initial Creation
+* 9/26/2015 - CJ - Replaced all temporary counters and data sets with random names.
+* 				   Replaced chaining with %return_annualized to give user optional chaining methods.
+*				   Replaced macro %renamer with PROC Transpose preserving numeric variables.
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -23,194 +27,103 @@
 						BM= 0, 
 						Rf= 0,
 						scale= 0,
+						method= GEOMETRIC, 
 						dateColumn= DATE, 
 						outEpsilon= epsilon);
 
+%local vars _tempRP Betas meanRet exBM _tempAlpha _tempBeta betaVal_t i s;
+/*Find all variable names excluding the date column, benchmark, and risk free variables*/
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
+%put VARS IN CAPM_alpha_beta: (&vars);
+/*Find number of variables in data set excluding the date column, benchmark, and risk free variables*/
+%let nvars = %sysfunc(countw(&vars));
+/*Define temporary data set names with random names*/
+%let _tempRP= %ranname();
+%let Betas= %ranname();
+%let meanRet= %ranname();
+%let exBM= %ranname();
+%let _tempAlpha= %ranname();
+%let _tempBeta= %ranname();
+%let betaVal_t= %ranname();
+/* Assign random names to array counters*/
+%let i= %ranname();
+%let s= %ranname();
 
-%local lib ds ret ;
-
-/***********************************
-*Figure out 2 level ds name of PRICES
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
-
-proc sql noprint;
-select name
-into :ret separated by ' '
-     from sashelp.vcolumn
-where libname = upcase("&lib")
- and memname = upcase("&ds")
- and type = "num"
- and upcase(name) ^= upcase("&dateColumn")
-and upcase(name) ^= upcase("&Rf");
-quit;
-
-%let nv = %sysfunc(countw(&ret));
-
-/*Create a series for taking STDev and Calculate Mean*/
-data &returns(drop=i) _meanRet1(drop=i);
-set &returns end=last nobs=nobs;
-
-array ret[&nv] &ret;
-array prod[&nv] _temporary_;
-
-if _n_ = 1 then do;
-	do i=1 to &nv;
-		prod[i] = 1;
-	end;
-	delete;
-end;
-
-do i=1 to &nv;
-	prod[i] = prod[i] * (1+ret[i])**(&scale);
-
-end;
-output &returns;
-
-if last then do;
-	do i=1 to &nv;
-
-		ret[i] =(prod[i])**(1/(nobs)) - 1;
-	end;
-	output _meanRet1;
-end;
-run;
-
+%return_annualized(&returns, scale= &scale, method= &method, outReturnAnnualized= &meanRet);
 %CAPM_alpha_beta(&returns, 
 						BM= &BM, 
 						Rf= &Rf,
 						dateColumn= &dateColumn,  
-						outBeta= alphas_and_betas);
+						outBeta= &betas);
 
-%return_excess(_meanRet1, 
+%return_excess(&meanRet, 
 					 	Rf= &Rf, 
 						dateColumn= &dateColumn, 
-						outReturn= _tempRP);
+						outReturn= &_tempRP);
 
-data _temp;
-set _tempRP;
+data &exBM;
+set &_tempRP;
 keep &BM;
+run;
 
-data _temp2;
-set alphas_and_betas;
-	if alphas_and_betas= 'alphas'
+data &_tempAlpha;
+set &betas;
+	if _STAT_= 'alphas'
 		then delete;
 run;
 
-data _temp3;
-set alphas_and_betas;
-	if alphas_and_betas= 'betas'
+data &_tempBeta;
+set &betas;
+	if _STAT_= 'betas'
 		then delete;
 run;
 
 proc iml;
-use _temp;
+use &exBM;
 read all var _num_ into x;
-close _temp;
+close &exBM;
 
-use _temp2;
+use &_tempAlpha;
 read all var _num_ into y[colname= names];
-close _temp2;
+close &_tempAlpha;
 
 betaVal= y*x;
 
 betaVal= betaVal`;
 names= names`;
 
-create betaVal_t from betaVal[rowname= names];
+create &betaVal_t from betaVal[rowname= names];
 append from betaVal[rowname= names];
-close betaVal_t;
+close &betaVal_t;
 quit;
 
-proc transpose data= betaVal_t out= real_t;
-var _all_;
+proc transpose data= &betaVal_t out= &betaVal_t;
+id names;
 run;
 
-proc transpose data= real_t(obs= 1) out= tempNames;
-var _all_;
-run; 
-
-proc sql noprint;
-select catx('=', _name_, names)
-	into :rename separated by ' '
-		from tempNames;
-quit;
-
-data real_t;
-	set real_t(rename= (&rename));
+data &outEpsilon;
+set  &_tempBeta &betaVal_t &meanRet;
+drop _NAME_ &BM &dateColumn;
 run;
 
-%let nvars= %sysfunc(countw(&ret));
-
-%macro renamer;
- %do z=1 %to &nvars;
- rename x&z = %scan(&ret,&z) ;
- %end;
-%mend;
-data real_t;
-set real_t;
-array charx{&nvars} &ret;
-array x{&nvars};
-do z=1 to &nvars;
- x{z}=input(charx{z},best24.);
-end;
-drop &ret z;
-%renamer
-
-data real_t;
-set real_t;
-if names= 'names'
-	then delete;
-drop names;
-run;
-
-data outEps1;
-set  _temp3 real_t _meanRet1;
-drop alphas_and_betas &BM date;
-run;
-
-proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-		where libname = upcase("work")
- 		and memname = upcase("outEps1")
- 		and type = "num"
-		and upcase(name) ^= upcase("&dateColumn")
-		and upcase(name) ^= upcase("&Rf")
-		and upcase(name) ^= upcase("&BM");
-quit;
-
-data &outEpsilon (drop= s);
-set outEps1;
+data &outEpsilon (drop= &s);
+set &outEpsilon;
 
 array epsilon[*] &vars;
-
-do s= 1 to dim(epsilon);
-	epsilon[s]= &Rf + epsilon[s]- lag(epsilon[s]) - lag2(epsilon[s]);
-end;
+	do &s= 1 to dim(epsilon);
+		epsilon[&s]= &Rf + epsilon[&s]- lag(epsilon[&s]) - lag2(epsilon[&s]);
+	end;
 run;
 
 data &outEpsilon;
 set &outEpsilon;
 if _n_= 1 then delete;
 if _n_= 2 then delete;
-keep &vars;
-run;
-
-data &outEpsilon;
-stat= 'epsilon';
-set &outEpsilon;
+_STAT_= 'Epsilon';
 run;
 
 proc datasets lib= work nolist;
-delete _tempRP tempNames alphas_and_betas _temp _temp2 _temp3 
-		real_t outEps1 betaVal_t _meanRet1;
+delete &_tempRP &Betas &meanRet &exBM &_tempAlpha &_tempBeta &betaVal_t;
 run;
+quit;
 %mend;

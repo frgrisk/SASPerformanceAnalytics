@@ -1,27 +1,34 @@
 %let stocks=IBM GE DOW GOOGL SPY;
 
+<<<<<<< HEAD
 %let dir=C:\Users\dpazzula\Documents\VOR\PerformanceAnalyticsGitHub\SAS-Performance-Analytics\Performance Analytics Library;
 
 %include "&dir\macro\*.sas" /nosource;
+=======
+/*%let dir=C:\Users\dpazzula\Documents\VOR\SASPerformanceAnalytics\Performance Analytics Library;*/
+%let dir= C:\Users\CJohnston\Documents\SASPerformanceAnalytics\Performance Analytics Library;
+>>>>>>> upstream/master
 
-libname out "&dir";
+%include "&dir\macro\*.sas" /nosource;
 
-%get_Stocks(&stocks,from=31DEC2004,to=01JAN2015,keepPrice=1)
+libname out "&dir\test";
 
-proc export outfile="&dir\prices.csv"
+%get_Stocks(&stocks,from=31DEC2004,to=01JAN2015,keepPrice=1, priceColumn= adj_close)
+
+proc export outfile="&dir\test\prices.csv"
 	        data=prices
 			dbms=csv
 			replace;
 run;
 
-proc import file="&dir\edhec.csv"
+proc import file="&dir\test\edhec.csv"
             out=edhec
 			dbms=csv
 			replace;
 run;
 
 data WORK.MANAGERS    ;
-infile "&dir\managers.csv" delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+infile "&dir\test\managers.csv" delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
    informat Date yymmdd10. ;
    informat HAM1 best32. ;
    informat HAM2 best32. ;

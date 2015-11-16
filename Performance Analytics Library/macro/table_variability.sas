@@ -151,6 +151,6 @@ run;
 
 proc datasets lib= work nolist;
 delete Monthly Annualized_StdDev MAD meanData merged price_t;
-
+quit;
 
 %mend;

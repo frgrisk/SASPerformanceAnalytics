@@ -16,39 +16,20 @@
 %macro geo_mean(returns, 	 
 					dateColumn=Date,
 					outGeo= _geoMean);
-%local lib ds z;
+%local vars _geo;
 
-/***********************************
-*Figure out 2 level ds name of returns
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &BM); 
+%put VARS IN CoMoments: (&vars);
+
+%let _geo= %ranname();
 
 
-/*******************************
-*Get numeric fields in data set
-*******************************/
-proc sql noprint;
-select name
-	into :z separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
-
-proc transpose data=&returns out=_temp;
+proc transpose data=&returns out= &_geo;
 by &dateColumn;
-var &z;
+var &vars;
 run;
 
-proc sort data=_temp;
+proc sort data=&_geo;
 by _name_;
 run;
 
@@ -56,7 +37,7 @@ proc sql noprint;
 create table &outGeo as
 select exp(mean(log(1+col1)))-1 as GeoMean,
 	   _name_
-	from _temp
+	from &_geo
 	where col1^=.
 	group by _name_;
 
@@ -64,12 +45,13 @@ proc transpose data= &outGeo out= &outGeo;
 id _name_;
 run;
 
-data &outGeo;
-	retain _name_ &z;
+data &outGeo(rename= _name_= _STAT_);
+	retain _name_ &vars;
 set &outGeo;
 run;
 
 proc datasets lib= work nolist;
-delete &returns _temp;
+delete &_geo;
 run;
+quit;
 %mend;

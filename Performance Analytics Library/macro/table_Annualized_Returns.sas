@@ -22,69 +22,77 @@
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro table_AnnualizedReturns(returns,
+%macro table_Annualized_Returns(returns,
 								Rf= 0,
 								scale= 0, 
 								method= GEOMETRIC, 
 								dateColumn=DATE, 
 								outTable= annualized_table, 
 								printTable= noprint);
+%local Sharpe_Ratio Ann_Return Std_Dev _tempTable charTable;
+%let Sharpe_Ratio= %ranname();
+%let Ann_Return= %ranname();
+%let Std_Dev= %ranname();
+%let _tempTable= %ranname();
+%let charTable= %ranname();
 
 %SharpeRatio_annualized(&returns, 
 					  Rf= &Rf, 
 					  scale= &scale, 
 					  dateColumn= &dateColumn, 
 					  method= &method,
-					  outSharpe= Sharpe_Ratio);
+					  outSharpe= &Sharpe_Ratio);
 
 %return_annualized(&returns, 
 							scale= &scale,
 							method= &method,
 							dateColumn= &dateColumn, 
-							outReturnAnnualized= annualized_returns)
+							outReturnAnnualized= &Ann_Return)
 
 %Standard_Deviation(&returns, 
 							scale= &scale,
 							annualized= TRUE, 
 							dateColumn= &dateColumn, 
-							outStdDev= _tempStd1);
+							outStdDev= &Std_Dev);
 
 
 
-data &outTable (drop= s Date n);
-		retain annualized;
-	set annualized_returns _tempStd1 Sharpe_Ratio;
+data &outTable (drop= &dateColumn n);
+		retain _STAT_;
+		format _STAT_ $12.;
+	set &Ann_Return &Std_Dev &Sharpe_Ratio;
 	n=_n_;
-	if n=1 then annualized= 'Return';
-	if n=2 then annualized= 'StdDev';
-	if n=3 then annualized= 'Sharpe';
+	if n=1 then _STAT_= 'Ann_Return';
+	if n=2 then _STAT_= 'Std_Dev';
+	if n=3 then _STAT_= 'Sharpe_Ratio';
 run;
 
-proc transpose data= &outTable out= _tempTable2(rename= (col1= return) rename= (col2= stdDev) rename= (col3= SharpeRatio));
+proc transpose data= &outTable out= &_tempTable(rename= (col1= Ann_Return) rename= (col2= Std_Dev) rename= (col3= Sharpe_Ratio));
 run;
 
-%to_character(datain= _tempTable2, dataout= _tempTable2, vars= Return stdDev SharpeRatio, formats= percent12.4 percent8.2 8.4, n= 3);
+%to_character(datain= &_tempTable, dataout= &_tempTable, vars= Ann_Return Std_Dev Sharpe_Ratio, formats= percent12.4 percent8.2 8.4, n= 3);
 run;
 
-proc transpose data= _tempTable2 out= _tempTable3 name= Annualized;
+proc transpose data= &_tempTable out= &_tempTable name= _STAT_;
 var _all_;
 run;
 
-data charTable;
-	set _tempTable3;
-	if Annualized= '_NAME_' then delete;
-	drop _label_ Date;
+data &charTable;
+	set &_tempTable;
+	if _STAT_= '_NAME_' then delete;
+	drop _label_ &dateColumn;
 run;
 
 %if %upcase(&printTable)= PRINT %then %do;
-proc print data= charTable noobs;
+proc print data= &charTable noobs;
+title 'Annualized Return Statistics';
 run; 
 %end;
 
 proc datasets lib=work nolist;
-	delete _tempRP _tempStd _meanRet1 Sharpe_Ratio annualized_returns 
-			_tempStd1 _tempTable2 _tempTable3 charTable;
+	delete &Sharpe_Ratio &Ann_Return &Std_Dev &_tempTable &charTable;
 run;
+quit;
 
 %mend;
 

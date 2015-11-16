@@ -27,57 +27,40 @@ the benchmark. The systematic risk is annualized.
 							dateColumn= DATE,
 							outSpecificRisk= Risk_specific);
 
-%local lib ds;
+%local systematic_risk StdDev;
 
-/***********************************
-*Figure out 2 level ds name of PRICES
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
+%put VARS IN Specific_Risk: (&vars);
 
-proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn")
-	  and upcase(name) ^= upcase("&BM")
-	  and upcase(name) ^= upcase("&Rf");
-quit;
+%let systematic_risk= %ranname();
+%let StdDev= %ranname();
 
 %Systematic_Risk(&returns, 
 						BM= &BM,
 						Rf= &Rf,
 						scale= &scale,
 						dateColumn= &dateColumn,
-						outSR= systematic_risk);
-
-data vars_returns;
+						outSR= &systematic_risk);
+data &returns;
 set &returns;
 keep &vars;
 run;
 
-%Standard_Deviation(vars_returns, 
+%Standard_Deviation(&returns, 
 							scale= &scale,
 							annualized= TRUE, 
 							dateColumn= &dateColumn,
-							outStdDev= new_StdDev);
+							outStdDev= &StdDev);
+
 
 proc iml;
-use systematic_risk;
+use &systematic_risk;
 read all var _num_ into a[colname= names];
-close systematic risk;
+close &systematic_risk;
 
-use new_StdDev;
+use &StdDev;
 read all var _num_ into b;
-close new_StdDev;
+close &StdDev;
 
 c= a#a;
 d= b#b;
@@ -91,16 +74,18 @@ append from e[rowname= names];
 close &outSpecificRisk;
 quit;
 
-proc transpose data= &outSpecificRisk out=&outSpecificRisk name= stat;
+proc transpose data= &outSpecificRisk out=&outSpecificRisk name= _STAT_;
 id names;
 run;
 
 data &outSpecificRisk;
+format _STAT_ $32.;
 set &outSpecificRisk;
-stat= "SpecRisk";
+_STAT_= "Spec_Risk";
 run; 
 
 proc datasets lib= work nolist;
-delete systematic_risk new_StdDev vars_returns;
+delete &systematic_risk &StdDev;
 run;
+quit;
 %mend;

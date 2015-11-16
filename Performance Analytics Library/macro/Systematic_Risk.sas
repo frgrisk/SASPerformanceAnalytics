@@ -22,30 +22,24 @@ the benchmark. The systematic risk is annualized.
 
 %macro Systematic_Risk(returns,
 						BM=, 
-						Rf=, 
+						Rf=0, 
 						scale= 1, 
 						dateColumn= DATE,
 						outSR= Risk_systematic);
 
-%local lib ds;
+%local CAPMvars ann_StdDev betas market_risk ;
 
-/***********************************
-*Figure out 2 level ds name of PRICES
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%let CAPMvars= %ranname();
+%let ann_StdDev= %ranname();
+%let betas= %ranname();
+%let market_risk= %ranname();
 
 
 %CAPM_alpha_beta(&returns, 
 						BM= &BM, 
 						Rf= &Rf, 
 						dateColumn= &dateColumn,
-						outBeta= alphas_and_betas);
+						outBeta= &CAPMvars);
 
 
 
@@ -53,26 +47,26 @@ the benchmark. The systematic risk is annualized.
 						scale= &scale, 
 						annualized= TRUE,
 						dateColumn= &dateColumn, 
-						outStdDev= annualized_StdDev);
+						outStdDev= &ann_StdDev);
 
-data betas;
-set alphas_and_betas;
-if alphas_and_betas= 'alphas' then delete;
+data &betas;
+set &CAPMvars;
+if _STAT_= 'alphas' then delete;
 run;
 
-data market_risk;
-set annualized_StdDev;
+data &market_risk;
+set &ann_StdDev;
 keep &BM;
 run;
 
 proc iml;
-use betas;
+use &betas;
 read all var _num_ into a[colname= names];
-close betas;
+close &betas;
 
-use market_risk;
+use &market_risk;
 read all var _num_ into b;
-close market_risk;
+close &market_risk;
 
 c= a#b;
 
@@ -84,17 +78,18 @@ append from c[rowname= names];
 close &outSR;
 quit;
 
-proc transpose data= &outSR out=&outSR name= stat;
+proc transpose data= &outSR out=&outSR name= _STAT_;
 id names;
 run;
 
 data &outSR;
 set &outSR;
-stat= "Sys_Risk";
+_STAT_= "Sys_Risk";
 run; 
 
 proc datasets lib= work nolist;
-delete annualized_StdDev market_risk alphas_and_betas betas;
+delete &ann_StdDev &market_risk &CAPMvars &betas;
 run;
+quit;
 
 %mend;

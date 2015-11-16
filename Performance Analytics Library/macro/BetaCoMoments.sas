@@ -11,6 +11,9 @@
 * outBetaCoKurt - output beta co-kurtosis matrix. [Default= BetaM4]
 * MODIFIED:
 * 7/6/2015 – DP - Initial Creation
+* 10/1/2015 - CJ - Replaced temporary variables and data sets with random names.
+*				   Used "vecdiag" to convert matrix to vector form in IML rather than 
+*				   conducting this step using an array data step.
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -20,7 +23,46 @@
 						outBetaCoSkew= BetaM3, 
 						outBetaCoKurt= BetaM4);
 
-%local lib ds nvar;
+%local vars CoSkew CoKurt BetaCoSkew BetaCoKurt BetaCoVar names;
+
+
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
+%put VARS IN CoMoments: (&vars);
+
+%let CoSkew= %ranname();
+%let CoKurt= %ranname();
+%let BetaCoSkew= %ranname();
+%let BetaCoKurt= %ranname();
+%let BetaCoVar= %ranname();
+%let anova= %ranname();
+%let Names= %ranname();
+
+
+%comoments(&returns, outCoSkew= &CoSkew, outCoKurt= &CoKurt);
+proc iml;
+use &CoSkew;
+read all var _num_ into D[colname= Names];
+close &CoSkew;
+c= vecdiag(D);
+
+betaskew= D/c;
+
+create &BetaCoSkew from betaskew[rowname= Names];
+append from betaskew[rowname= Names];
+close &BetaCoSkew;
+
+use &CoKurt;
+read all var _num_ into F[colname= Names];
+close &CoKurt;
+g= vecdiag(F);
+
+betakurt= F/g;
+
+create &BetaCoKurt from betakurt[rowname= Names];
+append from betakurt[rowname= Names];
+close &BetaCoKurt;
+quit;
+
 
 %let lib= %scan(&returns, 1, %str(.));
 %let ds= %scan(&returns, 2, %str(.));
@@ -30,62 +72,9 @@
 %end;
 %put lib:&lib ds:&ds;
 
-
-%comoments(&returns);
-proc iml;
-use M3;
-read all var _num_ into D;
-close M3;
-c= diag(D);
-
-create BetaCoSkewness from c;
-append from c;
-close c;
-
-use M4;
-read all var _num_ into F;
-close M4;
-g= diag(F);
-
-create BetaCoKurtosis from g;
-append from g;
-close g;
-quit;
-
 proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("work")
-	  and memname = upcase("BetaCoSkewness")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
-
-%let nvar = %sysfunc(countw(&vars));
-data BetaCoSkewness(drop= i);
-set BetaCoSkewness;
-array vars[*] &vars;
-array temp[&nvar] _temporary_;
-
-do i=1 to dim(vars);
-	vars[i]= sum(vars[i], temp[i]);
-	temp[i]= vars[i];
-end;
-
-data BetaCoSkewness;
-	set BetaCoSkewness end= last;
-	if last;
-run;
-
-proc transpose data= BetaCoSkewness out= BetaCoSkewness;
-var _all_;
-run;
-
-proc sql noprint;
-create table names as
-select name
-	into :vars2 separated by ' '
+	create table &names as 
+		select name
 	from sashelp.vcolumn
 	where libname = upcase("&lib")
 	  and memname = upcase("&ds")
@@ -93,282 +82,61 @@ select name
 	  and upcase(name) ^= upcase("&dateColumn");
 quit;
 
-data names;
-set names;
-n= _n_;
+proc transpose data= &BetaCoSkew out= &BetaCoSkew;
+id Names;
 run;
 
-data BetaCoSkewness;
-set BetaCoSkewness;
-n=_n_;
+data &outBetaCoSkew(drop= _name_ rename= name= Names);
+merge &Names &BetaCoSkew;
 run;
 
-data BetaCoSkewness;
-merge BetaCoSkewness names;
-by n;
-drop _name_;
+proc transpose data= &BetaCoKurt out= &BetaCoKurt;
+id Names;
 run;
 
-proc sort data= M3;
-by name;
+data &outBetaCoKurt(drop= _name_ rename= name= Names);
+merge &Names &BetaCoKurt;
 run;
 
-proc sort data= BetaCoSkewness;
-by name;
-run;
-
-data M3;
-merge M3 BetaCoSkewness;
-by name;
-run;
-
-proc sort data=M3;
-by n;
-run;
-
-data M3;
-set M3;
-rename col1= skewness;
-run;
-
-proc sql noprint;
-select name 
-into: ret separated by ' '
-from sashelp.vcolumn
-where libname = upcase("work")
-	  and memname = upcase("M3")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn")
-	  and upcase(name) ^= upcase("skewness");
-quit;
-
-data M3(drop=i);
-		set M3 ;
-		array ret[*] &ret;
-
-	do i=1 to dim(ret);
-		ret[i]= ret[i]/skewness;
-	end;
-run;
-
-data M3;
-set M3;
-drop n;
-run;
-
-proc sql noprint;
-select name
-	into :vars3 separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("work")
-	  and memname = upcase("BetaCoKurtosis")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
-
-data BetaCoKurtosis(drop= i);
-set BetaCoKurtosis;
-array variables[*] &vars3;
-array temp1[&nvar] _temporary_;
-
-do i=1 to dim(variables);
-	variables[i]= sum(variables[i], temp1[i]);
-	temp1[i]= variables[i];
-end;
-
-data BetaCoKurtosis;
-	set BetaCoKurtosis end= last;
-	if last;
-run;
-
-proc transpose data= BetaCoKurtosis out= BetaCoKurtosis;
-var _all_;
-run;
-
-data BetaCoKurtosis;
-set BetaCoKurtosis;
-n=_n_;
-run;
-
-data BetaCoKurtosis;
-merge BetaCoKurtosis names;
-by n;
-drop _name_;
-run;
-
-proc sort data= M4;
-by name;
-run;
-
-proc sort data= BetaCoKurtosis;
-by name;
-run;
-
-data M4;
-merge M4 BetaCoKurtosis;
-by name;
-run;
-
-proc sort data=M4;
-by n;
-run;
-
-data M4;
-set M4;
-rename col1= kurtosis;
-run;
-
-proc sql noprint;
-select name 
-into: ret1 separated by ' '
-from sashelp.vcolumn
-where libname = upcase("work")
-	  and memname = upcase("M4")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn")
-	  and upcase(name) ^= upcase("kurtosis");
-quit;
-
-data M4(drop=i);
-		set M4;
-		array ret1[*] &ret1;
-
-	do i=1 to dim(ret1);
-		ret1[i]= ret1[i]/kurtosis;
-	end;
-run;
-
-ods select Cov PearsonCorr;
-proc corr data=&returns noprob outp=anova
+proc corr data=&returns noprob outp=&anova noprint 
           nomiss
           cov; 
+var &vars;
 run;
 
 proc iml;
-use anova where(_type_= "COV");
-read all var _num_ into cov;
-close anova;
-p= diag(cov);
+use &anova where(_type_= "COV");
+read all var _num_ into cov[colname= Names];
+close &anova;
+p= vecdiag(cov);
 
-create BetaCoVariance from p;
-append from p;
-close p;
+betacov= cov/p;
+
+create &BetaCoVar from betacov[rowname= Names];
+append from betacov[rowname= Names];
+close &BetaCoVar;
 quit;
 
-proc sql noprint;
-select name
-	into :vars5 separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("work")
-	  and memname = upcase("BetaCoVariance")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
-
-data BetaCoVariance(drop= i);
-set BetaCoVariance;
-array vars5[*] &vars5;
-array temp2[&nvar] _temporary_;
-
-do i=1 to dim(vars5);
-	vars5[i]= sum(vars5[i], temp2[i]);
-	temp2[i]= vars5[i];
-end;
-
-data BetaCoVariance;
-	set BetaCoVariance end= last;
-	if last;
+proc transpose data= &BetaCoVar out= &BetaCoVar;
+id Names;
 run;
 
-proc transpose data= BetaCoVariance out= BetaCoVariance;
-var _all_;
+data &outBetaCoVar(drop= _name_ rename= name= Names);
+merge &Names &BetaCoVar;
 run;
 
-data BetaCoVariance;
-set BetaCoVariance;
-n=_n_;
+proc transpose data= &outBetaCoVar out= &outBetaCoVar name= Names;
+id Names;
 run;
-
-data anova;
-set anova;
-n=_n_;
+proc transpose data= &outBetaCoSkew out= &outBetaCoSkew name= Names;
+id Names;
 run;
-
-data BetaCoVariance;
-merge BetaCoVariance names;
-by n;
-drop _name_;
-run;
-
-data anova;
-set anova;
-rename _name_= name;
-run;
-
-proc sort data= anova;
-by name;
-run;
-
-proc sort data= BetaCoVariance;
-by name;
-run;
-
-data anova;
-merge anova BetaCoVariance;
-by name;
-run;
-
-proc sort data=anova;
-by n;
-run;
-
-data anova;
-set anova;
-rename col1= variance;
-run;
-
-proc sql noprint;
-select name 
-into: ret2 separated by ' '
-from sashelp.vcolumn
-where libname = upcase("work")
-	  and memname = upcase("anova")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn")
-	  and upcase(name) ^= upcase("variance");
-quit;
-
-data anova(drop=i);
-		set anova;
-		array ret2[*] &ret2;
-
-	do i=1 to dim(ret2);
-		ret2[i]= ret2[i]/variance;
-	end;
-run;
-
-data &outBetaCoSkew;
-set M3;
-drop skewness;
-drop n;
-run;
-
-data &outBetaCoKurt;
-set M4;
-drop kurtosis;
-drop n;
-run;
-
-data &outBetaCoVar;
-set anova;
-if _type_^= "COV" then delete;
-drop _type_;
-drop variance;
-drop n;
+proc transpose data= &outBetaCoKurt out= &outBetaCoKurt name= Names;
+id Names;
 run;
 
 proc datasets lib= work nolist;
-delete anova M3 M4 names BetaCoSkewness BetaCoVariance BetaCoKurtosis;
+delete &anova &CoSkew &CoKurt &BetaCoSkew &BetaCoKurt &BetaCoVar &names;
 run;
-
+quit;
 %mend;

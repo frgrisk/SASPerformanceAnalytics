@@ -26,77 +26,54 @@
 							dateColumn=DATE,
 							outSharpe= SharpeRatio);
 							
-%local lib ds Sharpe;
+%local vars _tempRP _tempStd _tempSharpe i;
 
-/***********************************
-*Figure out 2 level ds name of RETURNS
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-%let ds=&lib;
-%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
+%put VARS IN Adjusted_SharpeRatio: (&vars);
 
+%let _tempRP= %ranname();
+%let _tempStd= %ranname();
+%let _tempSharpe= %ranname();
 
-/**********************
-Calculate Sharpe Ratio
-**********************/
+%let i= %ranname();
 
-%return_excess(&returns, 
-					 	Rf= &Rf, 
-						dateColumn= &dateColumn, 
-						outReturn= _tempRP);
+%return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outReturn= &_tempRP);
 
-proc means data= _tempRP noprint;
-output out= ExRet;
+proc means data= &_tempRP noprint;
+output out= &_tempRP;
 run;
 
-data _tempExRet;
-set ExRet;
-drop i _freq_ _stat_ _type_ date;
+data &_tempRP;
+set &_tempRP;
+drop _freq_ _stat_ _type_ date;
 where _stat_= 'MEAN';
 run;
 
 
 %Standard_Deviation(&returns,
 							dateColumn= &dateColumn, 
-							outStdDev= _tempStd);
+							outStdDev= &_tempStd);
 
+data &_tempSharpe (drop= &i);
+set &_tempRP &_tempStd;
 
-data _tempVals;
-set _tempExRet _tempStd;
+array Sharpe[*] &vars;
+
+do &i= 1 to dim(Sharpe);
+Sharpe[&i]= lag(Sharpe[&i])/Sharpe[&i];
+end;
 run;
 
-proc sql noprint;
-select name
-	into :Sharpe separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("work")
-	  and memname = upcase("_tempVals")
-	  and type = "num";
-quit;
-
-data _tempSharpe (drop= i);
-set _tempVals;
-
-array Sharpe[*] &Sharpe;
-
-do i= 1 to dim(Sharpe);
-Sharpe[i]= lag(Sharpe[i])/Sharpe[i];
-end;
-
 data &outSharpe;
-		retain stat;
-	set _tempSharpe end= last;
-stat= 'SharpeRatio';
+retain _STAT_;
+set &_tempSharpe end= last;
+_STAT_= 'Sharpe_Ratio';
 if last; 
 run;
 
 
 proc datasets lib=work nolist;
-	delete &returns ExRet _tempExRet _tempRP _tempStd _tempVals _tempSharpe;
+	delete &_tempRP &_tempStd &_tempSharpe;
 run;
 quit;
 

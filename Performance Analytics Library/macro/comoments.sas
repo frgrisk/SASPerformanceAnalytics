@@ -9,6 +9,9 @@
 * outCoKurt - output co-kurtosis matrix. [Default= M4]
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
+* 10/1/2015 - CJ - Replaced temporary variable names with random names.  
+*				   Changed method of computing Co-Kurtosis matrix to accomodate
+* 				   a data set with more than 5 variables.
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -16,25 +19,19 @@
 						dateColumn= Date, 
 						outCoSkew= M3, 
 						outCoKurt= M4);
+%local vars M3 M4 names;
 
-%local lib ds;
 
-%let lib= %scan(&returns, 1, %str(.));
-%let ds= %scan(&returns, 2, %str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
+%put VARS IN CoMoments: (&vars);
 
-data &returns;
-set &returns;
-drop Date;
-run;
+%let M3= %ranname();
+%let M4= %ranname();
+%let names= %ranname();
 
 proc iml;
 use &returns;
-read all var _num_ into T;
+read all var {&vars} into T[colname= names];
 close &returns;
 
 n=ncol(T);
@@ -44,15 +41,14 @@ begCol = 1;
 endCol = n;
 mean = mean(T);
 idx = 1:(r-1);
-meanT= mean(T);
-Ti= T- meanT;
+Ti= T- mean(T);
   S=j(n,n);
        	do j=1 to n;
-		Tvector= Ti[idx, j];
+		Tv= Ti[idx, j];
         Tj = (T[idx,j] - mean[j]);
             do k=1 to n;    
                      Tk = (T[idx,k] - mean[k]);    
-                     s[k,j]= sum(Tvector#Tj#Tk)/(r-1);
+                     s[k,j]= sum(Tv#Tj#Tk)/(r-1);
 					 
             end;
      	end;
@@ -60,86 +56,56 @@ Ti= T- meanT;
   begCol=endCol+1;
   endCol=endCol+n;
 
-create M3 from S;
-append from S;
-close M3;
+create &M3 from S[rowname= names];
+append from S[rowname= names];
+close &M3;
 quit;
 
+
+/*Create M4 matrix*/
 proc iml;
 use &returns;
-read all var _num_ into T;
+read all var {&vars} into T[colname= Names];
 close &returns;
 
 n=ncol(T);
 r=nrow(T);
-M4 = j(n**4,5,0);
-X= j(n**4,5,0);
+M4 = j(n, n*n);
 begCol = 1;
 endCol = n;
 mean = mean(T);
 idx = 1:(r-1);
+Ti= T- mean(T);
   S=j(n,n);
-  	do i= 1 to n;
-		Ti= T[idx, i]- mean[i];
-    		do j=1 to n;
-        		Tj = T[idx,j]- mean[j];
-					do k=1 to n;
-						Tk= T[idx,k]- mean[k];
-            				do l=1 to n;    
-                     			Tl = T[idx,l]- mean[l]; 
- 								rowIndex= (i-1)*(n**3)+(j-1)*(n**2)+(k-1)*n+l;
-								X[rowIndex, 1]= i;
-								X[rowIndex, 2]= j;
-								X[rowIndex, 3]= k;
-								X[rowIndex, 4]= l;
-                     			X[rowIndex, 5]= sum(Ti#Tj#Tk#Tl)/(r-1);
-
-					 		end;
-     				end;
-			end;
-	end;
-  M4[,begCol:endCol]=X;
+       	do j=1 to n;
+		Tv= Ti[idx, j];
+        Tj = (T[idx,j] - mean[j]);
+		Tl = (T[idx,j] - mean[j]);
+            do k=1 to n;    
+                     Tk = (T[idx,k] - mean[k]);    
+                     s[k,j]= sum(Tv#Tj#Tk#Tl)/(r-1);
+					 
+            end;
+     	end;
+  M4[,begCol:endCol]=S;
   begCol=endCol+1;
   endCol=endCol+n;
 
-create M4 from X;
-append from X;
-close M4;
+create &M4 from S[rowname= Names];
+append from S[rowname= Names];
+close &M4;
 quit;
 
-data M4;
-set M4;
-rename col1= i;
-rename col2= j;
-rename col3= k;
-run;
-
-data M4;
-set M4;
-if i^=j then delete;
-if i^=k then delete;
-if j^=k then delete;
-drop i j k col4;
-run;
-
-proc iml;
-use M4;
-read all var _num_ into T;
-close M4;
-
-n=ncol(T);
-r=nrow(T);
-vshape= r##(1/2);
-w= shape(T,vshape,vshape);
-w_t= w`;
-
-create M4 from w_t;
-append from w_t;
-close w_t;
-quit;
+%let lib= %scan(&returns, 1, %str(.));
+%let ds= %scan(&returns, 2, %str(.));
+%if "&ds" = "" %then %do;
+	%let ds=&lib;
+	%let lib=work;
+%end;
+%put lib:&lib ds:&ds;
 
 proc sql noprint;
-	create table names as 
+	create table &names as 
 		select name
 	from sashelp.vcolumn
 	where libname = upcase("&lib")
@@ -148,75 +114,25 @@ proc sql noprint;
 	  and upcase(name) ^= upcase("&dateColumn");
 quit;
 
-data M3;
-set M3;
-n= _n_;
+proc transpose data=&M3 out= &outCoSkew;
+id Names;
 run;
 
-data names;
-set names;
-n= _n_;
+data &outCoSkew(drop= _name_ rename= name= Names);
+merge &names &outCoSkew;
 run;
 
-data M3;
-merge M3 names;
-by n;
-drop n;
+proc transpose data= &M4 out= &outCoKurt;
+id Names;
 run;
 
-proc transpose data= M3 out= &outCoSkew;
-id name;
-run;
-
-data M4;
-set M4;
-n= _n_;
-run;
-
-data M4;
-merge M4 names;
-by n;
-drop n;
-run;
-
-proc transpose data= M4 out= &outCoKurt;
-id name;
-run;
-
-data &outCoSkew;
-set &outCoSkew;
-n= _n_;
-run;
-
-data &outCoKurt;
-set &outCoKurt;
-n= _n_;
-run;
-
-data &outCoSkew;
-merge &outCoSkew names;
-by n;
-run;
-
-data &outCoKurt;
-merge &outCoKurt names;
-by n;
-run;
-
-data &outCoSkew;
-retain name;
-set &outCoSkew;
-drop _name_ n;
-run;
-
-data &outCoKurt;
-retain name;
-set &outCoKurt;
-drop _name_ n;
+data &outCoKurt(drop= _name_ rename= name= Names);
+merge &names &outCoKurt;
 run;
 
 proc datasets lib= work nolist;
-delete names;
+delete &names &M3 &M4;
 run;
+quit;
 %mend;
 

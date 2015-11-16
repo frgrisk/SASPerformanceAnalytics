@@ -32,26 +32,26 @@
 								dateColumn= DATE, 
 								outAppraisalRatio= Appraisal_Ratio);
 
+%local nv Jensen_Alpha divisor vars i;
+/*Assign random names to temporary data sets*/
+%let Jensen_Alpha= %ranname();
+%let divisor= %ranname();
+/*Find and count all variable names excluding date column, risk free and benchmark variables*/
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
+%put VARS IN Appraisal_Ratio: (&vars);
+%let nv= %sysfunc(countw(&vars));
+/*Assign random name to counter*/
+%let i= %ranname();
 
-%local lib ds nv;
-
-/***********************************
-*Figure out 2 level ds name of RETURNS
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-%let ds=&lib;
-%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
 %CAPM_JensenAlpha(&returns, 
 							BM= &BM, 
 							Rf= &Rf, 
 							scale= &scale, 
 							method= &method,
 							dateColumn= &dateColumn, 
-							outJensen= Jensen_Alpha);
+							outJensen= &Jensen_Alpha);
+
+
 
 %if %upcase (&option)= APPRAISAL %then %do;
 %Specific_Risk(&returns, 
@@ -59,7 +59,7 @@
 						Rf=&Rf,
 						scale= &scale,
 						dateColumn= &dateColumn,
-						outSpecificRisk= divisor);
+						outSpecificRisk= &divisor);
 
 %end;
 
@@ -68,9 +68,9 @@
 						BM= &BM, 
 						Rf= &Rf, 
 						dateColumn= &dateColumn, 
-						outBeta= divisor);
-data divisor;
-set divisor;
+						outBeta= &divisor);
+data &divisor;
+set &divisor;
 if alphas_and_betas= 'alphas' then delete;
 run;
 %end;
@@ -81,35 +81,24 @@ run;
 						Rf=&Rf,
 						scale= &scale,
 						dateColumn= &dateColumn,
-						outSR= divisor);
+						outSR= &divisor);
 %end;
 
-proc sql noprint;
-select name
-into :vars separated by ' '
-     from sashelp.vcolumn
-where libname = upcase("&lib")
- and memname = upcase("&ds")
- and type = "num"
- and upcase(name) ^= upcase("&dateColumn")
- and upcase(name) ^= upcase("&Rf")
- and upcase(name) ^= upcase("&BM");
-quit;
 
-data &outAppraisalRatio(drop= i);
-set divisor Jensen_Alpha;
+data &outAppraisalRatio(drop= &i);
+set &divisor &Jensen_Alpha;
 
 array vars[*] &vars;
-do i= 1 to dim(vars);
+do &i= 1 to &nv;
 
-vars[i]= vars[i]/lag(vars[i]);
+vars[&i]= vars[&i]/lag(vars[&i]);
 end;
 run;
 
-data &outAppraisalRatio;
+data &outAppraisalRatio(rename= _name_= _STAT_);
 retain _name_;
 set &outAppraisalRatio;
-rename _name_= AppraisalRatio;
+
 %if %upcase(&option)= APPRAISAL %then %do;
 if stat= 'SpecRisk' then delete;
 drop stat;
@@ -125,14 +114,15 @@ drop stat;
 run;
 
 data &outAppraisalRatio;
-format AppraisalRatio $32.;
+format _STAT_ $32.;
 set &outAppraisalRatio;
-AppraisalRatio= upcase("&option");
+_STAT_= upcase("&option");
 drop Jensen_Alpha;
 run;
 
 proc datasets lib= work nolist;
-delete divisor Jensen_Alpha;
+delete &divisor &Jensen_Alpha;
 run;
+quit;
 							
 %mend;

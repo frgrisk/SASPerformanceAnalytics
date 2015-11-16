@@ -21,28 +21,11 @@
 						dateColumn=DATE,
 						outCentered=centered_returns);
 
-%local lib ds vars;
+%local vars;
 
-/***********************************
-*Figure out 2 level ds name of PRICES
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
-
-proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
+/*Find all variable names excluding the date column and risk free variable*/
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
+%put VARS IN return_calculate: (&vars);
 
 proc iml;
 use &returns;
@@ -55,38 +38,17 @@ Centered= a-MeanA;
 Centered= Centered`;
 names= names`;
 
-create cent_ret from Centered[rowname= names];
+create &outCentered from Centered[rowname= names];
 append from Centered[rowname= names];
-close cent_ret;
+close &outCentered;
 quit;
 
-proc transpose data= cent_ret out= cent_ret;
+proc transpose data= &outCentered out= &outCentered;
 id names;
 run;
 
-data DateColumn;
-set &returns;
-keep &dateColumn;
-run;
-data DateColumn;
-set DateColumn;
-n=_n_;
-run;
-
 data &outCentered;
-set cent_ret;
-n=_n_;
-run;
-
-data &outCentered;
-retain &dateColumn;
-merge &outCentered DateColumn;
-by n;
+merge &returns(keep= &dateColumn) &outCentered;
 drop _name_;
-drop n;
-run;
-
-proc datasets lib= work nolist;
-delete cent_ret DateColumn;
 run;
 %mend;
