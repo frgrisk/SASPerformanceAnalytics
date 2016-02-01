@@ -90,7 +90,7 @@ quit;
 /*	vars[&i] = lag(vars[&i])/vars[&i];*/
 /*end;*/
 
-if s;
+/*if s;*/
 /*run;*/
 
 /*quit; */
