@@ -21,7 +21,7 @@
 										dateColumn= Date);
 
 %local vars;
-/*Find all variable names excluding the date column and risk free variable*/
+/*Find all variable names excluding the risk free variable*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &Rf); 
 %put VARS IN return_calculate: (&vars);
 
