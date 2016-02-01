@@ -1,5 +1,5 @@
 
-%macro get_stocks(stocks,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
+%macro get_stocks(stocks,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close,outReturns=returns);
 %local i n;
 %let n= %sysfunc(countw(&stocks));
 options nosource nonotes nosource2;

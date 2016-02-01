@@ -17,7 +17,7 @@ quit;
 filename &ff zip "&fn";
 
 data &outData;
-infile ff(F-F_Research_Data_Factors_daily.CSV) delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=1 ;
+infile &ff(F-F_Research_Data_Factors_daily.CSV) delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=1 ;
    informat Date  yymmdd8.;
    informat Mkt_RF best32. ;
    informat SMB best32. ;
