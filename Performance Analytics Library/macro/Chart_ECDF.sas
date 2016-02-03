@@ -21,7 +21,7 @@
 %local vars;
 /*Find all variable names excluding the date column*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
-%put VARS IN return_cumulative: (&vars);
+%put VARS IN Chart_ECDF: (&vars);
 
 title "&title";
 
