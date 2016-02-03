@@ -1,10 +1,10 @@
 /*---------------------------------------------------------------
-* NAME: Chart_RelativePerformance.sas
+* NAME: Chart_CumulativeReturns.sas
 *
 * PURPOSE: Create a chart displaying the cumulative returns of an asset or instrument over time. 
 * MACRO OPTIONS:
 * returns - required.  Data Set containing returns.
-* title- required.  Title for chart. [Default= Relative Performance Against &Rf]
+* title- required.  Title for chart. [Default= Cumulative Returns]
 * method- option.  Specifies the method of chaining in computing the cumulative return.  [Default= GEOMETRIC] {GEOMETRIC, ARITHMETIC}
 * WealthIndex- option.  Specifies that the value of a dollar in the first sample is $1, therefore charting the value of the returns per dollar over time.
 						[Default= FALSE] {TRUE, FALSE}
@@ -28,7 +28,7 @@
 %local vars nv i;
 /*Find all variable names excluding the date column*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
-%put VARS IN return_cumulative: (&vars);
+%put VARS IN Chart_CumulativeReturns: (&vars);
 /*Find the number of variables in vars*/
 %let nv = %sysfunc(countw(&vars));
 /*Assign a random name to i*/
