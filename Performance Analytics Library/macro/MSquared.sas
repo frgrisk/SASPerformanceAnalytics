@@ -27,7 +27,7 @@
 						dateColumn= Date,
 						outMSquared= MSquared);
 
-%local _temp_sr _temp_std vars;
+%local _temp_sr _temp_std vars i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &BM &Rf); 
 %put VARS IN CoMoments: (&vars);

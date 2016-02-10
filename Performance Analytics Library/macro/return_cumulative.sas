@@ -23,7 +23,7 @@
 							dateColumn=DATE,
 							outReturn=cumulative_returns);
 
-%local ret nvar;
+%local ret nvar i;
 /*Find all variable names excluding the date column and risk free variable*/
 %let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
 %put RET IN return_cumulative: (&ret);

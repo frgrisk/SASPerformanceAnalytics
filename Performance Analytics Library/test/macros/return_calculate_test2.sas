@@ -51,7 +51,7 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST RETURN_CUMULATIV_TEST2;
+	%put NOTE: NO ERROR IN TEST RETURN_CALCULATE_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;

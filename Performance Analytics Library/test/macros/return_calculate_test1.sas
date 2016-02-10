@@ -19,7 +19,7 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method= 'discrete')";
+put "returns = Return.calculate(prices, method='discrete')";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -34,13 +34,14 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=FALSE)
+%return_calculate(prices,updateInPlace=FALSE,method=discrete)
 
 proc compare base=returns_from_r 
 			 compare=returns 
 			 out=diff(where=(_type_ = "DIF"
-			            and (IBM or GE or DOW or GOOGL or SPY)
-					))
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY)
+					)))
 			 noprint;
 by date;
 run;
