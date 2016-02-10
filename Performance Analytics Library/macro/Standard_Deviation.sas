@@ -25,7 +25,7 @@
 						scale=1, 
 						dateColumn= DATE, 
 						outStdDev= StdDev);
-%local stdDev;
+%local stdDev i;
 
 %let i= %ranname();
 
