@@ -15,7 +15,8 @@ the benchmark. The systematic risk is annualized.
 * outSR - output Data Set of systematic risk.  Default="Risk_systematic".
 
 * MODIFIED:
-* 7/14/2015 – DP - Initial Creation
+* 7/14/2015 – CJ - Initial Creation
+* 03/1/2016 - DP - Changed to use table_SpecificRisk 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -27,69 +28,16 @@ the benchmark. The systematic risk is annualized.
 						dateColumn= DATE,
 						outSR= Risk_systematic);
 
-%local CAPMvars ann_StdDev betas market_risk ;
-
-%let CAPMvars= %ranname();
-%let ann_StdDev= %ranname();
-%let betas= %ranname();
-%let market_risk= %ranname();
-
-
-%CAPM_alpha_beta(&returns, 
-						BM= &BM, 
-						Rf= &Rf, 
-						dateColumn= &dateColumn,
-						outBeta= &CAPMvars);
-
-
-
-%Standard_Deviation(&returns, 
-						scale= &scale, 
-						annualized= TRUE,
-						dateColumn= &dateColumn, 
-						outStdDev= &ann_StdDev);
-
-data &betas;
-set &CAPMvars;
-if _STAT_= 'alphas' then delete;
-run;
-
-data &market_risk;
-set &ann_StdDev;
-keep &BM;
-run;
-
-proc iml;
-use &betas;
-read all var _num_ into a[colname= names];
-close &betas;
-
-use &market_risk;
-read all var _num_ into b;
-close &market_risk;
-
-c= a#b;
-
-c= c`;
-names= names`;
-
-create &outSR from c[rowname= names];
-append from c[rowname= names];
-close &outSR;
-quit;
-
-proc transpose data= &outSR out=&outSR name= _STAT_;
-id names;
-run;
+%table_SpecificRisk(&returns, 
+					BM=&BM, 
+					Rf=&RF,
+					scale= &scale,
+					dateColumn= &dateColumn,
+					outTable= &outSR,
+					printTable= NOPRINT);
 
 data &outSR;
-set &outSR;
-_STAT_= "Sys_Risk";
-run; 
-
-proc datasets lib= work nolist;
-delete &ann_StdDev &market_risk &CAPMvars &betas;
+	set &outSR(where=(_STAT_ = "Systematic Risk"));
 run;
-quit;
 
 %mend;
