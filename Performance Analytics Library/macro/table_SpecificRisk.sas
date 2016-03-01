@@ -11,7 +11,9 @@
 * printTable- option to print output data set.  {PRINT, NOPRINT} [Default= NOPRINT]
 
 * MODIFIED:
-* 7/14/2015 – DP - Initial Creation
+* 7/14/2015 – CJ - Initial Creation
+* 03/1/2016 - DP - Updated to do calculations here.  specific_risk and systematic_risk now call
+*                  this macro. 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -110,7 +112,7 @@ end;
 output;
 run;
 
-proc sort data=table_specificrisk;
+proc sort data=&outTable;
 by _stat_;
 run;
 

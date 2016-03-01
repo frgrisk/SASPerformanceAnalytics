@@ -15,77 +15,30 @@ the benchmark. The systematic risk is annualized.
 * outSpecificRisk - output Data Set of systematic risk.  Default="Risk_specific".
 
 * MODIFIED:
-* 7/14/2015 – DP - Initial Creation
+* 7/14/2015 – CJ - Initial Creation
+* 03/1/2016 - DP - Changed to use table_SpecificRisk 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro Specific_Risk(returns, 
-							BM=, 
-							Rf=0,
-							scale= 1,
-							dateColumn= DATE,
-							outSpecificRisk= Risk_specific);
+						BM=, 
+						Rf=0,
+						scale= 1,
+						dateColumn= DATE,
+						outSpecificRisk= Risk_specific);
 
-%local systematic_risk StdDev;
-
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
-%put VARS IN Specific_Risk: (&vars);
-
-%let systematic_risk= %ranname();
-%let StdDev= %ranname();
-
-%Systematic_Risk(&returns, 
-						BM= &BM,
-						Rf= &Rf,
-						scale= &scale,
-						dateColumn= &dateColumn,
-						outSR= &systematic_risk);
-data &returns;
-set &returns;
-keep &vars;
-run;
-
-%Standard_Deviation(&returns, 
-							scale= &scale,
-							annualized= TRUE, 
-							dateColumn= &dateColumn,
-							outStdDev= &StdDev);
-
-
-proc iml;
-use &systematic_risk;
-read all var _num_ into a[colname= names];
-close &systematic_risk;
-
-use &StdDev;
-read all var _num_ into b;
-close &StdDev;
-
-c= a#a;
-d= b#b;
-e= (d-c)##(1/2);
-
-e= e`;
-names= names`;
-
-create &outSpecificRisk from e[rowname= names];
-append from e[rowname= names];
-close &outSpecificRisk;
-quit;
-
-proc transpose data= &outSpecificRisk out=&outSpecificRisk name= _STAT_;
-id names;
-run;
+%table_SpecificRisk(&returns, 
+					BM=&BM, 
+					Rf=&RF,
+					scale= &scale,
+					dateColumn= &dateColumn,
+					outTable= &outSpecificRisk,
+					printTable= NOPRINT);
 
 data &outSpecificRisk;
-format _STAT_ $32.;
-set &outSpecificRisk;
-_STAT_= "Spec_Risk";
-run; 
-
-proc datasets lib= work nolist;
-delete &systematic_risk &StdDev;
+	set &outSpecificRisk(where=(_STAT_ = "Specific Risk"));
 run;
-quit;
+
+
 %mend;
