@@ -24,63 +24,94 @@
 							outTable= table_SpecificRisk,
 							printTable= NOPRINT);
 
-%local lib ds vars;
+%local vars var n i out_reg out_excess;
 
 /***********************************
-*Figure out 2 level ds name of PRICES
+*Get Variables in the RETURNS data set
 ************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
+%put VARS IN Specific_Risk: (&vars);
+%let n=%sysfunc(countw(&vars));
+
+/*Calculate excess from benchmark*/
+%let out_excess = %ranname();
+%return_excess(&returns, 
+			 	Rf= &rf, 
+			 	dateColumn=&dateColumn,
+				outReturn= &out_excess);
+
+
+/*Local variables to hold time series of predicted and residual values*/
+%do i=1 %to &n;
+	%let var=%scan(&vars,&i);
+	%local p&var r&var;
+	%let p&var=%ranname();
+	%let r&var=%ranname();
 %end;
-%put lib:&lib ds:&ds;
 
-%Specific_Risk(&returns, 
-						BM= &BM, 
-						Rf= &Rf, 
-						scale= &scale,
-						dateColumn= &dateColumn, 
-						outSpecificRisk= specific_risk);
+/*Regress values on benchmark*/
+%let out_reg=%ranname();
+proc reg data=&out_excess noprint ;
+model &vars  = &bm;
+output out=&out_reg(drop=&dateColumn) 
+	pred=
+	%do i=1 %to &n;
+		%let var=%scan(&vars,&i);
+		&&&p&var
+	%end;
 
-%Systematic_Risk(&returns,
-						BM=&BM, 
-						Rf=&Rf, 
-						scale= &scale, 
-						dateColumn= &dateColumn,
-						outSR= systematic_risk);
-
-proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn")
-	  and upcase(name) ^= upcase("&BM")
-	  and upcase(name) ^= upcase("&Rf");
+	RESIDUAL=
+	%do i=1 %to &n;
+		%let var=%scan(&vars,&i);
+		&&&r&var
+	%end;
+	;
+run;
 quit;
 
-data vars_returns;
-set &returns;
-keep &vars;
+/*Get the Annualized Vol*/
+%Standard_Deviation(&out_reg, 
+					scale=&scale, 
+					annualized= TRUE, 
+					outStdDev= &outTable);
+
+/*Transpose the Vol values and create the _STAT_ column*/
+data &outTable(keep=_stat_ &vars);
+	format _STAT_ $32.;
+set &outTable;
+
+array tRisk[&n] &vars;
+array sysRisk[&n] 
+	%do i=1 %to &n;
+		%let var=%scan(&vars,&i);
+		&&&p&var
+	%end;
+;
+array spRisk[&n] 
+	%do i=1 %to &n;
+		%let var=%scan(&vars,&i);
+		&&&r&var
+	%end;
+;
+
+%let i=%ranname();
+
+_stat_ = "Total Risk";
+output;
+_stat_ = "Specific Risk";
+do &i=1 to 4;
+	tRisk[&i] = spRisk[&i];
+end;
+output;
+_stat_ = "Systematic Risk";
+do &i=1 to 4;
+	tRisk[&i] = sysRisk[&i];
+end;
+output;
 run;
 
-%Standard_Deviation(vars_returns, 
-							scale= &scale,
-							annualized= TRUE,
-							dateColumn= &dateColumn,
-							outStdDev= total_risk);
-
-data total_risk;
-set total_risk;
-stat= 'Tot_Risk';
-run;
-
-data &outTable;
-set specific_risk systematic_risk total_risk;
+proc sort data=table_specificrisk;
+by _stat_;
 run;
 
 %if %upcase(&printTable) = PRINT %then %do;
@@ -89,7 +120,7 @@ run;
 %end;
 
 proc datasets lib= work nolist;
-delete vars_returns systematic_risk specific_risk total_risk;
+delete &out_excess &out_reg;
 run;
 quit;
 

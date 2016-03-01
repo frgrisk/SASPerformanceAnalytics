@@ -75,6 +75,7 @@ proc compare base=returns_from_r
 			 compare= table_SpecificRisk 
 			 method= absolute
 			 criterion= 0.0001
+			 outnoequal
 			 out=diff(where=(_type_ = "DIF"
 			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4)
 					))
