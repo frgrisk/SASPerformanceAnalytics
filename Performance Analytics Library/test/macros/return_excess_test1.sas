@@ -38,7 +38,10 @@ run;
 %return_excess(prices, Rf= .04/12)
 
 proc compare base=returns_from_r 
-			 compare=risk_premium 
+			 compare=risk_premium
+			 method=absolute
+			 criterion=1e-6 
+			 outnoequal
 			 out=diff(where=(_type_ = "DIF"
 			            and (IBM or GE or DOW or GOOGL or SPY)
 					))
