@@ -7,14 +7,14 @@
 *		 Active premium= Investment's annualized return- Benchmark's annualized return. 
 *
 * MACRO OPTIONS:
-* returns    - required.  Data Set containing returns.
-* BM         - required.  Specifies the variable name of benchmark asset or index in the returns data set.
-* scale      - optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
-                Default=1
-* method     - optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-                Default=GEOMETRIC
-* dateColumn - Date column in Data Set. Default=DATE
-* outActivePremium - output Data Set with annualized returns.  Default="active_premium"
+* returns - Required.  Data Set containing returns.
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          Default=1
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           Default=GEOMETRIC
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outActivePremium - Optional. output Data Set with annualized returns.  Default="active_premium"
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation

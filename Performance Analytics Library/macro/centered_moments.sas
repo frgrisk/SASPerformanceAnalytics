@@ -6,16 +6,17 @@
 * NOTES: The n-th centered moment is calculated as moment^n(R)= E[(r-E(R))^n];
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns
-* dateColumn - Date column in Data Set. Default=DATE
-* outCenteredVar- output data set for centered variance. [Default= centered_Var]
-* outCenteredSkew- output data set for centered skewness. [Default= centered_Skew]
-* outCenteredKurt- output data set for centered kurtosis. [Default= centered_Kurt]
+* returns - Required.  Data Set containing returns
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outCenteredVar - Optional. Output data set for centered variance. Default= centered_Var
+* outCenteredSkew - Optional. Output data set for centered skewness. Default= centered_Skew
+* outCenteredKurt - Optional. Output data set for centered kurtosis. Default= centered_Kurt
 *
 * MODIFIED:
 * 7/8/2015 – DP - Initial Creation
 * 9/29/2015 - CJ - Replaced PROC SQL with %get_number_column_names.
 *				   Renamed temporary data sets with %ranname().
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

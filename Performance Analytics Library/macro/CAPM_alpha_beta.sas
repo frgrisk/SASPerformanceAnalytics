@@ -7,16 +7,17 @@
 * 		 input an unchanging value (0.02) or a variable risk free rate included in the return data set;
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* BM- required.  Names variable containing returns of benchmark asset from returns data set. 
-* Rf- required.  Either a value or variable representing the Risk Free Rate of Return.
-* dateColumn - Date column in Data Set. Default=DATE
-* outBeta - output Data Set of asset Alphas and Betas.  Default= "alphas_and_betas".
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outBeta - Optional. Output Data Set of asset Alphas and Betas. Default= "alphas_and_betas"
 * MODIFIED:
 * 6/17/2015 – DP - Initial Creation
 * 9/25/2015 - CJ - Assigned random names to temporary variables and data sets.
 *				   Replaced PROC SQL statement with %get_number_column_names macro.
 *				   Deleted macro %renamer that converted character to numeric variables, replaced with PROC TRANSPOSE
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

@@ -4,16 +4,17 @@
 * PURPOSE: Creates Beta covariance, coskewness and cokurtosis matrices.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* dateColumn - Date column in Data Set. Default=DATE
-* outBetaCoVar - output beta covariance matrix. [Default= BetaM2]
-* outBetaCoSkew - output beta co-skewness matrix. [Default= BetaM3]
-* outBetaCoKurt - output beta co-kurtosis matrix. [Default= BetaM4]
+* returns - Required. Data Set containing returns.
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outBetaCoVar - Optional. Output beta covariance matrix. [Default= BetaM2]
+* outBetaCoSkew - Optional. Output beta co-skewness matrix. [Default= BetaM3]
+* outBetaCoKurt - Optional. Output beta co-kurtosis matrix. [Default= BetaM4]
 * MODIFIED:
 * 7/6/2015 – DP - Initial Creation
 * 10/1/2015 - CJ - Replaced temporary variables and data sets with random names.
 *				   Used "vecdiag" to convert matrix to vector form in IML rather than 
 *				   conducting this step using an array data step.
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

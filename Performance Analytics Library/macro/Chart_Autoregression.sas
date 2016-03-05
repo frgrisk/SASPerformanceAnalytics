@@ -7,26 +7,27 @@
 *		   there are many more plots for analysis available which have been included in this macro.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* asset- required.  Specifies the variable or asset to be plotted.
-* lag- required.  Specifies the amount of lags to plot in each chart.
-* title- required.  Title for Charts. [Default= AutoRegression Analysis for &asset]
-* all- option.  Option to plot all charts available via Proc Timeseries for analysis. [Default= FALSE]
-* ACF- option. Option to plot an ACF chart for the specified lag. [Default= TRUE]
-* PACF- option.  Option to plot a PACF chart for the specified lag. [Default= TRUE]
-* WN- option.  Option to plot White Noise charts for the specified lag. [Default= FALSE]
-* IACF- option.  Option to plot Inverse ACF charts for the specified lag. [Default= FALSE]
-* Residual- option.  Option to plot Residual charts for the specified lag. [Default= FALSE]
-* SeasonalAdjusted- option.  Option to plot a Seasonal adjusted chart for the specified lag. [Default= FALSE]
-* SeasonalComponent- option.  Option to plot a Seasonal component chart for the specified lag. [Default= FALSE]
-* SeasonalCycle- option.  Option to plot a Seasonal cycle chart for the specified lag. [Default= FALSE]
-* TrendComponent- option.  Option to plot a trend component chart for the specified lag. [Default= FALSE]
-* TrendCycleComponent- option.  Option to plot a trend cycle component chart for the specified lag. [Default= FALSE]
-* TrendCycleSeasonal- option.  Option to plot a Seasonally adjusted trend cycle chart for the specified lag. [Default= FALSE]
-* dateColumn- specifies the date column for returns in the data set. [Default= Date]
+* returns - Required.  Data Set containing returns.
+* asset - Required.  Specifies the variable or asset to be plotted.
+* lag - Required.  Specifies the amount of lags to plot in each chart.
+* title - Optional.  Title for Charts. Default= AutoRegression Analysis for &asset
+* ALL - Optional.  Option to plot all charts available via Proc Timeseries for analysis. Default= FALSE
+* ACF - Optional. Option to plot an ACF chart for the specified lag. Default= TRUE
+* PACF - Optional.  Option to plot a PACF chart for the specified lag. Default= TRUE
+* WN - Optional.  Option to plot White Noise charts for the specified lag. Default= FALSE
+* IACF - Optional.  Option to plot Inverse ACF charts for the specified lag. Default= FALSE
+* RESIDUAL - Optional.  Option to plot Residual charts for the specified lag. Default= FALSE
+* SeasonalAdjusted - Optional.  Option to plot a Seasonal adjusted chart for the specified lag. Default= FALSE
+* SeasonalComponent - Optional.  Option to plot a Seasonal component chart for the specified lag. Default= FALSE
+* SeasonalCycle - Optional.  Option to plot a Seasonal cycle chart for the specified lag. Default= FALSE
+* TrendComponent - Optional.  Option to plot a trend component chart for the specified lag. Default= FALSE
+* TrendCycleComponent - Optional.  Option to plot a trend cycle component chart for the specified lag. Default= FALSE
+* TrendCycleSeasonal - Optional.  Option to plot a Seasonally adjusted trend cycle chart for the specified lag. Default= FALSE
+* dateColumn - Optional. specifies the date column for returns in the data set. Default= Date
 *
 * MODIFIED:
 * 1/25/2016 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
