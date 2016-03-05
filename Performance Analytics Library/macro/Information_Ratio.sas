@@ -4,14 +4,16 @@
 * PURPOSE: calculate the information ratio of a portfolio given returns and a benchmark asset or index.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* BM- required.  Names the benchmark asset or index from the data set.
-* scale- optional the number of periods in a year (ie daily scale= 252, monthly scale= 12, quarterly scale= 4).
-* dateColumn - Date column in Data Set. Default=DATE
-* outInformationRatio - output Data Set with information ratio.  Default="Info_Ratio".
+* returns - Required.  Data Set containing returns.
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          Default=1
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outInformationRatio - Optional. Output Data Set with information ratio.  Default="Info_Ratio".
 *
 * MODIFIED:
 * 7/13/2015 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
