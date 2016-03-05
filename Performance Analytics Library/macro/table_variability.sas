@@ -7,13 +7,14 @@
 	     standard deviation;
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* scale- required.  Denotes the scale to annualize standard deviation.
-* dateColumn- specifies the format of the date column in the returns data set. [Default= Date]
-* outTable - output Data Set with variability statistics. [Default= variability_table]
-* printTable- option to print output data set. {PRINT, NOPRINT} [Default= NOPRINT]
+* returns - Required.  Data Set containing returns.
+* scale - Required. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+* dateColumn - Optional. Specifies the date column in the returns data set. [Default= Date]
+* outTable - Optional. Output Data Set with variability statistics. [Default= variability_table]
+* printTable - Optional. Option to print output data set. {PRINT, NOPRINT} [Default= NOPRINT]
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

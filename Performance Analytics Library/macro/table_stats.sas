@@ -8,14 +8,15 @@
 		 standard deviation, skewness, and kurtosis;
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* alpha- Significance level.  Specifies the level of significance for the mean. [Default= 0.05]
-* outStats - output Data Set with related statistics. [Default= Stats]
-* dateColumn - Date column in Data Set. Default=DATE
-* digits- specifies the number of digits to display in the output table.
-* printTable - option to print table.  Default= NOPRINT
+* returns - Required.  Data Set containing returns.
+* alpha - Optional. Significance level.  Specifies the level of significance for the mean. [Default= 0.05]
+* outStats - Optional. Output Data Set with related statistics. [Default= Stats]
+* dateColumn - Optional. Date column in Data Set. Default=Date
+* digits - Optional. Specifies the number of digits to display in the output table. [Default= 4]
+* printTable - Optional. Option to print table.  {PRINT,NOPRINT} [Default= NOPRINT]
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
