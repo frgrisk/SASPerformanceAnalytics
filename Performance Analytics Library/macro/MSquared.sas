@@ -5,16 +5,18 @@
 *		  Useful in comparing portfolios with different levels of risk.  
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* BM- required.  Names variable containing returns of benchmark asset from returns data set. 
-* Rf- specifies a variable name or value that is the risk free rate of return.
-* method- option to annualize returns using geometric or arithmetic chaining.  {GEOMETRIC, ARITHMETIC} [Default= GEOMETRIC].
-* dateColumn - Date column in Data Set. Default=DATE
-* outMSquared - output Data Set of MSquared.  Default= "MSquared".
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           Default=GEOMETRIC
+* dateColumn - Optional. Date column in Data Set. Default=Date
+* outMSquared - Optional. Output Data Set of MSquared.  Default= "MSquared".
 * MODIFIED:
 * 7/24/2015 – DP - Initial Creation
 * 10/2/2015 - CJ - Replaced PROC SQL with %get_number_column_names
 *				   Renamed temporary data sets with %ranname
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
