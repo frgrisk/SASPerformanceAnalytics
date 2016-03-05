@@ -8,17 +8,19 @@
 * 		 input an unchanging value (0.02) or a variable risk free rate included in a return data set;
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* Rf- required.  Either a value or variable representing the Risk Free Rate of Return.
-* scale - number of periods per year if Sharpe is annualized.
-* method - {LOG, DISCRETE} -- compound or simple returns.  
-*          Default=DISCRETE
-* dateColumn - Date column in Data Set. Default=DATE
-* outTable - output Data Set of annualized returns statistics.  Default="annualized_table".
-* printTable - option to print table.  {PRINT, NOPRINT} Default= NOPRINT
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          Default=1
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           Default=GEOMETRIC
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outTable - Optional. Output Data Set of annualized returns statistics.  Default="annualized_table".
+* printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT
 *
 * MODIFIED:
 * 6/10/2015 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

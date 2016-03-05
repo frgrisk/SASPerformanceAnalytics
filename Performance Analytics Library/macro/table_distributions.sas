@@ -4,14 +4,16 @@
 * PURPOSE: Creates a table of distribution statistics.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* dateColumn- specifies the date column in the data set.  [Default= Date]
-* outDistribution - output Data Set with distribution statistics. [Default= distribution_table]
-* digits- specifies the amount of digits to display in output [Default= 4]
-* scale- required.  Denotes the scale to annualize standard deviation. [Default= 1]
-* printTable - option to print table.  {PRINT, NOPRINT} Default= NOPRINT
+* returns - Required.  Data Set containing returns.
+* dateColumn - Optional. Specifies the date column in the data set.  [Default= Date]
+* outDistribution - Optional. Output Data Set with distribution statistics. [Default= distribution_table]
+* digits- Optional. Specifies the amount of digits to display in output. [Default= 4]
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          [Default=1]
+* printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

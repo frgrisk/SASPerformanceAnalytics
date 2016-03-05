@@ -4,16 +4,17 @@
 * PURPOSE: computes the autocorrelations up to lag= &nlag of assets in a data set.  Presents this data in a table.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns of the portfolio.
-* nlag- required.  Specifies the number of lags to perform (and number of columns)
-				  The value of lag should be at least p+d+q based from the model ARIMA(p, d, q).  table_autocorrelation
-				  will not return a p-value if lag is less than this value.
-* dateColumn - Date column in Data Set. Default=DATE
-* outAutoCorr - specifies name of output Data Set of autocorrelations.  Default="AutoCorrelations".
-* printTable- option to print table.  {PRINT, NOPRINT} Default= [NOPRINT]
+* returns - Required.  Data Set containing returns of the portfolio.
+* nlag - Required.  Specifies the number of lags to perform (and number of columns)
+	     The value of lag should be at least p+d+q based from the model ARIMA(p, d, q).  "table_autocorrelation"
+		 will not return a p-value if lag is less than this value.
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outAutoCorr - Optional. Specifies name of output Data Set of autocorrelations.  Default="AutoCorrelations".
+* printTable- Optional. Option to print table.  {PRINT, NOPRINT}. Default= [NOPRINT]
 * MODIFIED:
 * 6/23/2015 – CJ - Initial Creation
 * 7/15/2015 - DP - Updated to use only TIMESERIES and calculate Ljung-Box in Data Step.
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
