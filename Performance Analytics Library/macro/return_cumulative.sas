@@ -8,13 +8,14 @@
 *        series of returns. 
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns
-* method - {GEOMETRIC, ARITHMETIC} -- compound or simple returns.  
+* returns - Required.  Data Set containing returns.
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
-* dateColumn - Date column in Data Set. Default=DATE
-* outReturn - output Data Set with  cumulative returns.  
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outReturn - Optional. Output Data Set with  cumulative returns. Default="cumulative_returns" 
 * MODIFIED:
 * 5/22/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

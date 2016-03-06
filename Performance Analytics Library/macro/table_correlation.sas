@@ -1,16 +1,17 @@
 /*---------------------------------------------------------------
 * NAME: table_correlation.sas
 *
-* PURPOSE: computes the pearson correlations between assets in a data set.  Presents this data in a table.
+* PURPOSE: computes the Pearson correlations between assets in a data set.  Presents this data in a table.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns of the portfolio.
-* returnsCompare- required.  Specifies the variable to compute correlations against.
-* dateColumn - Date column in Data Set. Default=DATE
-* outCorr - specifies name of output Data Set of correlations.  Default="Correlations".
-* printTable- option to print output table. {PRINT, NOPRINT} Default= [NOPRINT]
+* returns - Required.  Data Set containing returns of the portfolio.
+* returnsCompare - Required.  Specifies the variable to compute correlations against.
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outCorr - Optional. Specifies name of output Data Set of correlations.  Default="Correlations".
+* printTable - Optional. Option to print output table. {PRINT, NOPRINT} Default= [NOPRINT]
 * MODIFIED:
 * 6/23/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

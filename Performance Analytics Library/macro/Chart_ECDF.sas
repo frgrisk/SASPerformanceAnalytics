@@ -3,12 +3,13 @@
 *
 * PURPOSE: Create a chart displaying the Empirical CDF of an asset in comparison with a normal density CDF. 
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* title- required.  Title for chart. [Default= Relative Performance Against &Rf]
-* dateColumn- specifies the date column for returns in the data set. [Default= Date]
+* returns - Required.  Data Set containing returns.
+* title- Optional.  Title for chart. [Default= Empirical CDF]
+* dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
 * MODIFIED:
 * 2/3/2016 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

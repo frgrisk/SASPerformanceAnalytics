@@ -6,13 +6,14 @@
 * NOTES: The n-th centered moment is calculated as moment^n(R)= E[(r-E(R))^n];
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns
-* dateColumn - Date column in Data Set. Default=DATE
-* outCentered - output Data Set with centered returns.  Only used if updateInPlace=FALSE 
+* returns - Required.  Data Set containing returns
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outCentered - Optional. Output Data Set with centered returns.  Only used if updateInPlace=FALSE 
 *             Default="centered_returns"
 *
 * MODIFIED:
 * 7/8/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

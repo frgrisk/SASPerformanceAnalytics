@@ -8,14 +8,16 @@
 *		 monthly scale= 12, quarterly scale= 4). 
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* annualized - option to annualize the standard deviation.  {TRUE, FALSE} Default= FALSE
-* scale - Number of periods per year used in the calculation.
-* dateColumn - Date column in Data Set. Default=DATE
-* outStdDev - output Data Set with annualized standard deviation.  Default="StdDev". 
+* returns - Required.  Data Set containing returns.
+* annualized - Optional. Option to annualize the standard deviation.  {TRUE, FALSE} Default= FALSE
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          Default=1
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outStdDev - Optional. Output Data Set with annualized standard deviation.  Default="StdDev". 
 *
 * MODIFIED:
 * 6/3/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

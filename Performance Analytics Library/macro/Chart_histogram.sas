@@ -4,19 +4,21 @@
 * PURPOSE: Create a simple histogram with options for an asset or instrument using a returns data set.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* asset- required.  Specifies the benchmark asset or index in the returns data set.
-* scale- specifies whether the y-axis should go by probability or frequency. {count, percent, proportion}, [Default= count]  
-* title- required.  Title for histogram. [Default= asset name]
-* bindwidth- specifies the range of returns to select for each bar. [Default= 0.001]
-* density- option to overlay a normal density curve on top of the histogram for comparison. If true, [Density= Density]
-* color- option to change the color of the histogram bins [Default= carolina blue]
-* density color- option to change the color of the density line [Default= red]
-* histogramTransparency- option to change the transparency of the histogram bins [Default= 0.8]
-* keepOutliers- option to delete outlier returns from the histogram within the range of Q1- 1.5IQR and Q3+1.5IQR [Default= false]
-* qqplot- option to display a QQ Plot in addition to the histogram [Default= false]
-* rug- option to display a fringe plot overlayed onto the histogram [Default= false]
-* dateColumn- specifies the date column for returns in the data set. [Default= Date]
+* returns - Required.  Data Set containing returns.
+* asset - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* scale - Optional. Specifies whether the y-axis should go by probability or frequency. {count, percent, proportion}, [Default= count]  
+* title - Optional.  Title for histogram. [Default= asset returns]
+* bindwidth - Optional. Specifies the range of returns to select for each bar. [Default= 0.001]
+* density - Optional. Overlay a normal density curve on top of the histogram for comparison. 
+*           [Default= TRUE]. If true, [TRUE=TURE]. {TRUE, FALSE}.
+* color - Optional. Change the color of the histogram bins. [Default= cornflowerblue]
+* densitycolor - Optional. Change the color of the density line. [Default= red]
+* histogramTransparency - Optional. Change the transparency of the histogram bins. [Default= 0.8]
+* keepOutliers - Optional. Delete outlier returns from the histogram within the range of Q1- 1.5IQR and Q3+1.5IQR.
+                 [Default= TRUE]. {TRUE, FALSE}
+* qqplot - Optional. Display a QQ Plot in addition to the histogram. [Default= FALSE]. {TRUE,FALSE}
+* rug - Optional. Display a fringe plot overlayed onto the histogram. [Default= FALSE]. {TRUE,FALSE}
+* dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
 * Future Modifications: Overlay VaR line once the VaR macro is completed.
 *

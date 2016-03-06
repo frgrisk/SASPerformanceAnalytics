@@ -4,11 +4,12 @@
 * PURPOSE: Calculate the geometric mean of an asset.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* dateColumn - Date column in Data Set. Default=DATE
-* outGeo - output Data Set with geometric mean. [Default= _geoMean]
+* returns - Required.  Data Set containing returns.
+* dateColumn - Optional. Date column in Data Set. Default=Date
+* outGeo - Optional. Output Data Set with geometric mean. [Default= _geoMean]
 * MODIFIED:
 * 7/21/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

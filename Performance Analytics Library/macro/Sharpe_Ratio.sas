@@ -8,16 +8,17 @@
 * 		 input an unchanging value (0.02) or a variable risk free rate included in a return data set;
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* Rf- required.  Either a value or variable representing the Risk Free Rate of Return.
-* dateColumn - Date column in Data Set. Default=DATE
-* outSharpe - output Data Set with Sharpe ratios.  Default="SharpeRatio".
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outSharpe - Optional. Output Data Set with Sharpe ratios.  Default="SharpeRatio".
 *
 *
 * Current version of Sharpe_Ratio only incorporates the use of Standard Deviation.  Later modifications may
 * include VaR or ES, and an option for weights.
 * MODIFIED:
 * 6/3/2015 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
