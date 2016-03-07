@@ -3,17 +3,19 @@
 *
 * PURPOSE: Create a chart displaying the cumulative returns of an asset or instrument over time. 
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* title- required.  Title for chart. [Default= Cumulative Returns]
-* method- option.  Specifies the method of chaining in computing the cumulative return.  [Default= GEOMETRIC] {GEOMETRIC, ARITHMETIC}
-* WealthIndex- option.  Specifies that the value of a dollar in the first sample is $1, therefore charting the value of the returns per dollar over time.
+* returns - Required.  Data Set containing returns.
+* title - Optional.  Title for chart. Default= Cumulative Returns
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           Default=GEOMETRIC
+* WealthIndex - Optional.  Specifies that the value of a dollar in the first sample is $1, therefore charting the value of the returns per dollar over time.
 						[Default= FALSE] {TRUE, FALSE}
-* Grid- option to overlay grid lines on the returns axis. [Default= TRUE] 
-* Interval- option.  Specifies the frequency of grid lines overlayed on the returns axis. [Default= 1 (100%)]
-* dateColumn- specifies the date column for returns in the data set. [Default= Date]
+* Grid - Optional. Overlay grid lines on the returns axis. [Default= TRUE] 
+* Interval - Optional.  Specifies the frequency of grid lines overlayed on the returns axis. [Default= 1 (100%)]
+* dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
 * MODIFIED:
 * 2/3/2016 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

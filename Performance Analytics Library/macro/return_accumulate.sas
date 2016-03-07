@@ -6,19 +6,20 @@
 * NOTES: Accepts periodic returns.  Will calculate daily/monthly/quarterly/yearly
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns
-* method - {LOG, DISCRETE} -- compound or simple returns.  
+* returns - Required.  Data Set containing returns
+* method - Optional. {LOG, DISCRETE} -- compound or simple returns.  
            Default=DISCRETE
-* toFreq - {DAY|DAILY, MONTH|MTH|MONTHLY, QUARTER|QTR|QUARTERLY, YEAR|YR|YEARLY}
+* toFreq - Optional. {DAY|DAILY, MONTH|MTH|MONTHLY, QUARTER|QTR|QUARTERLY, YEAR|YR|YEARLY}
 *		   Default = MONTH
-* dateColumn - Date column in Data Set. Default=DATE
-* updateInPlace - {TRUE, FALSE} -- update the &returns Data Set in place.
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* updateInPlace - Optional. {TRUE, FALSE} -- update the &returns Data Set in place.
 *                 Default=TRUE
-* outReturn - output Data Set with returns.  Only used if updateInPlace=FALSE 
+* outReturn - Optional. Output Data Set with returns.  Only used if updateInPlace=FALSE 
 *             Default="agg_returns"
 *
 * MODIFIED:
 * 2/23/2016 â€“ DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

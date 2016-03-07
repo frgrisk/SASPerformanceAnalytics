@@ -3,14 +3,16 @@
 *
 * PURPOSE: Create a chart displaying relative performance compared to a benchmark asset or instrument. 
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* Rf- required.  Names the risk free rate or benchmark asset to be used in comparison.
-* title- required.  Title for chart. [Default= Relative Performance Against &Rf]
-* method- option.  Specifies the method of chaining in computing the cumulative return.  [Default= GEOMETRIC] {GEOMETRIC, ARITHMETIC}  
-* dateColumn- specifies the date column for returns in the data set. [Default= Date]
+* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* Rf - Optional. The value or variable representing the risk free rate of return. [Default=0]
+* title - Optional.  Title for chart. [Default= Relative Performance Against &Rf]
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           [Default=GEOMETRIC]
+* dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
 * MODIFIED:
 * 2/1/2016 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

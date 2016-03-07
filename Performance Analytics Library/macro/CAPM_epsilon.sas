@@ -7,18 +7,22 @@
 * 		 input an unchanging value (0.02) or a variable risk free rate included in the return data set;
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* BM- required.  Names variable containing returns of benchmark asset from returns data set. 
-* Rf- required.  Either a value or variable representing the Risk Free Rate of Return.
-* Scale- Required. Specifies the number of periods in one year.  [Daily= 252, Weekly= 52, Monthly= 12, Quarterly= 4]
-* method- Specifies whether to use geometric or arithmetic chaining in calculating returns. 
-* dateColumn - Date column in Data Set. Default=DATE
-* outEpsilon - output Data Set of asset's Epsilon.  Default="Epsilon".
+* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* BM - Optional. Specifies the variable name of benchmark asset or index in the returns data set. Default=0
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          Default=0
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           Default=GEOMETRIC
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outEpsilon - Optional. Output Data Set of asset's Epsilon. Default="epsilon".
+*
 * MODIFIED:
 * 6/17/2015 – DP - Initial Creation
 * 9/26/2015 - CJ - Replaced all temporary counters and data sets with random names.
 * 				   Replaced chaining with %return_annualized to give user optional chaining methods.
 *				   Replaced macro %renamer with PROC Transpose preserving numeric variables.
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

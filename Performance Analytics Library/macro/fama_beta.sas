@@ -5,15 +5,17 @@
 * 		   equivalent to the total portfolio risk.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* BM- required.  Names variable containing returns of benchmark asset from returns data set. 
-* Scale- Optional. the number of periods in a year (ie daily scale= 252, monthly scale= 12, quarterly scale= 4). 
-* dateColumn - Date column in Data Set. Default=DATE
-* outBeta - output Data Set of asset Betas.  Default= "alphas_and_betas".
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          Default=1
+* dateColumn - Optional. Date column in Data Set. Default=Date
+* outBeta - Optional. Output Data Set of asset Betas.  Default= fama_beta.
 * MODIFIED:
 * 7/24/2015 – DP - Initial Creation
 * 10/2/2015 - CJ - Replaced PROC SQL statement with %get_number_column_names
 *				   Added a scale parameter, allowing for an annualized beta term.
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

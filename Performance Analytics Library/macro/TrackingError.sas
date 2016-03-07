@@ -4,15 +4,17 @@
 * PURPOSE: calculate the tracking error of a portfolio given returns and a benchmark asset or index.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* BM- required.  Names the benchmark asset or index from the data set.
-* annualized- specifies whether to return annualized tracking error rather than tracking error.
-* scale- option if add_annualized= TRUE, the number of periods in a year (ie daily scale= 252, monthly scale= 12, quarterly scale= 4).
-* dateColumn - Date column in Data Set. Default=DATE
-* outTrackingError - output Data Set with tracking error.  Default="tracking_error".
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* annualized - Optional. Specifies whether to return annualized tracking error rather than tracking error. {TRUE,FALSE}. [Default= FALSE]
+* scale - Optional. Option if add_annualized= TRUE, the number of periods in a year (ie daily scale= 252, monthly scale= 12, quarterly scale= 4).
+          [Default= 1]
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outTrackingError - Optional. Output Data Set with tracking error.  Default="tracking_error".
 *
 * MODIFIED:
 * 7/13/2015 – CJ - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

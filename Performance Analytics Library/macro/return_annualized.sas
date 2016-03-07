@@ -9,15 +9,16 @@
 *		 monthly scale= 12, quarterly scale= 4). 
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* scale - required.  Number of periods per year used in the calculation.
-* method - {GEOMETRIC, ARITHMETIC} -- option for either geometric or arithmetic chaining.  
+* returns - Required.  Data Set containing returns.
+* scale - Required. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
-* dateColumn - Date column in Data Set. Default=DATE
-* outReturnAnnualized - output Data Set with annualized returns.  Default="annualized_returns". 
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outReturnAnnualized - Optional. Output Data Set with annualized returns.  Default="annualized_returns". 
 *
 * MODIFIED:
 * 6/2/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

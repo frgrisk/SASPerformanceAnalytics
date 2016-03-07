@@ -5,14 +5,15 @@
 *          beta coskewness, and beta cokurtosis.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* dateColumn- specifies the format of the date column in the returns data set. [Default= Date]
-* outHigherMoments- Output table [Default= Higher_Moments]
-* printTable- option to print the data set. {PRINT, NOPRINT} [Default= PRINT]
+* returns - Required.  Data Set containing returns.
+* dateColumn - Optional. Specifies the date column in the returns data set. [Default= Date]
+* outHigherMoments - Optional. Output table name. [Default= Higher_Moments]
+* printTable - Optional. Option to print the data set. {PRINT, NOPRINT} [Default= NOPRINT]
 * MODIFIED:
 * 7/6/2015 – CJ - Initial Creation
 * 10/1/2015 - CJ - Modified to accomodate edits from %CoMoments and replace temporary variable 
 *				   names with random names.
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

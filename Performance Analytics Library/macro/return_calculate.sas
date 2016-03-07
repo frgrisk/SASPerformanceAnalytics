@@ -8,18 +8,19 @@
 *        or create new output;
 *
 * MACRO OPTIONS:
-* prices - required.  Data Set containing prices
-* method - {LOG, DISCRETE} -- compound or simple returns.  
+* prices - Required.  Data Set containing prices
+* method - Optional. Compound or simple returns.  {LOG, DISCRETE} 
            Default=DISCRETE
-* dateColumn - Date column in Data Set. Default=DATE
-* updateInPlace - {TRUE, FALSE} -- update the &prices Data Set in place.
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* updateInPlace - Optional. Update the &prices Data Set in place. {TRUE, FALSE}
 *                 Default=TRUE
-* outReturn - output Data Set with returns.  Only used if updateInPlace=FALSE 
+* outReturn - Optional. Output Data Set with returns.  Only used if updateInPlace=FALSE 
 *             Default="returns"
 *
 * MODIFIED:
 * 5/5/2015 – DP - Initial Creation
 * 10/2/2015 - CJ - Replaced PROC SQL with %get_number_column_names
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

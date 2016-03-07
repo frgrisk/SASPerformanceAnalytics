@@ -4,14 +4,16 @@
 * PURPOSE: Creates co-skewness and co-kurtosis matrices.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* outCoSkew - output co-skewness matrix. [Default= M3]
-* outCoKurt - output co-kurtosis matrix. [Default= M4]
+* returns - Required.  Data Set containing returns.
+* dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
+* outCoSkew - Optional. Output co-skewness matrix. [Default= M3]
+* outCoKurt - Optional. Output co-kurtosis matrix. [Default= M4]
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
 * 10/1/2015 - CJ - Replaced temporary variable names with random names.  
 *				   Changed method of computing Co-Kurtosis matrix to accomodate
 * 				   a data set with more than 5 variables.
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

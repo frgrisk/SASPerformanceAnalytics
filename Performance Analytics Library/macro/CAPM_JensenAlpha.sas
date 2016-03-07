@@ -7,20 +7,22 @@
 and is in effect the exess return adjusted for systematic risk.
 *
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns.
-* BM- required.  Specifies the benchmark asset or index in the returns data set.
-* Rf- required.  Specifies a variable or number assigned to the risk free rate of return.
-* scale - required.  Number of periods per year used in the calculation.
-* method- option to implement geometric chaining or arithmetic chaining when annualizing returns. 
-*		  {GEOMETRIC, ARITHMETIC} [Default= GEOMETRIC]
-* dateColumn - Date column in Data Set. Default=DATE
-* outJensen - output Data Set with Jensen alphas.  Default="Jensen_Alpha". 
+* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+          Default=1
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           Default=GEOMETRIC
+* dateColumn - Optional. Date column in Data Set. Default=DATE
+* outJensen - Optional. Output Data Set with Jensen alphas.  Default="Jensen_Alpha". 
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation
 * 9/25/2015 - CJ - Renamed temporary data sets using macro %ranname.
 *				   Replaced PROC SQL with %get_number_column_names.
 *				   Renamed Jensen_Alpha "_STAT_".
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

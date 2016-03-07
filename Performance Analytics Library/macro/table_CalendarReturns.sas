@@ -4,15 +4,17 @@
 * PURPOSE: Table of Calendar Returns with month as column and year as row with a total value for the year
 *		   in the last column.
 * MACRO OPTIONS:
-* returns - required.  Data Set containing returns with option to include risk free rate variable.
-* method- required.  Choose to implement geometric or arithmetic chaining. Default= GEOMETRIC.
-* dateColumn - Date column in Data Set. Default=DATE.
-* outCalendarReturns - output Data Set of calendar_returns.  Default="Calendar_Returns".
-* printTable- option to print returns of all or one asset. Options[PRINT, NOPRINT].
-* name- option to print single variable, name of the variable to print if printTable= PRINT.
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
+           Default=GEOMETRIC
+* dateColumn - Optional. Date column in Data Set. Default=Date.
+* outCalendarReturns - Optional. Output Data Set of calendar_returns.  Default="Calendar_Returns".
+* printTable - Optional. Option to print returns of all or one asset. {PRINT, NOPRINT}. Default= NOPRINT
+* name - Required. Name of the variable to print if printTable= PRINT.
 
 * MODIFIED:
 * 7/14/2015 – DP - Initial Creation
+* 3/05/2016 – RM - Comments modification 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
