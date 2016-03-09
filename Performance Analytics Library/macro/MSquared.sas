@@ -11,23 +11,24 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=Date
-* outMSquared - Optional. Output Data Set of MSquared.  Default= "MSquared".
+* outData - Optional. Output Data Set of MSquared.  Default= "MSquared".
 * MODIFIED:
 * 7/24/2015 – DP - Initial Creation
 * 10/2/2015 - CJ - Replaced PROC SQL with %get_number_column_names
 *				   Renamed temporary data sets with %ranname
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro MSquared(returns, 
 						BM=,  
-						Rf=0,
-						scale=1,
+						Rf= 0,
+						scale= 1,
 						method= GEOMETRIC, 
-						dateColumn= Date,
-						outMSquared= MSquared);
+						dateColumn= DATE,
+						outData= MSquared);
 
 %local _temp_sr _temp_std vars i;
 
@@ -39,15 +40,15 @@
 
 %let i= %ranname();
 
-%SharpeRatio_annualized(&returns,scale=&scale,Rf=&rf,outSharpe=&_temp_sr,method=&method,dateColumn=&dateColumn)
-%StdDev_annualized(&returns,scale=&scale,outStdDev= &_temp_std,dateColumn=&dateColumn)
+%SharpeRatio_annualized(&returns,scale=&scale,Rf=&rf,outData=&_temp_sr,method=&method,dateColumn=&dateColumn)
+%StdDev_annualized(&returns,scale=&scale,outData= &_temp_std,dateColumn=&dateColumn)
 
 data _null_;
 set &_temp_std;
 call symputx("sb",put(&Bm,best32.),"l");
 run;
 
-data &outMSquared(drop=&i);
+data &outData(drop=&i);
 format _STAT_ $32.;
 set &_temp_sr(drop=&bm);
 array vars[*] &vars;

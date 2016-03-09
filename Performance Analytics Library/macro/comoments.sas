@@ -18,7 +18,7 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro comoments(returns,
-						dateColumn= Date, 
+						dateColumn= DATE, 
 						outCoSkew= M3, 
 						outCoKurt= M4);
 %local vars M3 M4 names;

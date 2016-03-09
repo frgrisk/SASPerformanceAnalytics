@@ -9,7 +9,7 @@
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           [Default=1]
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outTable - Optional. Output Data Set of systematic risk.  Default="table_SpecificRisk".
+* outData - Optional. Output Data Set of systematic risk.  Default="table_SpecificRisk".
 * printTable - Optional. Option to print output data set.  {PRINT, NOPRINT} [Default= NOPRINT]
 
 * MODIFIED:
@@ -17,16 +17,17 @@
 * 03/1/2016 - DP - Updated to do calculations here.  specific_risk and systematic_risk now call
 *                  this macro. 
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro table_SpecificRisk(returns, 
 							BM=, 
-							Rf=0,
+							Rf= 0,
 							scale= 1,
 							dateColumn= DATE,
-							outTable= table_SpecificRisk,
+							outData= table_SpecificRisk,
 							printTable= NOPRINT);
 
 %local vars var n i out_reg out_excess;
@@ -45,7 +46,7 @@
 %return_excess(&returns, 
 			 	Rf= &rf, 
 			 	dateColumn=&dateColumn,
-				outReturn= &out_excess);
+				outData= &out_excess);
 
 
 /*Local variables to hold time series of predicted and residual values*/
@@ -80,12 +81,12 @@ quit;
 %Standard_Deviation(&out_reg, 
 					scale=&scale, 
 					annualized= TRUE, 
-					outStdDev= &outTable);
+					outData= &outData);
 
 /*Transpose the Vol values and create the _STAT_ column*/
-data &outTable(keep=_stat_ &vars);
+data &outData(keep=_stat_ &vars);
 	format _STAT_ $32.;
-set &outTable;
+set &outData;
 
 array tRisk[&n] &vars;
 array sysRisk[&n] 
@@ -117,12 +118,12 @@ end;
 output;
 run;
 
-proc sort data=&outTable;
+proc sort data=&outData;
 by _stat_;
 run;
 
 %if %upcase(&printTable) = PRINT %then %do;
-	proc print data=&outTable noobs;
+	proc print data=&outData noobs;
 	run;
 %end;
 

@@ -17,13 +17,14 @@
 * 9/29/2015 - CJ - Replaced PROC SQL with %get_number_column_names.
 *				   Renamed temporary data sets with %ranname().
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro centered_moments(returns,  
-						dateColumn=Date,
-						outCenteredVar=centered_Var,
+						dateColumn= DATE,
+						outCenteredVar= centered_Var,
 						outCenteredSkew= centered_Skew,
 						outCenteredKurt= centered_Kurt);
 
@@ -38,7 +39,7 @@
 %let cent_skew= %ranname();
 %let cent_kurt= %ranname();
 
-%return_centered(&returns, outCentered= &centered_returns);
+%return_centered(&returns, outData= &centered_returns);
 
 proc iml;
 use &centered_returns;

@@ -11,7 +11,7 @@
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outSharpe - Optional. Output Data Set with Sharpe ratios.  Default="SharpeRatio".
+* outData - Optional. Output Data Set with Sharpe ratios.  Default="SharpeRatio".
 *
 *
 * Current version of Sharpe_Ratio only incorporates the use of Standard Deviation.  Later modifications may
@@ -19,13 +19,14 @@
 * MODIFIED:
 * 6/3/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro Sharpe_Ratio(returns,
 							Rf= 0,
-							dateColumn=DATE,
-							outSharpe= SharpeRatio);
+							dateColumn= DATE,
+							outData= SharpeRatio);
 							
 %local vars _tempRP _tempStd _tempSharpe i;
 
@@ -38,7 +39,7 @@
 
 %let i= %ranname();
 
-%return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outReturn= &_tempRP);
+%return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &_tempRP);
 
 proc means data= &_tempRP noprint;
 output out= &_tempRP;
@@ -53,7 +54,7 @@ run;
 
 %Standard_Deviation(&returns,
 							dateColumn= &dateColumn, 
-							outStdDev= &_tempStd);
+							outData= &_tempStd);
 
 data &_tempSharpe (drop= &i);
 set &_tempRP &_tempStd;
@@ -65,7 +66,7 @@ Sharpe[&i]= lag(Sharpe[&i])/Sharpe[&i];
 end;
 run;
 
-data &outSharpe;
+data &outData;
 retain _STAT_;
 set &_tempSharpe end= last;
 _STAT_= 'Sharpe_Ratio';

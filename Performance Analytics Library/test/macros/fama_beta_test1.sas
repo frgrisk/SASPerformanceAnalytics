@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%fama_beta(prices, BM= SPY, dateColumn= dateColumn, outBeta= fama_beta)
+%fama_beta(prices, BM= SPY, dateColumn= dateColumn, outData= fama_beta)
 
 
 /*If tables have 0 records then delete them.*/

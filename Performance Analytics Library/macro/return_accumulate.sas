@@ -14,22 +14,23 @@
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * updateInPlace - Optional. {TRUE, FALSE} -- update the &returns Data Set in place.
 *                 Default=TRUE
-* outReturn - Optional. Output Data Set with returns.  Only used if updateInPlace=FALSE 
+* outData - Optional. Output Data Set with returns.  Only used if updateInPlace=FALSE 
 *             Default="agg_returns"
 *
 * MODIFIED:
-* 2/23/2016 â€“ DP - Initial Creation
+* 2/23/2016 - DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro return_accumulate(returns,
-						method=DISCRETE,
-						toFreq=MONTH,
-						dateColumn=DATE,
-						updateInPlace=TRUE,
-						outReturn=agg_returns);
+						method= DISCRETE,
+						toFreq= MONTH,
+						dateColumn= DATE,
+						updateInPlace= TRUE,
+						outData= agg_returns);
 
 %local vars nv i YR QTR MTH DAY outData byVar;
 /*Find all variable names excluding the date column*/
@@ -50,7 +51,7 @@
 	%let outData = &returns;
 %end;
 %else %do;
-	%let outData = &outReturn;
+	%let outData = &outData;
 %end;
 
 /*Add columns to track frequencies*/

@@ -12,17 +12,18 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outReturn - Optional. Output Data Set with  cumulative returns. Default="cumulative_returns" 
+* outData - Optional. Output Data Set with  cumulative returns. Default="cumulative_returns" 
 * MODIFIED:
 * 5/22/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro return_cumulative(returns,
-							method=GEOMETRIC,
-							dateColumn=DATE,
-							outReturn=cumulative_returns);
+							method= GEOMETRIC,
+							dateColumn= DATE,
+							outData= cumulative_returns);
 
 %local ret nvar i;
 /*Find all variable names excluding the date column and risk free variable*/
@@ -33,7 +34,7 @@
 
 %let i= %ranname();
 
-data &outReturn(drop=&i);
+data &outData(drop=&i);
 	set &returns ;
 array ret[*] &ret;
 array cprod [&nvar] _temporary_;

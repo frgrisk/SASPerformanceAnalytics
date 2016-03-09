@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%appraisal_ratio(prices, BM= SPY, Rf= 0.01/252, scale= 252, option= APPRAISAL, outAppraisalRatio= appraisal_ratio)
+%appraisal_ratio(prices, BM= SPY, Rf= 0.01/252, scale= 252, option= APPRAISAL, outData= appraisal_ratio)
 
 
 /*If tables have 0 records then delete them.*/

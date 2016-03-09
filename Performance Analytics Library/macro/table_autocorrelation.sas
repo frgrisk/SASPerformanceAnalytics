@@ -9,12 +9,13 @@
 	     The value of lag should be at least p+d+q based from the model ARIMA(p, d, q).  "table_autocorrelation"
 		 will not return a p-value if lag is less than this value.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outAutoCorr - Optional. Specifies name of output Data Set of autocorrelations.  Default="AutoCorrelations".
+* outData - Optional. Specifies name of output Data Set of autocorrelations.  Default="AutoCorrelations".
 * printTable- Optional. Option to print table.  {PRINT, NOPRINT}. Default= [NOPRINT]
 * MODIFIED:
 * 6/23/2015 – CJ - Initial Creation
 * 7/15/2015 - DP - Updated to use only TIMESERIES and calculate Ljung-Box in Data Step.
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -22,7 +23,7 @@
 %macro table_autocorrelation(returns, 
 								nlag=, 
 								dateColumn= DATE, 
-								outAutoCorr= AutoCorrelations,
+								outData= AutoCorrelations,
 								printTable= NOPRINT);
 
 %local lib ds vars n;
@@ -51,13 +52,13 @@ quit;
 
 proc timeseries data= &returns 
 				out=_null_
-				outcorr= &outAutoCorr;
+				outcorr= &outData;
 	corr acf /transpose= YES nlag= &nlag;
 	var &vars;
 run;
 
-data &outAutoCorr;
-set &outAutoCorr;
+data &outData;
+set &outData;
 drop _label_ _stat_ lag0 Q i;
 rename _name_= StockId;
 
@@ -72,7 +73,7 @@ P_Value = 1-cdf('chisq',Q,6);
 run;
 
 %if %upcase(&printTable)= PRINT %then %do;
-proc print data= &outAutoCorr noobs;
+proc print data= &outData noobs;
 run; 
 %end;
 %mend;

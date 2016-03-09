@@ -15,7 +15,7 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outEpsilon - Optional. Output Data Set of asset's Epsilon. Default="epsilon".
+* outData - Optional. Output Data Set of asset's Epsilon. Default="epsilon".
 *
 * MODIFIED:
 * 6/17/2015 – DP - Initial Creation
@@ -23,17 +23,18 @@
 * 				   Replaced chaining with %return_annualized to give user optional chaining methods.
 *				   Replaced macro %renamer with PROC Transpose preserving numeric variables.
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro CAPM_epsilon(returns, 
-						BM= 0, 
+						BM=, 
 						Rf= 0,
-						scale= 0,
+						scale= 1,
 						method= GEOMETRIC, 
 						dateColumn= DATE, 
-						outEpsilon= epsilon);
+						outData= epsilon);
 
 %local vars _tempRP Betas meanRet exBM _tempAlpha _tempBeta betaVal_t i s;
 /*Find all variable names excluding the date column, benchmark, and risk free variables*/
@@ -53,17 +54,17 @@
 %let i= %ranname();
 %let s= %ranname();
 
-%return_annualized(&returns, scale= &scale, method= &method, outReturnAnnualized= &meanRet);
+%return_annualized(&returns, scale= &scale, method= &method, outData= &meanRet);
 %CAPM_alpha_beta(&returns, 
 						BM= &BM, 
 						Rf= &Rf,
 						dateColumn= &dateColumn,  
-						outBeta= &betas);
+						outData= &betas);
 
 %return_excess(&meanRet, 
 					 	Rf= &Rf, 
 						dateColumn= &dateColumn, 
-						outReturn= &_tempRP);
+						outData= &_tempRP);
 
 data &exBM;
 set &_tempRP;
@@ -105,13 +106,13 @@ proc transpose data= &betaVal_t out= &betaVal_t;
 id names;
 run;
 
-data &outEpsilon;
+data &outData;
 set  &_tempBeta &betaVal_t &meanRet;
 drop _NAME_ &BM &dateColumn;
 run;
 
-data &outEpsilon (drop= &s);
-set &outEpsilon;
+data &outData (drop= &s);
+set &outData;
 
 array epsilon[*] &vars;
 	do &s= 1 to dim(epsilon);
@@ -119,8 +120,8 @@ array epsilon[*] &vars;
 	end;
 run;
 
-data &outEpsilon;
-set &outEpsilon;
+data &outData;
+set &outData;
 if _n_= 1 then delete;
 if _n_= 2 then delete;
 _STAT_= 'Epsilon';

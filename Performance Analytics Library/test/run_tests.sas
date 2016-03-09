@@ -3,8 +3,9 @@ ods listing close;
 
 options mprint notes;
 
-%let dir= C:\Users\CJohnston\Documents\SASPerformanceAnalytics\Performance Analytics Library;
+*%let dir= C:\Users\CJohnston\Documents\SASPerformanceAnalytics\Performance Analytics Library;
 *%let dir=C:\\Users\\dpazzula\\Documents\\VOR\\SAS_Perf_Anly;
+%let dir=C:\\Users\\Qiyuan\\Documents\\GitHub\\SASPerformanceAnalytics\\Performance Analytics Library;
 
 
 libname input "&dir";

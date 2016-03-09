@@ -9,11 +9,12 @@
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outInformationRatio - Optional. Output Data Set with information ratio.  Default="Info_Ratio".
+* outData - Optional. Output Data Set with information ratio.  Default="Info_Ratio".
 *
 * MODIFIED:
 * 7/13/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -21,8 +22,8 @@
 %macro Information_Ratio(returns,
 							BM=,
 							scale= 1,
-							dateColumn=DATE,
-							outInformationRatio=Info_Ratio);
+							dateColumn= DATE,
+							outData= Info_Ratio);
 
 
 
@@ -60,10 +61,10 @@ quit;
 %let ap = %ranname();
 
 
-%ActivePremium(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outActivePremium=&ap)
-%TrackingError(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outTrackingError=&te,annualized=TRUE)
+%ActivePremium(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&ap)
+%TrackingError(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&te,annualized=TRUE)
 
-data &outInformationRatio;
+data &outData;
 format _stat_ $32.;
 set &te &ap(in=&ap);
 array vars[&nv] &ret;

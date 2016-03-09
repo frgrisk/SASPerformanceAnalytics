@@ -10,22 +10,23 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * alpha - Optional. Significance level.  Specifies the level of significance for the mean. [Default= 0.05]
-* outStats - Optional. Output Data Set with related statistics. [Default= Stats]
+* outData - Optional. Output Data Set with related statistics. [Default= Stats]
 * dateColumn - Optional. Date column in Data Set. Default=Date
 * digits - Optional. Specifies the number of digits to display in the output table. [Default= 4]
 * printTable - Optional. Option to print table.  {PRINT,NOPRINT} [Default= NOPRINT]
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_stats(returns, 	
-					alpha= 0.05,
-					outStats= Stats, 
-					dateColumn=Date,
-					digits=4,
-					printTable= noprint);
+					alpha= 0.05, 
+					dateColumn= DATE,
+					outData= Stats,
+					digits= 4,
+					printTable= NOPRINT);
 %local lib ds z;
 
 /***********************************
@@ -168,7 +169,7 @@ select (_NAME_);
 end;
 run;
 
-proc sort data=_tempOut out=&outStats(drop=so rename=(_NAME_=_STAT_));
+proc sort data=_tempOut out=&outData(drop=so rename=(_NAME_=_STAT_));
 by so;
 run;
 
@@ -179,7 +180,7 @@ run;
 quit;
 
 %if %upcase(&printTable) = PRINT %then %do;
-	proc print data=&outStats noobs;
+	proc print data=&outData noobs;
 	run;
 %end;
 

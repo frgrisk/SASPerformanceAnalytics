@@ -44,7 +44,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, outMSquared= MSquared)
+%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, outData= MSquared)
 
 
 /*If tables have 0 records then delete them.*/

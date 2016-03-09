@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Standard_Deviation(prices, outStdDev= annualized_stddev)
+%Standard_Deviation(prices, outData= annualized_stddev)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
