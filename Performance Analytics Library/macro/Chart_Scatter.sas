@@ -25,6 +25,7 @@
 * MODIFIED:
 * 1/20/2016 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -44,7 +45,7 @@
 							alpha= 0.05,
 							ellipse= FALSE,
 							EllipseType= predicted,
-							dateColumn= Date);
+							dateColumn= DATE);
 
 
 PROC SGSCATTER data = &returns;
