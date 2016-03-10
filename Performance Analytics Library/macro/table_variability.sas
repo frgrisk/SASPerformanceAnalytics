@@ -10,18 +10,19 @@
 * returns - Required.  Data Set containing returns.
 * scale - Required. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
 * dateColumn - Optional. Specifies the date column in the returns data set. [Default= Date]
-* outTable - Optional. Output Data Set with variability statistics. [Default= variability_table]
+* outData - Optional. Output Data Set with variability statistics. [Default= variability_table]
 * printTable - Optional. Option to print output data set. {PRINT, NOPRINT} [Default= NOPRINT]
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_variability(returns, 
-								scale=,
-								dateColumn= Date,
-								outTable= variability_table,
+								scale= 1,
+								dateColumn= DATE,
+								outData= variability_table,
 								printTable= NOPRINT);
 %local lib ds vars set1;
 
@@ -51,8 +52,8 @@ select name
 quit;
 
 
-%Standard_Deviation(&returns, scale= &scale, annualized= TRUE, outStdDev= annualized_StdDev);
-%Standard_Deviation(&returns, scale= 1, outStdDev= Monthly);
+%Standard_Deviation(&returns, scale= &scale, annualized= TRUE, outData= annualized_StdDev);
+%Standard_Deviation(&returns, scale= 1, outData= Monthly);
 
 
 
@@ -132,7 +133,7 @@ if _stat_ = 'MAX' then delete;
 drop _stat_;
 run;
 
-data &outTable;
+data &outData;
 /*retain Variability;*/
 set MAD Monthly Annualized_StdDev;
 if _n_= 1 then Variability= 'Mean Absolute Deviation';
@@ -140,13 +141,13 @@ if _n_= 2 then Variability= 'Monthly Standard Deviation';
 if _n_= 3 then Variability= 'Annualized Standard Deviation';
 run;
 
-data &outTable;
+data &outData;
 retain Variability;
-set &outTable;
+set &outData;
 run;
 
 %if %upcase(&printTable) = PRINT %then %do;
-	proc print data=&outTable noobs;
+	proc print data=&outData noobs;
 	run;
 %end;
 

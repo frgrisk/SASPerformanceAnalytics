@@ -14,11 +14,12 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outActivePremium - Optional. output Data Set with annualized returns.  Default="active_premium"
+* outData - Optional. output Data Set with annualized returns.  Default="active_premium"
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation
-* 3/05/2016 – RM - Comments modification   
+* 3/05/2016 – RM - Comments modification  
+* 3/09/2016 - QY - parameter consistency 
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
@@ -27,7 +28,7 @@
 							scale= 1,
 							method= GEOMETRIC,
 							dateColumn= DATE, 
-							outActivePremium= active_premium);
+							outData= active_premium);
 
 %local ar;
 						
@@ -37,15 +38,15 @@
 					scale= &scale, 
 					method= &method, 
 					dateColumn= &dateColumn, 
-					outReturnAnnualized= &ar);
+					outData= &ar);
 
 %return_excess(&ar, 
 				Rf= &BM, 
 				dateColumn= &dateColumn,
-				outReturn= &outActivePremium);
+				outData= &outData);
 
-data &outActivePremium;
-set &outActivePremium;
+data &outData;
+set &outData;
 drop &BM &dateColumn;
 run; 
 

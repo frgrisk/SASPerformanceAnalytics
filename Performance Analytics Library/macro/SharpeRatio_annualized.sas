@@ -14,20 +14,21 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=date
-* outSharpe - Optional. Output Data Set with risk premium.  Default="Annualized_SharpeRatio".
+* outData - Optional. Output Data Set with risk premium.  Default="Annualized_SharpeRatio".
 *
 * MODIFIED:
 * 6/12/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro SharpeRatio_annualized(returns, 
 					  				 Rf= 0, 
-					 				 scale= 0,
+					 				 scale= 1,
 					  				 method= GEOMETRIC, 
-					  				 dateColumn= date, 
-					  				 outSharpe= Annualized_SharpeRatio);
+					  				 dateColumn= DATE, 
+					  				 outData= Annualized_SharpeRatio);
 
 %local ret nv j Chained_Ex_Ret Ann_StD SR;
 /*Find all variable names excluding the date column and risk free variable*/
@@ -41,16 +42,16 @@
 %let Chained_Ex_Ret= %ranname();
 %let Ann_StD= %ranname();
 
-%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);
-%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);
+%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &Chained_Ex_Ret);
+%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outData= &Chained_Ex_Ret);
 
 %Standard_Deviation(&returns, 
 							annualized= TRUE, 
 							scale= &scale,
 							dateColumn= &dateColumn,
-							outStdDev= &Ann_StD);
+							outData= &Ann_StD);
 
-data &outSharpe (drop= &j);
+data &outData (drop= &j);
 retain _STAT_;
 format _STAT_ $32.;
 set &Chained_Ex_Ret &Ann_StD (in=s);
@@ -80,11 +81,11 @@ quit;
 /**/
 /*%let i= %ranname();*/
 /**/
-/*%return_annualized(&returns, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);*/
+/*%return_annualized(&returns, scale= &scale, method= &method, outData= &Chained_Ex_Ret);*/
 /*%return_excess(&Chained_Ex_Ret, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);*/
-/*%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outStdDev= &Ann_StD);*/
+/*%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outData= &Ann_StD);*/
 /**/
-/*data &outSharpe;*/
+/*data &outData;*/
 /*set RP Std (in=s);*/
 /*drop &i &dateColumn;*/
 /*array vars[&nv] &vars;*/

@@ -10,12 +10,13 @@
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outTable - Optional. Output Data Set with information ratio and tracking error.  Default="table_InformationRatio".
+* outData - Optional. Output Data Set with information ratio and tracking error.  Default="table_InformationRatio".
 * printTable - Optional. Option to print the output data set.  {PRINT, NOPRINT}, [Default= NOPRINT]
 *
 * MODIFIED:
 * 7/13/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -23,8 +24,8 @@
 %macro table_InformationRatio(returns,
 								BM=,
 								scale= 1,
-								dateColumn=DATE,
-								outTable=table_InformationRatio, 
+								dateColumn= DATE,
+								outData= table_InformationRatio, 
 								printTable= NOPRINT);
 
 %local tea teb ir;
@@ -37,19 +38,19 @@
 						BM= &BM,
 						annualized= TRUE,
 						scale= &scale,
-						outTrackingError=&tea);
+						outData=&tea);
 
 %TrackingError(&returns,
 						BM= &BM,
 						annualized= FALSE,
 						scale= &scale,
-						outTrackingError= &teb);
+						outData= &teb);
 
 %Information_Ratio(&returns, 
 						BM= &BM, 
 						scale= &scale,
 						dateColumn= &dateColumn,
-						outInformationRatio= &ir);
+						outData= &ir);
 
 data &tea;
 format _stat_ $32.;
@@ -63,12 +64,12 @@ set &teb;
 _stat_= 'Tracking_Error';
 run;
 
-data &outTable;
+data &outData;
 set &teb &tea &ir ;
 run;
 
 %if %upcase(&printTable) = PRINT %then %do;
-	proc print data=&outTable noobs;
+	proc print data=&outData noobs;
 	run;
 %end;
 

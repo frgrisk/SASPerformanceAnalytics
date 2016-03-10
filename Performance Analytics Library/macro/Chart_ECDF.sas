@@ -10,13 +10,14 @@
 * MODIFIED:
 * 2/3/2016 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro Chart_ECDF(returns, 
 					title= Empirical CDF,
-					dateColumn=Date);
+					dateColumn= DATE);
 
 
 %local vars;

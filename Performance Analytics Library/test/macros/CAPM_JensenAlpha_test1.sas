@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%CAPM_JensenAlpha(prices, BM= SPY, Rf= 0.01/252, scale= 252, outJensen= Jensen_Alpha)
+%CAPM_JensenAlpha(prices, BM= SPY, Rf= 0.01/252, scale= 252, outData= Jensen_Alpha)
 
 
 /*If tables have 0 records then delete them.*/

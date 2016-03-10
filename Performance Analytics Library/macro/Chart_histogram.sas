@@ -24,6 +24,7 @@
 *
 * MODIFIED:
 * 1/7/2016 – CJ - Initial Creation
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -40,7 +41,7 @@
 								KeepOutliers= TRUE,
 								qqplot= FALSE,
 								rug= FALSE,
-								dateColumn= Date);
+								dateColumn= DATE);
 
 %let IQR= %ranname();
 
