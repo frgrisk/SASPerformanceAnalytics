@@ -10,11 +10,12 @@
 * scale - Optional. Option if add_annualized= TRUE, the number of periods in a year (ie daily scale= 252, monthly scale= 12, quarterly scale= 4).
           [Default= 1]
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outTrackingError - Optional. Output Data Set with tracking error.  Default="tracking_error".
+* outData - Optional. Output Data Set with tracking error.  Default="tracking_error".
 *
 * MODIFIED:
 * 7/13/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -23,8 +24,8 @@
 							BM=,
 							annualized= FALSE,
 							scale= 1,
-							dateColumn=DATE,
-							outTrackingError=tracking_error);
+							dateColumn= DATE,
+							outData= tracking_error);
 
 %local rp ;
 %let rp = %ranname();
@@ -32,7 +33,7 @@
 %return_excess(&returns, 
 				Rf= &BM, 
 				dateColumn= &dateColumn,
-				outReturn=&rp);
+				outData=&rp);
 
 data &rp;
 set &rp;
@@ -44,7 +45,7 @@ run;
 						scale= &scale, 
 						annualized= &annualized,
 						dateColumn= &dateColumn, 
-						outStdDev= &outTrackingError);
+						outData= &outData);
 
 proc datasets lib= work nolist;
 delete &rp;

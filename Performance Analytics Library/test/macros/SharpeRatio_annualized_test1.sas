@@ -39,7 +39,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SharpeRatio_annualized(prices, Rf= 0.01/252, scale= 252, method= GEOMETRIC, outSharpe= Sharpe_Ratio)
+%SharpeRatio_annualized(prices, Rf= 0.01/252, scale= 252, method= GEOMETRIC, outData= Sharpe_Ratio)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

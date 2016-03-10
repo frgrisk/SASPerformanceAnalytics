@@ -15,25 +15,26 @@ and is in effect the exess return adjusted for systematic risk.
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outJensen - Optional. Output Data Set with Jensen alphas.  Default="Jensen_Alpha". 
+* outData - Optional. Output Data Set with Jensen alphas.  Default="Jensen_Alpha". 
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation
 * 9/25/2015 - CJ - Renamed temporary data sets using macro %ranname.
 *				   Replaced PROC SQL with %get_number_column_names.
 *				   Renamed Jensen_Alpha "_STAT_".
-* 3/05/2016 – RM - Comments modification 
+* 3/05/2016 – RM - Comments modification
+* 3/09/2016 - QY - parameter consistency 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro CAPM_JensenAlpha(returns, 
 							BM=, 
-							Rf=0, 
+							Rf= 0, 
 							scale= 1,
 							method= GEOMETRIC,
 							dateColumn= DATE, 
-							outJensen= Jensen_Alpha);
+							outData= Jensen_Alpha);
 
 
 %local _tempBeta _tempRAnn _tempRAnn_ex ;
@@ -50,12 +51,12 @@ and is in effect the exess return adjusted for systematic risk.
 							scale=&scale,
 							method= &method,
 							dateColumn= &dateColumn, 
-							outReturnAnnualized= &_tempRAnn_ex);
+							outData= &_tempRAnn_ex);
 
 %return_excess(&_tempRAnn_ex, 
 								Rf= &Rf, 
 								dateColumn= &dateColumn,
-								outReturn= &_tempRAnn_ex);
+								outData= &_tempRAnn_ex);
 
 
 
@@ -63,7 +64,7 @@ and is in effect the exess return adjusted for systematic risk.
 						BM= &BM, 
 						Rf= &Rf,
 						dateColumn= &dateColumn,  
-						outBeta= &_tempBeta);
+						outData= &_tempBeta);
 
 data &_tempBeta;
 set &_tempBeta;
@@ -87,18 +88,18 @@ jensen= y-(x#z);
 jensen= jensen`;
 names= names`;
 
-create &outJensen from jensen[rowname= names];
+create &outData from jensen[rowname= names];
 append from jensen[rowname= names];
-close &outJensen;
+close &outData;
 quit;
 
-proc transpose data= &outJensen out= &outJensen name= _STAT_;
+proc transpose data= &outData out= &outData name= _STAT_;
 id names;
 run;
 
-data &outJensen;
+data &outData;
 format _STAT_ $32.;
-set &outJensen;
+set &outData;
 _STAT_= 'Jensen_Alpha';
 run;
 

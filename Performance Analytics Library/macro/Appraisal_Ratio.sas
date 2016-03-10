@@ -16,23 +16,24 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outAppraisalRatio - Optional. output Data Set with Appraisal Ratios.  Default="Appraisal_Ratio"
+* outData - Optional. output Data Set with Appraisal Ratios.  Default="Appraisal_Ratio"
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro Appraisal_Ratio(returns, 
 								BM=, 
-								Rf=0, 
+								Rf= 0, 
 								scale= 1,
 								option=, 
 								method= GEOMETRIC,
 								dateColumn= DATE, 
-								outAppraisalRatio= Appraisal_Ratio);
+								outData= Appraisal_Ratio);
 
 %local nv Jensen_Alpha divisor vars i;
 /*Assign random names to temporary data sets*/
@@ -51,7 +52,7 @@
 							scale= &scale, 
 							method= &method,
 							dateColumn= &dateColumn, 
-							outJensen= &Jensen_Alpha);
+							outData= &Jensen_Alpha);
 
 
 
@@ -61,7 +62,7 @@
 						Rf=&Rf,
 						scale= &scale,
 						dateColumn= &dateColumn,
-						outSpecificRisk= &divisor);
+						outData= &divisor);
 
 %end;
 
@@ -70,7 +71,7 @@
 						BM= &BM, 
 						Rf= &Rf, 
 						dateColumn= &dateColumn, 
-						outBeta= &divisor);
+						outData= &divisor);
 data &divisor;
 set &divisor;
 if alphas_and_betas= 'alphas' then delete;
@@ -83,11 +84,11 @@ run;
 						Rf=&Rf,
 						scale= &scale,
 						dateColumn= &dateColumn,
-						outSR= &divisor);
+						outData= &divisor);
 %end;
 
 
-data &outAppraisalRatio(drop= &i);
+data &outData(drop= &i);
 set &divisor &Jensen_Alpha;
 
 array vars[*] &vars;
@@ -97,9 +98,9 @@ vars[&i]= vars[&i]/lag(vars[&i]);
 end;
 run;
 
-data &outAppraisalRatio(rename= _name_= _STAT_);
+data &outData(rename= _name_= _STAT_);
 retain _name_;
-set &outAppraisalRatio;
+set &outData;
 
 %if %upcase(&option)= APPRAISAL %then %do;
 if stat= 'SpecRisk' then delete;
@@ -115,9 +116,9 @@ drop stat;
 %end;
 run;
 
-data &outAppraisalRatio;
+data &outData;
 format _STAT_ $32.;
-set &outAppraisalRatio;
+set &outData;
 _STAT_= upcase("&option");
 drop Jensen_Alpha;
 run;

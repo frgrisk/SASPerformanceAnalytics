@@ -13,14 +13,15 @@
 * MODIFIED:
 * 2/1/2016 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro chart_RelativePerformance(returns,
-										Rf=0,
+										Rf= 0,
 										title= Relative Performance Against &Rf, 
 										method= GEOMETRIC,  
-										dateColumn= Date);
+										dateColumn= DATE);
 
 %local vars;
 /*Find all variable names excluding the risk free variable*/
@@ -29,7 +30,7 @@
 
 %return_excess(&returns, 
 						Rf= &Rf, 
-						outReturn= &returns);
+						outData= &returns);
 
 data &returns(keep= &vars);
 set &returns;
@@ -37,7 +38,7 @@ run;
 
 %return_cumulative(&returns, 
 							method= &method,
-							outReturn= &returns); 
+							outData= &returns); 
 
 proc transpose data= &returns out= &returns;
 by &dateColumn;

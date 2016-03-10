@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%ActivePremium(prices, BM= SPY, scale= 1, outActivePremium= active_premium)
+%ActivePremium(prices, BM= SPY, scale= 1, outData= active_premium)
 
 
 /*If tables have 0 records then delete them.*/

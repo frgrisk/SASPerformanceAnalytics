@@ -11,7 +11,7 @@
 * ExcessReturns - Optional.  Option to plot returns in excess of the benchmark or a risk free rate. {TRUE, FALSE} [Default= FALSE]
 * Rf - Optional.  If excessReturns is true, then specifies the risk free rate as a number or as a benchmark asset {Rf= 0.05, Rf= SPY}
        [Default= 0]
-* grid- Optional.  Overlay a grid aligned with the points on the x and y axis. {TRUE,FALSE} [Default= FALSE]
+* grid- Optional.  Overlay a grid aligned with the points on the x and y axis. {TRUE,FALSE} [Default= TRUE]
 * transparency - Optional.  Specifies the level of transparency for data symbols. [Default= 0.35]
 * color - Optional. Change the color of the scatter plot points. [Default= cornflowerblue]
 * symbol - Optional. Change the symbol of the scatter plot points.
@@ -26,6 +26,7 @@
 * MODIFIED:
 * 1/22/2016 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -36,7 +37,7 @@
 							title= &xvar versus &yvar Regression Plot,
 							ExcessReturns= FALSE,
 							Rf= 0,
-							grid= FALSE,
+							grid= TRUE,
 							transparency= 0.35,
 							color= cornflowerblue,
 							size= 6,
@@ -45,10 +46,10 @@
 							cl= CLI,
 							degree= 1,
 							alpha= 0.05,
-							dateColumn= Date);
+							dateColumn= DATE);
 
 %if &ExcessReturns= TRUE %then %do;
-%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outReturn= &returns);
+%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &returns);
 %end;
 
 PROC SGSCATTER data = &returns;

@@ -8,19 +8,20 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outCentered - Optional. Output Data Set with centered returns.  Only used if updateInPlace=FALSE 
+* outData - Optional. Output Data Set with centered returns.  Only used if updateInPlace=FALSE 
 *             Default="centered_returns"
 *
 * MODIFIED:
 * 7/8/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro return_centered(returns, 
-						dateColumn=DATE,
-						outCentered=centered_returns);
+						dateColumn= DATE,
+						outData= centered_returns);
 
 %local vars;
 
@@ -39,17 +40,17 @@ Centered= a-MeanA;
 Centered= Centered`;
 names= names`;
 
-create &outCentered from Centered[rowname= names];
+create &outData from Centered[rowname= names];
 append from Centered[rowname= names];
-close &outCentered;
+close &outData;
 quit;
 
-proc transpose data= &outCentered out= &outCentered;
+proc transpose data= &outData out= &outData;
 id names;
 run;
 
-data &outCentered;
-merge &returns(keep= &dateColumn) &outCentered;
+data &outData;
+merge &returns(keep= &dateColumn) &outData;
 drop _name_;
 run;
 %mend;

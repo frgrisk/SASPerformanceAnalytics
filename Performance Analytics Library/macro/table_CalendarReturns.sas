@@ -8,21 +8,22 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=Date.
-* outCalendarReturns - Optional. Output Data Set of calendar_returns.  Default="Calendar_Returns".
+* outData - Optional. Output Data Set of calendar_returns.  Default="Calendar_Returns".
 * printTable - Optional. Option to print returns of all or one asset. {PRINT, NOPRINT}. Default= NOPRINT
 * name - Required. Name of the variable to print if printTable= PRINT.
 
 * MODIFIED:
 * 7/14/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_CalendarReturns(returns,  
 									method= GEOMETRIC,
-									dateColumn= Date,
-									outCalendarReturns= Calendar_Returns, 
-									printTable= NoPrint,
+									dateColumn= DATE,
+									outData= Calendar_Returns, 
+									printTable= NOPRINT,
 									name=);
 
 %local ret nvar name;
@@ -79,15 +80,15 @@ set &year_month(rename=(month=month_n));
 month = put(date,monname3.);
 run;
 
-proc transpose data=&year_month out=&outCalendarReturns;
+proc transpose data=&year_month out=&outData;
 by year;
 var &ret;
 id month;
 run;
 
-data &outCalendarReturns(drop=i);
+data &outData(drop=i);
 format _name_ $32. YEAR 4. JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC TOTAL percent12.4;
-set &outCalendarReturns;
+set &outData;
 array mths[12] JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC;
 total = 0;
 do i=1 to 12;
@@ -95,12 +96,12 @@ TOTAL = (1+TOTAL) * (1+ sum(0,mths[i])) - 1;
 end;
 run;
 
-proc sort data=&outCalendarReturns;
+proc sort data=&outData;
 by _NAME_ YEAR;
 run;
 
-data &outCalendarReturns;
-set &outCalendarReturns;
+data &outData;
+set &outData;
 if _name_ = 'Date' then delete;
 run;
 
@@ -110,7 +111,7 @@ run;
 quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
-proc print data= &outCalendarReturns noobs;
+proc print data= &outData noobs;
 		title 'Aggregated Monthly Returns';
  		where _name_= "&name";
 run; 

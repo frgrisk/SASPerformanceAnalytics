@@ -7,20 +7,21 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * dateColumn - Optional. Specifies the date column in the returns data set. [Default= Date]
-* outHigherMoments - Optional. Output table name. [Default= Higher_Moments]
+* outData - Optional. Output table name. [Default= Higher_Moments]
 * printTable - Optional. Option to print the data set. {PRINT, NOPRINT} [Default= NOPRINT]
 * MODIFIED:
 * 7/6/2015 – CJ - Initial Creation
 * 10/1/2015 - CJ - Modified to accomodate edits from %CoMoments and replace temporary variable 
 *				   names with random names.
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro table_HigherMoments(returns, 
-								dateColumn= Date,
-								outHigherMoments= Higher_Moments,
+								dateColumn= DATE,
+								outData= Higher_Moments,
 								printTable= NOPRINT);
 
 %local BetaCoVar_Matrix BetaCoSkew_Matrix BetaCoKurt_Matrix Skew_Matrix Kurt_Matrix new_names Higher_Moments n_data n;
@@ -65,31 +66,31 @@ set &Skew_Matrix;
 run;
 
 /*Format table*/
-data &outHigherMoments;
+data &outData;
 set &Skew_Matrix &Kurt_Matrix &BetaCoVar_Matrix &BetaCoSkew_Matrix &BetaCoKurt_Matrix ;
 run;
 
-proc sort data= &outHigherMoments;
+proc sort data= &outData;
 by &n;
 run;
 
 data &n_data;
-set &outHigherMoments;
+set &outData;
 keep Names &n;
 rename Names= &Higher_moments;
 run;
 
-data &outHigherMoments;
-set &outHigherMoments;
+data &outData;
+set &outData;
 drop &n;
 run;
 
-proc transpose data= &outHigherMoments name= &Higher_moments out= &outHigherMoments;
+proc transpose data= &outData name= &Higher_moments out= &outData;
 by Names notsorted;
 run;
 
-data &outHigherMoments;
-set &outHigherMoments;
+data &outData;
+set &outData;
 &new_names= catx('_', &Higher_moments,"to", Names );
 run;
 
@@ -97,31 +98,31 @@ proc sort data= &n_data;
 by &Higher_moments;
 run;
 
-proc sort data= &outHigherMoments;
+proc sort data= &outData;
 by &Higher_moments;
 run;
 
-data &outHigherMoments;
-merge &outHigherMoments &n_data;
+data &outData;
+merge &outData &n_data;
 by &Higher_moments;
 run;
 
-proc sort data= &outHigherMoments;
+proc sort data= &outData;
 by &n;
 run;
 
-data &outHigherMoments;
-set &outHigherMoments;
+data &outData;
+set &outData;
 drop &n;
 run;
 
-proc transpose data= &outHigherMoments name= names out= &outHigherMoments;
+proc transpose data= &outData name= names out= &outData;
 id &new_names;
 run;
 
-data &outHigherMoments(rename= var= _STAT_);
+data &outData(rename= var= _STAT_);
 retain var;
-set &outHigherMoments;
+set &outData;
 &n= _n_;
 if &n=5 then var= 'BetaM4';
 if &n=1 then var= 'M3';
@@ -133,7 +134,7 @@ drop names;
 run;
 
 %if %upcase(&printTable) = PRINT %then %do;
-	proc print data=&outHigherMoments noobs;
+	proc print data=&outData noobs;
 	run;
 %end;
 

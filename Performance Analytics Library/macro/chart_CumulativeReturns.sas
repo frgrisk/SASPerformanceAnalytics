@@ -9,13 +9,14 @@
            Default=GEOMETRIC
 * WealthIndex - Optional.  Specifies that the value of a dollar in the first sample is $1, therefore charting the value of the returns per dollar over time.
 						[Default= FALSE] {TRUE, FALSE}
-* Grid - Optional. Overlay grid lines on the returns axis. [Default= TRUE] 
+* grid - Optional. Overlay grid lines on the returns axis. [Default= TRUE] 
 * Interval - Optional.  Specifies the frequency of grid lines overlayed on the returns axis. [Default= 1 (100%)]
 * dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
 * MODIFIED:
 * 2/3/2016 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -23,9 +24,9 @@
 										title= Cumulative Returns, 
 										method= GEOMETRIC, 
 										WealthIndex= FALSE,
-										Grid= TRUE,
+										grid= TRUE,
 										Interval= 1,  
-										dateColumn= Date);
+										dateColumn= DATE);
 
 %local vars nv i;
 /*Find all variable names excluding the date column*/
@@ -39,7 +40,7 @@
 /*Calculate cumulative returns*/
 %return_cumulative(&returns, 
 							method= &method,
-							outReturn= &returns);
+							outData= &returns);
 
 /*Calculate the Value of $1 over time if WealthIndex=TRUE*/
 %if &WealthIndex = TRUE %then %do;

@@ -6,7 +6,7 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * dateColumn - Optional. Specifies the date column in the data set.  [Default= Date]
-* outDistribution - Optional. Output Data Set with distribution statistics. [Default= distribution_table]
+* outData - Optional. Output Data Set with distribution statistics. [Default= distribution_table]
 * digits- Optional. Specifies the amount of digits to display in output. [Default= 4]
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           [Default=1]
@@ -14,15 +14,16 @@
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_distributions(returns, 
-							dateColumn= Date, 
-							outDistribution= distribution_table, 
-							digits=4,
-							scale=1,
-							printTable= noprint);
+                            scale= 1,
+							dateColumn= DATE, 
+							outData= distribution_table, 
+							digits= 4,
+							printTable= NOPRINT);
 
 
 %let lib = %scan(&returns,1,%str(.));
@@ -108,7 +109,7 @@ end;
 output;
 run;
 
-%standard_deviation(&returns,annualized= TRUE, scale=&scale,outStdDev=_tempOut3);
+%standard_deviation(&returns,annualized= TRUE, scale=&scale,outData=_tempOut3);
 
 data _tempOut3;
 format _stat_ $32. &z %eval(&digits + 4).&digits;
@@ -118,11 +119,11 @@ so = _n_;
 _stat_ = "Scaled Std Dev";
 run;
 
-data &outDistribution;
+data &outData;
 set _tempOut1-_tempOut3;
 run;
 
-proc sort data=&outDistribution out=&outDistribution(drop=so);
+proc sort data=&outData out=&outData(drop=so);
 by so;
 run;
 
@@ -131,7 +132,7 @@ delete _temp _tempOut1- _tempOut3;
 quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
-	proc print data= &outDistribution noobs;
+	proc print data= &outData noobs;
 	run; 
 %end;
 
