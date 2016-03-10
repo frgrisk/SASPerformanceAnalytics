@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 ods html close;
 ods listing close;
 
@@ -73,7 +73,7 @@ proc export data=test_results
 			dbms=xlsx
 			replace;
 run;
-=======
+
 ods html close;
 ods listing close;
 
@@ -149,4 +149,4 @@ proc export data=test_results
 			dbms=xlsx
 			replace;
 run;
->>>>>>> upstream/master
+
