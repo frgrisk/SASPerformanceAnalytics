@@ -1,18 +1,4 @@
-/*---------------------------------------------------------------
-* NAME: simple_normalize_by.sas
-*
-* PURPOSE: Calculates the weights of all values of an variable in each subgroup.
-*
-* Note: The input data set needs to sorted by &by variable before running this
-*       macro.
-*
-* MACRO OPTIONS:
-* data - Required. Data set that contains the data of interest. {ie. data = my_data_set}
-* var - Required. Name of the variable to be manipulated.
-* by - Required. Speficies the variable that divides data into subgroups.
-*
-* Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
-*-------------------------------------------------------------*/
+
 %macro simple_normalize_by(data,var,by);
 proc summary data=&data;
 by &by;
