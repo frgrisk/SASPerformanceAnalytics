@@ -8,7 +8,7 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with centered returns.  Only used if updateInPlace=FALSE 
+* outData - Optional. Output Data Set with centered returns. 
 *             Default="centered_returns"
 *
 * MODIFIED:
