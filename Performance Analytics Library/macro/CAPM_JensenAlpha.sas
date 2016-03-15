@@ -12,8 +12,8 @@ and is in effect the exess return adjusted for systematic risk.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with Jensen alphas.  Default="Jensen_Alpha". 
 *
@@ -32,7 +32,7 @@ and is in effect the exess return adjusted for systematic risk.
 							BM=, 
 							Rf= 0, 
 							scale= 1,
-							method= GEOMETRIC,
+							method= DISCRETE,
 							dateColumn= DATE, 
 							outData= Jensen_Alpha);
 

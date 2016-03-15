@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_annualized(prices,scale= 252, method=GEOMETRIC)
+%return_annualized(prices,scale= 252, method=DISCRETE)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
