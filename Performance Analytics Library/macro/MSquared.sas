@@ -8,8 +8,8 @@
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=Date
 * outData - Optional. Output Data Set of MSquared.  Default= "MSquared".
 * MODIFIED:
@@ -26,7 +26,7 @@
 						BM=,  
 						Rf= 0,
 						scale= 1,
-						method= GEOMETRIC, 
+						method= DISCRETE, 
 						dateColumn= DATE,
 						outData= MSquared);
 

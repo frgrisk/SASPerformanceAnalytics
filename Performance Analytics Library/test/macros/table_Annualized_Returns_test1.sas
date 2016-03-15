@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_AnnualizedReturns(prices, Rf= 0.01/252, scale= 252, method=GEOMETRIC)
+%table_AnnualizedReturns(prices, Rf= 0.01/252, scale= 252, method=DISCRETE)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

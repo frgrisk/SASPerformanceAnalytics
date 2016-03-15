@@ -1,15 +1,3 @@
-/*---------------------------------------------------------------
-* NAME: get_number_column_names.sas
-*
-* PURPOSE: Extract the name of variables from a given data set, excluding some variables
-*          specified by user.
-*
-* MACRO OPTIONS:
-* _table - Required. Data set to be manipulated.
-* _exclude - Name of variable to be excluded from extracting
-*
-* Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
-*-------------------------------------------------------------*/
 %macro get_number_column_names (_table=,_exclude=);
 /*---------------------------------------------------------------------------
  * Step 0.  Open table

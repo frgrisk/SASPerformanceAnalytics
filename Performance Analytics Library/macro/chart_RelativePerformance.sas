@@ -6,8 +6,8 @@
 * returns - Required. Data Set containing returns with option to include risk free rate variable.
 * Rf - Optional. The value or variable representing the risk free rate of return. [Default=0]
 * title - Optional.  Title for chart. [Default= Relative Performance Against &Rf]
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           [Default=GEOMETRIC]
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           [Default=DISCRETE]
 * dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
 * MODIFIED:
@@ -20,7 +20,7 @@
 %macro chart_RelativePerformance(returns,
 										Rf= 0,
 										title= Relative Performance Against &Rf, 
-										method= GEOMETRIC,  
+										method= DISCRETE,  
 										dateColumn= DATE);
 
 %local vars;

@@ -12,8 +12,8 @@
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set of annualized returns statistics.  Default="annualized_table".
 * printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT
@@ -28,7 +28,7 @@
 %macro table_Annualized_Returns(returns,
 								Rf= 0,
 								scale= 1, 
-								method= GEOMETRIC, 
+								method= DISCRETE, 
 								dateColumn= DATE, 
 								outData= annualized_table, 
 								printTable= NOPRINT);
