@@ -11,8 +11,8 @@
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. output Data Set with annualized returns.  Default="active_premium"
 *
@@ -26,7 +26,7 @@
 %macro ActivePremium(returns, 
 							BM=, 
 							scale= 1,
-							method= GEOMETRIC,
+							method= DISCRETE,
 							dateColumn= DATE, 
 							outData= active_premium);
 

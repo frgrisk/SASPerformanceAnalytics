@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------
 * NAME: SharpeRatio_annualized.sas
 *
-* PURPOSE: displays an annualized sharpe ratio with option for geometric or arithmetic chaining.
+* PURPOSE: displays an annualized sharpe ratio with option for DISCRETE or LOG chaining.
 *
 * NOTES: The Sharpe ratio of a desired asset is calculated given returns, a risk free rate, and scale. Option to
 * 		 input an unchanging value (0.02) or a variable risk free rate included in the return data set;
@@ -11,8 +11,8 @@
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=0
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=date
 * outData - Optional. Output Data Set with risk premium.  Default="Annualized_SharpeRatio".
 *
@@ -26,7 +26,7 @@
 %macro SharpeRatio_annualized(returns, 
 					  				 Rf= 0, 
 					 				 scale= 1,
-					  				 method= GEOMETRIC, 
+					  				 method= DISCRETE, 
 					  				 dateColumn= DATE, 
 					  				 outData= Annualized_SharpeRatio);
 

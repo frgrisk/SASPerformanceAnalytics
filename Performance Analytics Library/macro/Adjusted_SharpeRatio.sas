@@ -6,8 +6,8 @@
 *
 * MACRO OPTIONS:
 * returns - Required. Data Set containing returns with option to include risk free rate variable.
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * Rf - Optional. the value or variable representing the risk free rate of return. Default=0
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
@@ -20,8 +20,8 @@
 *				   Defined all local variables.
 *				   Replaced Proc SQL statement with %get_number_column_names().
 *				   Renamed column statistic "_STAT_" to be consistent with SAS results.
-*				   Replaced code returning geometric chained returns with %return_annualized
-*				   Inserted parameter method= to allow user to choose arithmetic or geometricaly chained returns.
+*				   Replaced code returning DISCRETE chained returns with %return_annualized
+*				   Inserted parameter method= to allow user to choose LOG or DISCRETEaly chained returns.
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 *
@@ -31,7 +31,7 @@
 %macro Adjusted_SharpeRatio(returns,
 								Rf= 0, 
 								scale= 1,
-								method= GEOMETRIC,
+								method= DISCRETE,
 								dateColumn= DATE, 
 								outData= adjusted_SharpeRatio);
 
