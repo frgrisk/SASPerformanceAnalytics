@@ -4,15 +4,15 @@
 * PURPOSE: calculate annualized simple or compound returns from a data
 *		   set of prices.
 *
-* NOTES: Calculates the annualized return using geometric or arithmetic 
+* NOTES: Calculates the annualized return using DISCRETE or LOG 
 *		 chaining.  Number of periods in a year are to scale (daily scale= 252,
 *		 monthly scale= 12, quarterly scale= 4). 
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * scale - Required. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with annualized returns.  Default="annualized_returns". 
 *
@@ -26,7 +26,7 @@
 
 %macro return_annualized(returns, 
 								scale= 1,
-								method= GEOMETRIC,
+								method= DISCRETE,
 								dateColumn= DATE, 
 								outData= annualized_returns);
 
@@ -47,13 +47,13 @@ array prod[&nv] _temporary_;
 
 if _n_ = 1 then do;
 	do i=1 to &nv;
-		/*Geometric*/
-%if %upcase(&method) = GEOMETRIC %then %do;
+		/*DISCRETE*/
+%if %upcase(&method) = DISCRETE %then %do;
 		prod[i] = 1;
 %end;
 
-		/*Arithmetic*/
-%else %if %upcase(&method) = ARITHMETIC %then %do;
+		/*LOG*/
+%else %if %upcase(&method) = LOG %then %do;
 		prod[i] = 0;
 %end;
 	end;
@@ -61,13 +61,13 @@ if _n_ = 1 then do;
 end;
 
 do i=1 to &nv;
-	/*Geometric*/
-%if %upcase(&method) = GEOMETRIC %then %do;
+	/*DISCRETE*/
+%if %upcase(&method) = DISCRETE %then %do;
 	prod[i] = prod[i] * (1+ret[i])**(&scale);
 	
 %end;
-	/*Arithmetic*/
-%else %if %upcase(&method) = ARITHMETIC %then %do;
+	/*LOG*/
+%else %if %upcase(&method) = LOG %then %do;
 	prod[i] = prod[i] + ret[i]*sqrt(&scale);
 	ret[i] = ret[i] * sqrt(&scale);
 %end;
@@ -76,13 +76,13 @@ output &_tempRAnn;
 
 if last then do;
 	do i=1 to &nv;
-	%if %upcase(&method) = GEOMETRIC %then %do;
+	%if %upcase(&method) = DISCRETE %then %do;
 
 		ret[i] =(prod[i])**(1/(nobs-1)) - 1;
 	%end;
 
-		/*Arithmetic*/
-	%else %if %upcase(&method) = ARITHMETIC %then %do;
+		/*LOG*/
+	%else %if %upcase(&method) = LOG %then %do;
 		ret[i] = prod[i]/(nobs-1);
 		ret[i] = ret[i] *sqrt(&scale);
 	%end;
@@ -98,9 +98,3 @@ delete &_tempRAnn;
 run;
 quit;
 %mend;
-
-
-
-
-
-

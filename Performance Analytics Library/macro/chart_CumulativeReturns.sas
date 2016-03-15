@@ -5,8 +5,8 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * title - Optional.  Title for chart. Default= Cumulative Returns
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * WealthIndex - Optional.  Specifies that the value of a dollar in the first sample is $1, therefore charting the value of the returns per dollar over time.
 						[Default= FALSE] {TRUE, FALSE}
 * grid - Optional. Overlay grid lines on the returns axis. [Default= TRUE] 
@@ -22,7 +22,7 @@
 *-------------------------------------------------------------*/
 %macro chart_CumulativeReturns(returns,
 										title= Cumulative Returns, 
-										method= GEOMETRIC, 
+										method= DISCRETE, 
 										WealthIndex= FALSE,
 										grid= TRUE,
 										Interval= 1,  
