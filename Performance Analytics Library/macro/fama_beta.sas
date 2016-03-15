@@ -10,21 +10,22 @@
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
 * dateColumn - Optional. Date column in Data Set. Default=Date
-* outBeta - Optional. Output Data Set of asset Betas.  Default= fama_beta.
+* outData - Optional. Output Data Set of asset Betas.  Default= fama_beta.
 * MODIFIED:
 * 7/24/2015 – DP - Initial Creation
 * 10/2/2015 - CJ - Replaced PROC SQL statement with %get_number_column_names
 *				   Added a scale parameter, allowing for an annualized beta term.
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro fama_beta(returns, 
 						BM=, 
-						scale=1, 
-						dateColumn= Date,
-						outBeta= fama_beta);
+						scale= 1, 
+						dateColumn= DATE,
+						outData= fama_beta);
 
 %local vars StdDev i;
 
@@ -39,9 +40,9 @@
 						annualized= FALSE,
 						scale=1, 
 						dateColumn= &dateColumn, 
-						outStdDev= &StdDev);
+						outData= &StdDev);
 
-data &outBeta(drop= &i &BM);
+data &outData(drop= &i &BM);
 retain _STAT_;
 set &StdDev;
 

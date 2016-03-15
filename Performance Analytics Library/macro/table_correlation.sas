@@ -7,11 +7,12 @@
 * returns - Required.  Data Set containing returns of the portfolio.
 * returnsCompare - Required.  Specifies the variable to compute correlations against.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outCorr - Optional. Specifies name of output Data Set of correlations.  Default="Correlations".
+* outData - Optional. Specifies name of output Data Set of correlations.  Default="Correlations".
 * printTable - Optional. Option to print output table. {PRINT, NOPRINT} Default= [NOPRINT]
 * MODIFIED:
 * 6/23/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -19,7 +20,7 @@
 %macro table_correlation(returns, 
 								returnsCompare=, 
 								dateColumn= DATE, 
-								outCorr= Correlations,
+								outData= Correlations,
 								printTable= NOPRINT);
 
 %local lib ds;
@@ -47,14 +48,14 @@ set &returns;
 drop date;
 run;
 
-ods output FisherPearsonCorr= &outCorr;
+ods output FisherPearsonCorr= &outData;
 proc corr data= _tempRet fisher;
 var &vars;
 with &returnsCompare;
 run;
 
-data &outCorr;
-set &outCorr;
+data &outData;
+set &outData;
 drop NObs zval biasadj correst;
 
 proc sql noprint;
@@ -62,13 +63,13 @@ select name
 	into :varStats separated by ' '
 	from sashelp.vcolumn
 		where libname = upcase("work")
- 		and memname = upcase("&outCorr")
+ 		and memname = upcase("&outData")
  		and type = "num"
 		and upcase(name) ^= upcase("&dateColumn");
 quit;
 
-data &outCorr(drop= i);
-set &outCorr;
+data &outData(drop= i);
+set &outData;
 
 array fixStats[*] &varStats;
 
@@ -76,17 +77,17 @@ do i= 1 to dim(fixStats);
 if fixStats[i]= . then fixStats[i]= 1;
 end;
 
-data &outCorr;
+data &outData;
 rename corr= Correlation;
 rename pvalue= p_value;
 rename lcl= Lower_CI;
 rename ucl= Upper_CI;
-set &outCorr;
+set &outData;
 run;
 
-data &outCorr;
+data &outData;
 retain var withvar Correlation p_value Lower_CI Upper_CI;
-set &outCorr;
+set &outData;
 if var= withvar then p_value= 0;
 run;
 
@@ -94,7 +95,7 @@ proc datasets lib= work nolist;
 delete _tempRet;
 
 %if %upcase(&printTable)= PRINT %then %do;
-proc print data= &outCorr noobs;
+proc print data= &outData noobs;
 run;
 %end;
 %mend;

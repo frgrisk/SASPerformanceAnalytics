@@ -1,3 +1,20 @@
+/*---------------------------------------------------------------
+* NAME: download_yahoo.sas
+*
+* PURPOSE: Download price data of stocks from yahoo and calculate return.
+*
+* NOTES: This macro downloads daily price data. The price output data set is named symbol_p. {ie. IBM_p}
+*
+* MACRO OPTIONS:
+* symbol - Required. Sticker of one stock. {ie.symbol=IBM}
+* from - Optional. Starting date (inclusive). {ie. 31DEC2004} [Default = 1 year before today's date]
+* to - Optional. Ending data (inclusive). {ie. 01JAN2015} [Default = 1 day before today's date]
+* keepPrice - Optional. Specify whether to keep the price data. {0,1} [Default = 0]
+* LogReturn - Optional. Compound or single returns. {0,1} [Default = 1]
+* PriceColumn - Optional. Specify the kind of price to be kept. [Default = adj_close]
+*
+* Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
+*-------------------------------------------------------------*/
 %macro download_yahoo(symbol,from,to,keepPrice=0,LogReturn=1,PriceColumn=adj_close);
 /*Builde URL for CSV from Yahoo! Finance*/
 data _null_;

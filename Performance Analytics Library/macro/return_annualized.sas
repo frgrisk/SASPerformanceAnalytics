@@ -14,20 +14,21 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outReturnAnnualized - Optional. Output Data Set with annualized returns.  Default="annualized_returns". 
+* outData - Optional. Output Data Set with annualized returns.  Default="annualized_returns". 
 *
 * MODIFIED:
 * 6/2/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro return_annualized(returns, 
-								scale=,
+								scale= 1,
 								method= GEOMETRIC,
 								dateColumn= DATE, 
-								outReturnAnnualized= annualized_returns);
+								outData= annualized_returns);
 
 %local _tempRP nv ret;
 
@@ -38,7 +39,7 @@
 %let _tempRAnn = %ranname();
 
 /*Create a series for taking STDev and Calculate Mean*/
-data &_tempRAnn(drop=i) &outReturnAnnualized(drop=i);
+data &_tempRAnn(drop=i) &outData(drop=i);
 set &returns end= last nobs=nobs;
 
 array ret[&nv] &ret;
@@ -87,7 +88,7 @@ if last then do;
 	%end;
 	
 	end;
-	output &outReturnAnnualized;
+	output &outData;
 end;
 run;
 quit;

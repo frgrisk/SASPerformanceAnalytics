@@ -13,34 +13,35 @@
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outStdDev - Optional. Output Data Set with annualized standard deviation.  Default="StdDev". 
+* outData - Optional. Output Data Set with annualized standard deviation.  Default="StdDev". 
 *
 * MODIFIED:
 * 6/3/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro Standard_Deviation(returns, 
 						annualized= FALSE,
-						scale=1, 
+						scale= 1, 
 						dateColumn= DATE, 
-						outStdDev= StdDev);
+						outData= StdDev);
 %local stdDev i;
 
 %let i= %ranname();
 
 proc means data= &returns noprint;
-output out= &outStdDev;
+output out= &outData;
 run;
 
 
-%let stdDev=%get_number_column_names(_table=&outStdDev,_exclude=&dateColumn _type_ _freq_);
+%let stdDev=%get_number_column_names(_table=&outData,_exclude=&dateColumn _type_ _freq_);
 
 
-data &outStdDev;
-set &outStdDev;
+data &outData;
+set &outData;
 where _stat_= 'STD';
 drop &i _freq_ _type_ _stat_;
 

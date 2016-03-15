@@ -14,22 +14,23 @@
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * updateInPlace - Optional. Update the &prices Data Set in place. {TRUE, FALSE}
 *                 Default=TRUE
-* outReturn - Optional. Output Data Set with returns.  Only used if updateInPlace=FALSE 
+* outData - Optional. Output Data Set with returns.  Only used if updateInPlace=FALSE 
 *             Default="returns"
 *
 * MODIFIED:
 * 5/5/2015 – DP - Initial Creation
 * 10/2/2015 - CJ - Replaced PROC SQL with %get_number_column_names
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro return_calculate(prices,
-						method=DISCRETE,
-						dateColumn=DATE,
-						updateInPlace=TRUE,
-						outReturn=returns);
+						method= DISCRETE,
+						dateColumn= DATE,
+						updateInPlace= TRUE,
+						outData= returns);
 
 %local vars nv i;
 /*Find all variable names excluding the date column and risk free variable*/
@@ -48,7 +49,7 @@ data
 		&prices
 	%end;
 	%else %do;
-		&outReturn
+		&outData
 	%end;
 	(drop=&i);
 set &prices;

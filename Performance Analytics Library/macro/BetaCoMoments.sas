@@ -19,7 +19,7 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro BetaCoMoments(returns, 
-						dateColumn= Date,
+						dateColumn= DATE,
 						outBetaCoVar= BetaM2,
 						outBetaCoSkew= BetaM3, 
 						outBetaCoKurt= BetaM4);

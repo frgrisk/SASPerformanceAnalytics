@@ -15,22 +15,23 @@
 * method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
            Default=GEOMETRIC
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outTable - Optional. Output Data Set of annualized returns statistics.  Default="annualized_table".
+* outData - Optional. Output Data Set of annualized returns statistics.  Default="annualized_table".
 * printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT
 *
 * MODIFIED:
 * 6/10/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_Annualized_Returns(returns,
 								Rf= 0,
-								scale= 0, 
+								scale= 1, 
 								method= GEOMETRIC, 
-								dateColumn=DATE, 
-								outTable= annualized_table, 
-								printTable= noprint);
+								dateColumn= DATE, 
+								outData= annualized_table, 
+								printTable= NOPRINT);
 %local Sharpe_Ratio Ann_Return Std_Dev _tempTable charTable;
 %let Sharpe_Ratio= %ranname();
 %let Ann_Return= %ranname();
@@ -43,23 +44,23 @@
 					  scale= &scale, 
 					  dateColumn= &dateColumn, 
 					  method= &method,
-					  outSharpe= &Sharpe_Ratio);
+					  outData= &Sharpe_Ratio);
 
 %return_annualized(&returns, 
 							scale= &scale,
 							method= &method,
 							dateColumn= &dateColumn, 
-							outReturnAnnualized= &Ann_Return)
+							outData= &Ann_Return)
 
 %Standard_Deviation(&returns, 
 							scale= &scale,
 							annualized= TRUE, 
 							dateColumn= &dateColumn, 
-							outStdDev= &Std_Dev);
+							outData= &Std_Dev);
 
 
 
-data &outTable (drop= &dateColumn n);
+data &outData (drop= &dateColumn n);
 		retain _STAT_;
 		format _STAT_ $12.;
 	set &Ann_Return &Std_Dev &Sharpe_Ratio;
@@ -69,7 +70,7 @@ data &outTable (drop= &dateColumn n);
 	if n=3 then _STAT_= 'Sharpe_Ratio';
 run;
 
-proc transpose data= &outTable out= &_tempTable(rename= (col1= Ann_Return) rename= (col2= Std_Dev) rename= (col3= Sharpe_Ratio));
+proc transpose data= &outData out= &_tempTable(rename= (col1= Ann_Return) rename= (col2= Std_Dev) rename= (col3= Sharpe_Ratio));
 run;
 
 %to_character(datain= &_tempTable, dataout= &_tempTable, vars= Ann_Return Std_Dev Sharpe_Ratio, formats= percent12.4 percent8.2 8.4, n= 3);

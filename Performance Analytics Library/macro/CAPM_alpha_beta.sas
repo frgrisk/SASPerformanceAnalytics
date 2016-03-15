@@ -11,13 +11,14 @@
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outBeta - Optional. Output Data Set of asset Alphas and Betas. Default= "alphas_and_betas"
+* outData - Optional. Output Data Set of asset Alphas and Betas. Default= "alphas_and_betas"
 * MODIFIED:
 * 6/17/2015 – DP - Initial Creation
 * 9/25/2015 - CJ - Assigned random names to temporary variables and data sets.
 *				   Replaced PROC SQL statement with %get_number_column_names macro.
 *				   Deleted macro %renamer that converted character to numeric variables, replaced with PROC TRANSPOSE
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -26,7 +27,7 @@
 						BM=, 
 						Rf= 0,
 						dateColumn= DATE,  
-						outBeta= alphas_and_betas);
+						outData= alphas_and_betas);
 
 %local vars RP Betas Names;
 /*Find all variable names excluding the date column, benchmark, and risk free variables*/
@@ -39,7 +40,7 @@
 %return_excess(&returns, 
 					 	Rf= &Rf, 
 						dateColumn= &dateColumn, 
-						outReturn= &RP);
+						outData= &RP);
 
 
 /***************************************
@@ -57,12 +58,12 @@ rename Intercept= alphas;
 rename &BM= betas;
 run;
 
-proc transpose data= &Betas out=&outBeta  name= _STAT_;
+proc transpose data= &Betas out=&outData  name= _STAT_;
 id _depvar_;
 run;
 
-data &outBeta(drop= _label_);
-set &outBeta;
+data &outData(drop= _label_);
+set &outData;
 run;
 
 proc datasets lib= work nolist;

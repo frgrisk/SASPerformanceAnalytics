@@ -10,19 +10,20 @@
 * returns - Required. Data Set containing returns with option to include risk free rate variable.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outReturn - Optional. Output Data Set with risk premium.  Default="risk_premium".
+* outData - Optional. Output Data Set with risk premium.  Default="risk_premium".
 *
 * MODIFIED:
 * 5/28/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro return_excess(returns,
 						Rf= 0,
-						dateColumn=DATE,
-						outReturn=risk_premium);
+						dateColumn= DATE,
+						outData= risk_premium);
 
 %local ret i;
 
@@ -32,7 +33,7 @@
 
 %let i= %ranname();
 
-data &outReturn(drop=&i);
+data &outData(drop=&i);
 	set &returns ;
 	array ret[*] &ret;
 

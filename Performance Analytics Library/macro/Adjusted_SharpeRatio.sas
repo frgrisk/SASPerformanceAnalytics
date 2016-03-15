@@ -12,7 +12,7 @@
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outAdjSharpe - Optional. output Data Set with adjusted Sharpe Ratios.  Default="adjusted_SharpeRatio"
+* outData - Optional. output Data Set with adjusted Sharpe Ratios.  Default="adjusted_SharpeRatio"
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation
@@ -23,16 +23,17 @@
 *				   Replaced code returning geometric chained returns with %return_annualized
 *				   Inserted parameter method= to allow user to choose arithmetic or geometricaly chained returns.
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro Adjusted_SharpeRatio(returns,
-								method= GEOMETRIC, 
-								Rf=0, 
+								Rf= 0, 
 								scale= 1,
+								method= GEOMETRIC,
 								dateColumn= DATE, 
-								outAdjSharpe= adjusted_SharpeRatio);
+								outData= adjusted_SharpeRatio);
 
 
 %local ret nv i j k Skew_Kurt_Table Chained_Ex_Ret Ann_StD SR;
@@ -51,9 +52,9 @@
 %let Ann_StD= %ranname();
 %let SR= %ranname();
 
-%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);
-%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outReturnAnnualized= &Chained_Ex_Ret);
-%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outStdDev= &Ann_StD);
+%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &Chained_Ex_Ret);
+%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outData= &Chained_Ex_Ret);
+%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outData= &Ann_StD);
 
 data &SR (drop= &j);
 set &Chained_Ex_Ret &Ann_StD (in=s);
@@ -164,7 +165,7 @@ run;
 /*run;*/
 
 
-data &outAdjSharpe(drop= &k rename= (_name_= _STAT_));
+data &outData(drop= &k rename= (_name_= _STAT_));
 format _NAME_ $char16.;
 set &Skew_Kurt_Table &SR;
 array vars[*] &ret;

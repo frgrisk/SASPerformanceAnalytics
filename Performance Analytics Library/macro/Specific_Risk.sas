@@ -13,33 +13,34 @@ the benchmark. The systematic risk is annualized.
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outSpecificRisk - Optional. Output Data Set of systematic risk.  Default="Risk_specific".
+* outData - Optional. Output Data Set of systematic risk.  Default="Risk_specific".
 
 * MODIFIED:
 * 7/14/2015 – CJ - Initial Creation
 * 03/1/2016 - DP - Changed to use table_SpecificRisk 
 * 3/05/2016 – RM - Comments modification 
+* 3/09/2016 - QY - parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro Specific_Risk(returns, 
 						BM=, 
-						Rf=0,
+						Rf= 0,
 						scale= 1,
 						dateColumn= DATE,
-						outSpecificRisk= Risk_specific);
+						outData= Risk_specific);
 
 %table_SpecificRisk(&returns, 
 					BM=&BM, 
 					Rf=&RF,
 					scale= &scale,
 					dateColumn= &dateColumn,
-					outTable= &outSpecificRisk,
+					outData= &outData,
 					printTable= NOPRINT);
 
-data &outSpecificRisk;
-	set &outSpecificRisk(where=(_STAT_ = "Specific Risk"));
+data &outData;
+	set &outData(where=(_STAT_ = "Specific Risk"));
 run;
 
 

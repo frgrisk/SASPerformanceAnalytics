@@ -1,4 +1,13 @@
-
+/*---------------------------------------------------------------
+* NAME: download_ff3.sas
+*
+* PURPOSE: Download ff3 factors from online source.
+*
+* MACRO OPTIONS:
+* outData - Required. Output data set.
+* 
+* Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
+*-------------------------------------------------------------*/
 %macro download_ff3(outData=ff3);
    
 %local fn rsp ff;
