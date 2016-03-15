@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Sharpe_Ratio(those_prices, Rf= 0.02, scale= 252, annualized= TRUE, method= GEOMETRIC)
+%Sharpe_Ratio(those_prices, Rf= 0.02, scale= 252, annualized= TRUE, method= DISCRETE)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

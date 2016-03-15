@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_annualized(prices,scale= 252, method=ARITHMETIC)
+%return_annualized(prices,scale= 252, method=LOG)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
