@@ -7,7 +7,7 @@
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * annualized - Optional. Specifies whether to return annualized tracking error rather than tracking error. {TRUE,FALSE}. [Default= FALSE]
-* scale - Optional. Option if annualized= TRUE, the number of periods in a year (ie daily scale= 252, monthly scale= 12, quarterly scale= 4).
+* scale - Optional. Option if add_annualized= TRUE, the number of periods in a year (ie daily scale= 252, monthly scale= 12, quarterly scale= 4).
           [Default= 1]
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with tracking error.  Default="tracking_error".
