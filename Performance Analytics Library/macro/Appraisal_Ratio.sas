@@ -13,8 +13,8 @@
 * option- Required.  {APPRAISAL, MODIFIED, ALTERNATIVE}.  Choose "appraisal" to calculate the appraisal ratio, 
 *					 "modified" to calculate modified Jensen's alpha, or "alternative" to calculate alternative
 *					 Jensen's alpha.
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. output Data Set with Appraisal Ratios.  Default="Appraisal_Ratio"
 *
@@ -31,7 +31,7 @@
 								Rf= 0, 
 								scale= 1,
 								option=, 
-								method= GEOMETRIC,
+								method= DISCRETE,
 								dateColumn= DATE, 
 								outData= Appraisal_Ratio);
 

@@ -5,8 +5,8 @@
 *		   in the last column.
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=Date.
 * outData - Optional. Output Data Set of calendar_returns.  Default="Calendar_Returns".
 * printTable - Optional. Option to print returns of all or one asset. {PRINT, NOPRINT}. Default= NOPRINT
@@ -20,7 +20,7 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_CalendarReturns(returns,  
-									method= GEOMETRIC,
+									method= DISCRETE,
 									dateColumn= DATE,
 									outData= Calendar_Returns, 
 									printTable= NOPRINT,
@@ -60,12 +60,12 @@ do i=1 to dim(ret);
 	if first.month then
 			cprod[i] = 0;
 
-		%if %upcase(&method) = GEOMETRIC %then %do;
+		%if %upcase(&method) = DISCRETE %then %do;
 
 		cprod[i] = (1+cprod[i])*(1+ret[i])-1;
 		%end;
 
-		%if %upcase(&method) = ARITHMETIC %then %do;
+		%if %upcase(&method) = LOG %then %do;
 
 		cprod[i]= sum(cprod[i], ret[i]); 
 		%end;

@@ -2,15 +2,15 @@
 * NAME: return_cumulative.sas
 *
 * PURPOSE: calculate cumulative returns over a period of time. 
-*   Can produce cumulative geometric or arithmetic returns from a returns data set.
+*   Can produce cumulative DISCRETE or LOG returns from a returns data set.
 *
 * NOTES: Calculates  the cumulative simple or compound returns from a 
 *        series of returns. 
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
-* method - Optional. Specifies either geometric or arithmetic chaining method {GEOMETRIC, ARITHMETIC}.  
-           Default=GEOMETRIC
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with  cumulative returns. Default="cumulative_returns" 
 * MODIFIED:
@@ -21,7 +21,7 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro return_cumulative(returns,
-							method= GEOMETRIC,
+							method= DISCRETE,
 							dateColumn= DATE,
 							outData= cumulative_returns);
 
@@ -47,18 +47,18 @@ do &i=1 to dim(ret);
 	if cprod[&i]= . then
 		cprod[&i]= 0;
 
-%if %upcase(&method) = GEOMETRIC %then %do;
+%if %upcase(&method) = DISCRETE %then %do;
 	cprod[&i]= (1+ret[&i])*(1+cprod[&i])-1;
 	ret[&i]= cprod[&i];
 %end;
 
-%else %if %upcase(&method) = ARITHMETIC %then %do;
+%else %if %upcase(&method) = LOG %then %do;
 	cprod[&i]= sum(cprod[&i], ret[&i]); 
 	ret[&i]= cprod[&i];
 %end;
 
 %else %do;
-%put ERROR: Invalid value in METHOD=&method.  Please use GEOMETRIC, or ARITHMETIC;
+%put ERROR: Invalid value in METHOD=&method.  Please use DISCRETE, or LOG;
 stop;
 %end;
 end;

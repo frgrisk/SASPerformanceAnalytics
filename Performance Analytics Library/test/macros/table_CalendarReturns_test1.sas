@@ -37,7 +37,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_CalendarReturns(prices, method= GEOMETRIC, printTable= NOPRINT)
+%table_CalendarReturns(prices, method= DISCRETE, printTable= NOPRINT)
 
 data Calendar_Returns;
 set Calendar_Returns;

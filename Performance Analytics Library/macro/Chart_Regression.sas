@@ -18,8 +18,8 @@
           See list of possible symbols at SAS product documentation (markerattrs symbol). [Default= circle]
 * size - Optional. Change the size (in pixels) of the plot points. [Default= 6]
 * loess - Optional. To overlay a loess fit to the scatter plot for comparison.  Logical, {TRUE,FALSE}. [Default= FALSE].
-* cl - Optional.  To create confidence limits for the regression line. {CLM, CLI}. [Default= CLI]
-* degree - Optional.  Specifies linear or quadratic fit.  For linear, degree=1, for quadratic, degree=2. [Default= 1]
+* cl - Optional. Option to create confidence limits for the regression line. {CLM, CLI}. [Default= CLI]
+* degree - Optional. Specifies linear or quadratic fit.  For linear, degree=1, for quadratic, degree=2. [Default= 1]
 * alpha - Optional. If ellipse is overlayed, specifies value of alpha for predictive bands. [Default= 0.05]
 * dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
