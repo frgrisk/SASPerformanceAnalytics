@@ -26,7 +26,7 @@
 		%sysevalf( (&value)*(&scale));
 	%end;
 %end;
-%else %upcase(&type) = STD %then %do;
+%else %if %upcase(&type) = STD %then %do;
 	%sysevalf((&value)*%sysfunc(sqrt((&scale)));
 %end;
 %else %do;
