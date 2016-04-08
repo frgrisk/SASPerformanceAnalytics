@@ -49,11 +49,16 @@
 /*Define temporary data set names with random names*/
 %let Skew_Kurt_Table= %ranname();
 %let Chained_Ex_Ret= %ranname();
+%let annual_return=%ranname();
+%let agg_returns=%ranname();
 %let Ann_StD= %ranname();
 %let SR= %ranname();
 
-%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &Chained_Ex_Ret);
-%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outData= &Chained_Ex_Ret);
+/*%return_accumulate(&returns,method=&method,toFreq=qtr,updateInPlace= false,outData= &agg_returns);*/
+/*%return_annualized(&agg_returns, scale= &scale, method= &method, outData= &annual_return);*/
+
+%return_annualized(&returns, scale= &scale, method= &method, outData= &annual_return);
+%return_excess(&annual_return, Rf= &Rf, dateColumn= &dateColumn, outData= &Chained_Ex_Ret);
 %Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outData= &Ann_StD);
 
 data &SR (drop= &j);
@@ -182,6 +187,7 @@ proc datasets lib=work nolist;
 delete &Skew_Kurt_Table &SR &Ann_StD &Chained_Ex_Ret;
 run;
 quit;
+
 
 %mend;
  

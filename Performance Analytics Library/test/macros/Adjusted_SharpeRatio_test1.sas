@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = AdjustedSharpeRatio(returns, Rf= 0.01/252, scale= 252)";
+put "returns = AdjustedSharpeRatio(returns*100, Rf= 0.01/252*100, scale= 252)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
