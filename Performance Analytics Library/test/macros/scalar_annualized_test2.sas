@@ -1,4 +1,4 @@
-%macro scalar_annualized_test1(keep=FALSE);
+%macro scalar_annualized_test2(keep=FALSE);
 %global pass notes;
 
 /*generate random scalar data set for test*/
@@ -28,7 +28,7 @@ run;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\scalar_annualized_test1_submit.sas";
+	filename x "&dir\scalar_annualized_test2_submit.sas";
 %end;
 
 data _null_;
@@ -40,10 +40,10 @@ put "                         sep=',',";
 put "                         header=TRUE";
 put "                 )";
 put "		)";
-put "scale_4 = apply.daily(randnum/4,FUN=Return.annualized,geometric=TRUE,scale=4)";
-put "scale_12 = apply.daily(randnum/12,FUN=Return.annualized,geometric=TRUE,scale=12)";
-put "scale_52 = apply.daily(randnum/52,FUN=Return.annualized,geometric=TRUE,scale=52)";
-put "scale_252 = apply.daily(randnum/252,FUN=Return.annualized,geometric=TRUE,scale=252)";
+put "scale_4 = apply.daily(randnum/4,FUN=Return.annualized,geometric=FALSE,scale=4)";
+put "scale_12 = apply.daily(randnum/12,FUN=Return.annualized,geometric=FALSE,scale=12)";
+put "scale_52 = apply.daily(randnum/52,FUN=Return.annualized,geometric=FALSE,scale=52)";
+put "scale_252 = apply.daily(randnum/252,FUN=Return.annualized,geometric=FALSE,scale=252)";
 put "randnum = data.frame(date=index(scale_4),randnum,scale_4,scale_12,scale_52,scale_252)";
 put "endsubmit;";
 run;
@@ -75,7 +75,7 @@ data annualized_scalar;
 run;
 %mend;
 
-%scalar_annualized_value(method=DISCRETE,type=VALUE);
+%scalar_annualized_value(method=LOG,type=VALUE);
 
 
 /*If tables have 0 records then delete them.*/
@@ -132,12 +132,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST SCALAR_ANNUALIZED_TEST1;
+	%put NOTE: NO ERROR IN TEST SCALAR_ANNUALIZED_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST SCALAR_ANNUALIZED_TEST1;
+	%put ERROR: PROBLEM IN TEST SCALAR_ANNUALIZED_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

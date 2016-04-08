@@ -27,9 +27,9 @@
 	%end;
 %end;
 %else %if %upcase(&type) = STD %then %do;
-	%sysevalf((&value)*%sysfunc(sqrt((&scale)));
+	%sysevalf((&value)*%sysfunc(sqrt(&scale)));
 %end;
 %else %do;
-	.
+	.;
 %end;
 %mend;
