@@ -36,7 +36,7 @@
 /*Define temporary data set names with random names*/
 %let RP= %ranname();
 %let Betas= %ranname();
-%let Names= %ranname();
+/*%let Names= %ranname();*/
 %return_excess(&returns, 
 					 	Rf= &Rf, 
 						dateColumn= &dateColumn, 
