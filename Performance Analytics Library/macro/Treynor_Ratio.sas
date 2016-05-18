@@ -22,6 +22,9 @@
 %macro Treynor_Ratio(returns,
 							BM = ,
 							Rf= 0,
+							scale = 1,
+							method = DISCRETE,
+							modified = FALSE,
 							dateColumn= DATE,
 							outData= TreynorRatio);
 							
@@ -37,26 +40,21 @@
 %let i= %ranname();
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &_tempRP);
+%return_annualized(&returns,scale= &scale, method= &method, dateColumn= &dateColumn, outData= &_tempRP);
 
-proc means data= &_tempRP noprint;
-output out= &_tempRP;
-run;
+%if %upcase(&modified) = FALSE %then %do;
+	%CAPM_alpha_beta(&returns, BM=&BM, Rf= &Rf, dateColumn= &dateColumn, outData= &_tempBeta)
 
-data &_tempRP;
-set &_tempRP;
-drop _freq_ _stat_ _type_ date;
-where _stat_= 'MEAN';
-run;
+	data &_tempBeta;
+	set &_tempBeta;
+	where _stat_='betas';
+	run;
+%end;
+%else %do;
+	%Systematic_Risk(&returns,BM= &BM, Rf= &Rf, scale= &scale, dateColumn= DATE, outData= &_tempBeta)
+%end;
 
-%CAPM_alpha_beta(&returns, BM=&BM, Rf= &Rf, dateColumn= &dateColumn, outData= &_tempBeta);
-
-data &_tempBeta;
-set &_tempBeta;
-where _stat_='betas';
-run;
-
-
-data &_tempTreynor (drop= &i _stat_ &BM);
+data &_tempTreynor (drop= &i _stat_ &BM date);
 set &_tempRP &_tempBeta;
 
 array Treynor[*] &vars;
