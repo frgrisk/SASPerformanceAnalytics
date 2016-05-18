@@ -36,7 +36,6 @@
 /*Define temporary data set names with random names*/
 %let RP= %ranname();
 %let Betas= %ranname();
-/*%let Names= %ranname();*/
 %return_excess(&returns, 
 					 	Rf= &Rf, 
 						dateColumn= &dateColumn, 
@@ -67,7 +66,7 @@ set &outData;
 run;
 
 proc datasets lib= work nolist;
-delete &RP &Betas &Names;
+delete &RP &Betas;
 run;
 quit;
 %mend;

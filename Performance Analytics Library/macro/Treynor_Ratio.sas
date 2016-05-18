@@ -1,14 +1,24 @@
 /*---------------------------------------------------------------
 * NAME: Treynor_Ratio.sas
 *
-* PURPOSE: 
+* PURPOSE: The Treynor ratio is similar to the Sharpe Ratio, except it uses beta as the volatility measure 
+*          (to divide the investment's annualized excess return over the beta).
 *
-* NOTES: 
+* NOTES: Calculates the Treynor ratio of a desired asset given returns, the benchmark and a risk free rate. Option to
+* 		 input an unchanging value (0.02) or a variable risk free rate included in a return data set. Number of periods
+*        in a year (scale) and way of compounding (method) are inputs in calculating annualized returns. To calculate
+*        the modified Treynor ratio, we replace the denumerator by systematic risk. 
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
-* dateColumn - Optional. Date column in Data Set. Default=DATE
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0.
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
+* modified - Optional. Specifies either regular or modified Treynor Ratio {FALSE, TRUE}.  
+           Default=FALSE.
+* dateColumn - Optional. Date column in Data Set. Default=DATE.
 * outData - Optional. Output Data Set with Treynor ratios.  Default="TreynorRatio".
 *
 *
@@ -16,19 +26,23 @@
 * include VaR or ES, and an option for weights.
 
 * MODIFIED:
+* 05/18/2016 - QY - Initial Creation
 * 
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro Treynor_Ratio(returns,
 							BM = ,
 							Rf= 0,
+							scale = 1,
+							method = DISCRETE,
+							modified = FALSE,
 							dateColumn= DATE,
 							outData= TreynorRatio);
 							
 %local vars _tempRP _tempBeta _tempTreynor i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
-%put VARS IN Treynor for Betas: (&vars);
+%put VARS IN Treynor: (&vars);
 
 %let _tempRP= %ranname();
 %let _tempBeta= %ranname();
@@ -38,35 +52,33 @@
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &_tempRP);
 
-proc means data= &_tempRP noprint;
-output out= &_tempRP;
+data &_tempRP(drop= &i &BM);
+	set &_tempRP;
+	array excess[*] &vars;
+	if _n_=1 then
+	do &i= 1 to dim(excess);
+	excess[&i]= .;
+	end;
 run;
 
-data &_tempRP;
-set &_tempRP;
-drop _freq_ _stat_ _type_ date;
-where _stat_= 'MEAN';
-run;
+%return_annualized(&_tempRP,scale= &scale, method= &method, dateColumn= &dateColumn, outData= &_tempRP);
 
-%CAPM_alpha_beta(&returns, BM=&BM, Rf= &Rf, dateColumn= &dateColumn, outData= &_tempBeta);
+%if %upcase(&modified) = FALSE %then %do;
+	%CAPM_alpha_beta(&returns, BM=&BM, Rf= &Rf, dateColumn= &dateColumn, outData= &_tempBeta)
 
-data &_tempBeta;
-set &_tempBeta;
-where _stat_='betas';
-run;
+	data &_tempBeta;
+	set &_tempBeta;
+	where _stat_='betas';
+	run;
+%end;
+%else %do;
+	%Systematic_Risk(&returns,BM= &BM, Rf= &Rf, scale= &scale, dateColumn= DATE, outData= &_tempBeta)
+%end;
 
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
-%put VARS IN Treynor for Treynor_Ratio: (&vars);
-
-
-data &_tempTreynor (drop= &i _stat_);
+data &_tempTreynor (drop= &i _stat_ &BM date);
 set &_tempRP &_tempBeta;
 
 array Treynor[*] &vars;
-
-do &i= 1 to dim(Treynor);
-if Treynor[&i]= '.' then Treynor[&i]= 1;
-end;
 
 do &i= 1 to dim(Treynor);
 Treynor[&i]= lag(Treynor[&i])/Treynor[&i];
