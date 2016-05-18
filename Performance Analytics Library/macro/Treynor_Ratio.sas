@@ -28,7 +28,7 @@
 %local vars _tempRP _tempBeta _tempTreynor i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
-%put VARS IN Treynor for Betas: (&vars);
+%put VARS IN Treynor: (&vars);
 
 %let _tempRP= %ranname();
 %let _tempBeta= %ranname();
@@ -55,18 +55,11 @@ set &_tempBeta;
 where _stat_='betas';
 run;
 
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
-%put VARS IN Treynor for Treynor_Ratio: (&vars);
 
-
-data &_tempTreynor (drop= &i _stat_);
+data &_tempTreynor (drop= &i _stat_ &BM);
 set &_tempRP &_tempBeta;
 
 array Treynor[*] &vars;
-
-do &i= 1 to dim(Treynor);
-if Treynor[&i]= '.' then Treynor[&i]= 1;
-end;
 
 do &i= 1 to dim(Treynor);
 Treynor[&i]= lag(Treynor[&i])/Treynor[&i];
