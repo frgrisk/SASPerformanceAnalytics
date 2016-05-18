@@ -1,14 +1,24 @@
 /*---------------------------------------------------------------
 * NAME: Treynor_Ratio.sas
 *
-* PURPOSE: 
+* PURPOSE: The Treynor ratio is similar to the Sharpe Ratio, except it uses beta as the volatility measure 
+*          (to divide the investment's annualized excess return over the beta).
 *
-* NOTES: 
+* NOTES: Calculates the Treynor ratio of a desired asset given returns, the benchmark and a risk free rate. Option to
+* 		 input an unchanging value (0.02) or a variable risk free rate included in a return data set. Number of periods
+*        in a year (scale) and way of compounding (method) are inputs in calculating annualized returns. To calculate
+*        the modified Treynor ratio, we replace the denumerator by systematic risk. 
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* Rf - Optional. The value or variable representing the risk free rate of return. Default=0
-* dateColumn - Optional. Date column in Data Set. Default=DATE
+* BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
+* Rf - Optional. The value or variable representing the risk free rate of return. Default=0.
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
+           Default=DISCRETE
+* modified - Optional. Specifies either regular or modified Treynor Ratio {FALSE, TRUE}.  
+           Default=FALSE.
+* dateColumn - Optional. Date column in Data Set. Default=DATE.
 * outData - Optional. Output Data Set with Treynor ratios.  Default="TreynorRatio".
 *
 *
@@ -16,6 +26,7 @@
 * include VaR or ES, and an option for weights.
 
 * MODIFIED:
+* 05/18/2016 - QY - Initial Creation
 * 
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
