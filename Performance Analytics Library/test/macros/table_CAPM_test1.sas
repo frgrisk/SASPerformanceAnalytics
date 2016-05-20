@@ -117,7 +117,7 @@ run;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices bull_and_bear returns_from_r;
+	delete diff prices capm returns_from_r;
 	quit;
 %end;
 
