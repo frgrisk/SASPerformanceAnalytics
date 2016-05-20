@@ -28,7 +28,7 @@
 					outData= CAPM,
 					printTable= NOPRINT);
 
-%local vars RP alphaBeta bullBear R_square AnnuAlpha Corr active_premium tracking_error information_ratio treynor_ratio;
+%local vars RP alphaBeta bullBear R_square AnnuAlpha Corr tracking_error active_premium information_ratio treynor_ratio;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
 %put VARS IN table_CAPM: (&vars);
@@ -39,8 +39,8 @@
 %let R_square= %ranname();
 %let AnnuAlpha= %ranname();
 %let Corr= %ranname();
-%let active_premium= %ranname();
 %let tracking_error= %ranname();
+%let active_premium= %ranname();
 %let information_ratio= %ranname();
 %let treynor_ratio= %ranname();
 
@@ -77,7 +77,7 @@ run;
 
 /*calculate annualized alpha*/
 data &AnnuAlpha(drop=i);
-length _stat_ $32.;
+format _stat_ $32.;
 set &alphaBeta;
 where _STAT_='alphas';
 array alpha[*] &vars;
@@ -102,7 +102,7 @@ id var;
 run;
 
 /*calculate tracking error*/
-%TrackingError(&returns, BM=&BM, annualized= FALSE, scale= &scale,dateColumn= &dateColumn, outData= &tracking_error)
+%TrackingError(&returns, BM=&BM, annualized= TRUE, scale= &scale,dateColumn= &dateColumn, outData= &tracking_error)
 
 /*calculate active premium*/
 %ActivePremium(&returns, BM=&BM, scale= &scale, dateColumn= &dateColumn, outData= &active_premium)
@@ -114,12 +114,12 @@ run;
 %Treynor_Ratio(&returns, BM=&BM, Rf= &Rf, scale = &scale, modified = FALSE, dateColumn= &dateColumn, outData= &treynor_ratio)
 
 data &outData;
-length _stat_ $32.;
-set &alphaBeta &bullBear &R_square &AnnuAlpha &Corr &active_premium &tracking_error &information_ratio &treynor_ratio;
+format _stat_ $32. &vars %eval(&digits + 4).&digits;
+set &alphaBeta &bullBear &R_square &AnnuAlpha &Corr &tracking_error &active_premium &information_ratio &treynor_ratio;
 run;
 
 proc datasets lib= work nolist;
-delete &RP &alphaBeta &bullBear &R_square &AnnuAlpha &Corr &active_premium &tracking_error &information_ratio &treynor_ratio;
+delete &RP &alphaBeta &bullBear &R_square &AnnuAlpha &Corr &tracking_error &active_premium &information_ratio &treynor_ratio;
 run;
 
 %if %upcase(&printTable)= PRINT %then %do;
