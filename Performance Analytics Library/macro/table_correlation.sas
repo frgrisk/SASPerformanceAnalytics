@@ -24,7 +24,7 @@
 								outData= Correlations,
 								printTable= NOPRINT);
 
-%local lib ds;
+%local vars varStats;
 
 /*%let lib= %scan(&returns, 1, %str(.));*/
 /*%let ds= %scan(&returns, 2, %str(.));*/
