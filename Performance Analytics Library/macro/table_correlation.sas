@@ -13,6 +13,7 @@
 * 6/23/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/20/2016 - QY - replace sql pary by get_number_column_names macro
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -25,23 +26,27 @@
 
 %local lib ds;
 
-%let lib= %scan(&returns, 1, %str(.));
-%let ds= %scan(&returns, 2, %str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+/*%let lib= %scan(&returns, 1, %str(.));*/
+/*%let ds= %scan(&returns, 2, %str(.));*/
+/*%if "&ds" = "" %then %do;*/
+/*	%let ds=&lib;*/
+/*	%let lib=work;*/
+/*%end;*/
+/*%put lib:&lib ds:&ds;*/
+/**/
+/*proc sql noprint;*/
+/*select name*/
+/*into :vars separated by ' '*/
+/*     from sashelp.vcolumn*/
+/*where libname = upcase("&lib")*/
+/* and memname = upcase("&ds")*/
+/* and type = "num"*/
+/* and upcase(name) ^= upcase("&dateColumn");*/
+/*quit;*/
 
-proc sql noprint;
-select name
-into :vars separated by ' '
-     from sashelp.vcolumn
-where libname = upcase("&lib")
- and memname = upcase("&ds")
- and type = "num"
- and upcase(name) ^= upcase("&dateColumn");
-quit;
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%put VARS IN Table_correlation: (&vars);
+
 
 data _tempRet;
 set &returns;
@@ -57,16 +62,21 @@ run;
 data &outData;
 set &outData;
 drop NObs zval biasadj correst;
+run;
 
-proc sql noprint;
-select name
-	into :varStats separated by ' '
-	from sashelp.vcolumn
-		where libname = upcase("work")
- 		and memname = upcase("&outData")
- 		and type = "num"
-		and upcase(name) ^= upcase("&dateColumn");
-quit;
+/*proc sql noprint;*/
+/*select name*/
+/*	into :varStats separated by ' '*/
+/*	from sashelp.vcolumn*/
+/*		where libname = upcase("work")*/
+/* 		and memname = upcase("&outData")*/
+/* 		and type = "num"*/
+/*		and upcase(name) ^= upcase("&dateColumn");*/
+/*quit;*/
+
+%let varStats= %get_number_column_names(_table= &outData, _exclude= &dateColumn);
+%put VARSTATS IN Table_correlation: (&varStats);
+
 
 data &outData(drop= i);
 set &outData;
@@ -93,9 +103,11 @@ run;
 
 proc datasets lib= work nolist;
 delete _tempRet;
+run;
 
 %if %upcase(&printTable)= PRINT %then %do;
 proc print data= &outData noobs;
 run;
+
 %end;
 %mend;
