@@ -116,7 +116,7 @@ run;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices returns_from_r MSquared;
+	delete diff prices returns_from_r MSquared;
 	quit;
 %end;
 

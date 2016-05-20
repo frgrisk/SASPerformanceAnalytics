@@ -115,10 +115,10 @@ run;
 	%let notes=Differences detected in outputs.;
 %end;
 
-/*%if &keep=FALSE %then %do;*/
-/*	proc datasets lib=work nolist;*/
-/*	delete diff prices bull_and_bear returns_from_r;*/
-/*	quit;*/
-/*%end;*/
+%if &keep=FALSE %then %do;
+	proc datasets lib=work nolist;
+	delete diff prices bull_and_bear returns_from_r;
+	quit;
+%end;
 
 %mend;

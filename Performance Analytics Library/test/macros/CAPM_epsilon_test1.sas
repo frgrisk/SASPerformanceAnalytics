@@ -105,7 +105,7 @@ run;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices epsilon risk_premium;
+	delete diff prices epsilon returns_from_r;
 	quit;
 %end;
 
