@@ -8,6 +8,7 @@
 * Rf - Optional. The value or variable representing the risk free rate of return. [Default=0]
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           [Default=1]
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set of systematic risk.  Default="table_SpecificRisk".
 * printTable - Optional. Option to print output data set.  {PRINT, NOPRINT} [Default= NOPRINT]
@@ -18,6 +19,7 @@
 *                  this macro. 
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -26,6 +28,7 @@
 							BM=, 
 							Rf= 0,
 							scale= 1,
+							VARDEF = DF,
 							dateColumn= DATE,
 							outData= table_SpecificRisk,
 							printTable= NOPRINT);
@@ -81,6 +84,7 @@ quit;
 %Standard_Deviation(&out_reg, 
 					scale=&scale, 
 					annualized= TRUE, 
+					VARDEF= &VARDEF,
 					outData= &outData);
 
 /*Transpose the Vol values and create the _STAT_ column*/
