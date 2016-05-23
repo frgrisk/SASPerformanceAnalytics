@@ -12,7 +12,6 @@
 * annualized - Optional. Option to annualize the standard deviation.  {TRUE, FALSE} Default= FALSE
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
-* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with annualized standard deviation.  Default="StdDev". 
 *
@@ -20,22 +19,20 @@
 * 6/3/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
-* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
 %macro Standard_Deviation(returns, 
 						annualized= FALSE,
-						scale= 1,
-						VARDEF = DF, 
+						scale= 1, 
 						dateColumn= DATE, 
 						outData= StdDev);
 %local stdDev i;
 
 %let i= %ranname();
 
-proc means data= &returns VARDEF= &VARDEF noprint;
+proc means data= &returns noprint;
 output out= &outData;
 run;
 

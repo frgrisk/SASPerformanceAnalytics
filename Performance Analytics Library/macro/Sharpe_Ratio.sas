@@ -10,7 +10,6 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
-* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with Sharpe ratios.  Default="SharpeRatio".
 *
@@ -21,13 +20,11 @@
 * 6/3/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
-* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro Sharpe_Ratio(returns,
 							Rf= 0,
-							VARDEF= DF, 
 							dateColumn= DATE,
 							outData= SharpeRatio);
 							
@@ -44,7 +41,7 @@
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &_tempRP);
 
-proc means data= &_tempRP VARDEF= &VARDEF noprint;
+proc means data= &_tempRP noprint;
 output out= &_tempRP;
 run;
 
@@ -56,7 +53,6 @@ run;
 
 
 %Standard_Deviation(&returns,
-							VARDEF = &VARDEF,
 							dateColumn= &dateColumn, 
 							outData= &_tempStd);
 

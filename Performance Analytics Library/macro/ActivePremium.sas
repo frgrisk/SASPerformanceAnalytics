@@ -46,8 +46,7 @@
 				outData= &outData);
 
 data &outData;
-format _stat_ $32.;
-_stat_='Active Premium';
+_stat_='active premium';
 set &outData;
 drop &BM &dateColumn;
 run; 

@@ -9,17 +9,15 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
-* alpha - Optional. Significance level.  Specifies the level of significance for the mean. Default= 0.05
-* outData - Optional. Output Data Set with related statistics. Default= Stats
+* alpha - Optional. Significance level.  Specifies the level of significance for the mean. [Default= 0.05]
+* outData - Optional. Output Data Set with related statistics. [Default= Stats]
 * dateColumn - Optional. Date column in Data Set. Default=Date
-* digits - Optional. Specifies the number of digits to display in the output table. Default= 4
-* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
-* printTable - Optional. Option to print table.  {PRINT,NOPRINT} Default= NOPRINT
+* digits - Optional. Specifies the number of digits to display in the output table. [Default= 4]
+* printTable - Optional. Option to print table.  {PRINT,NOPRINT} [Default= NOPRINT]
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
-* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -28,7 +26,6 @@
 					dateColumn= DATE,
 					outData= Stats,
 					digits= 4,
-					VARDEF = DF, 
 					printTable= NOPRINT);
 %local lib ds z;
 
@@ -66,7 +63,7 @@ proc sort data=_temp;
 by _name_;
 run;
 
-proc univariate data=_temp VARDEF= &VARDEF noprint ;
+proc univariate data=_temp noprint ;
 var COL1;
 by _NAME_;
 output out=_tempOut 

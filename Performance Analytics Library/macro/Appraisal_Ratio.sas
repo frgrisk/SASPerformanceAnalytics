@@ -15,7 +15,6 @@
 *					 Jensen's alpha.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
-* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. output Data Set with Appraisal Ratios.  Default="Appraisal_Ratio"
 *
@@ -23,7 +22,6 @@
 * 7/22/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
-* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -34,7 +32,6 @@
 								scale= 1,
 								option=, 
 								method= DISCRETE,
-								VARDEF = DF, 
 								dateColumn= DATE, 
 								outData= Appraisal_Ratio);
 
@@ -64,7 +61,6 @@
 						BM=&BM, 
 						Rf=&Rf,
 						scale= &scale,
-						VARDEF= &VARDEF, 
 						dateColumn= &dateColumn,
 						outData= &divisor);
 
@@ -87,7 +83,6 @@ run;
 						BM=&BM, 
 						Rf=&Rf,
 						scale= &scale,
-						VARDEF= &VARDEF, 
 						dateColumn= &dateColumn,
 						outData= &divisor);
 %end;

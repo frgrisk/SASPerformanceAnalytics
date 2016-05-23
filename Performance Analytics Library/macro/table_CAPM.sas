@@ -86,7 +86,7 @@ do i=1 to dim(alpha);
 	alpha[i]=(1+alpha[i])**(&scale) - 1;
 end;
 if _stat_='alphas' then 
-	_stat_='Annualized Alphas';
+	_stat_='annualized alphas';
 run;
 
 /*calculate correlation and p-value*/
