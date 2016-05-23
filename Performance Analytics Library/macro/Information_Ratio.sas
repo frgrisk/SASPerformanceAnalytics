@@ -64,7 +64,7 @@ quit;
 %let ap = %ranname();
 
 
-%ActivePremium(&returns,bm=&bm,scale=&scale,VARDEF= &VARDEF,dateColumn=&dateColumn,outData=&ap)
+%ActivePremium(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&ap)
 %TrackingError(&returns,bm=&bm,scale=&scale,VARDEF= &VARDEF,dateColumn=&dateColumn,outData=&te,annualized=TRUE)
 
 data &outData(drop=&dateColumn);
