@@ -16,6 +16,7 @@
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * modified - Optional. Specifies either regular or modified Treynor Ratio {FALSE, TRUE}.  
            Default=FALSE.
 * dateColumn - Optional. Date column in Data Set. Default=DATE.
@@ -26,7 +27,8 @@
 * include VaR or ES, and an option for weights.
 
 * MODIFIED:
-* 05/18/2016 - QY - Initial Creation
+* 5/18/2016 - QY - Initial Creation
+* 5/23/2016 - QY - Add VARDEF parameter
 * 
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -35,6 +37,7 @@
 							Rf= 0,
 							scale = 1,
 							method = DISCRETE,
+							VARDEF = DF, 
 							modified = FALSE,
 							dateColumn= DATE,
 							outData= TreynorRatio);
@@ -72,7 +75,7 @@ run;
 	run;
 %end;
 %else %do;
-	%Systematic_Risk(&returns,BM= &BM, Rf= &Rf, scale= &scale, dateColumn= DATE, outData= &_tempBeta)
+	%Systematic_Risk(&returns,BM= &BM, Rf= &Rf, scale= &scale, VARDEF= &VARDEF, dateColumn= DATE, outData= &_tempBeta)
 %end;
 
 data &_tempTreynor (drop= &i _stat_ &BM date);

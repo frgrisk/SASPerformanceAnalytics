@@ -5,16 +5,18 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
-* dateColumn - Optional. Specifies the date column in the data set.  [Default= Date]
-* outData - Optional. Output Data Set with distribution statistics. [Default= distribution_table]
-* digits- Optional. Specifies the amount of digits to display in output. [Default= 4]
+* dateColumn - Optional. Specifies the date column in the data set.  Default= Date
+* outData - Optional. Output Data Set with distribution statistics. Default= distribution_table
+* digits- Optional. Specifies the amount of digits to display in output. Default= 4
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
-          [Default=1]
+          Default=1
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -23,6 +25,7 @@
 							dateColumn= DATE, 
 							outData= distribution_table, 
 							digits= 4,
+							VARDEF = DF,
 							printTable= NOPRINT);
 
 
@@ -114,7 +117,7 @@ end;
 output;
 run;
 
-%standard_deviation(&returns,annualized= TRUE, scale=&scale,outData=_tempOut3);
+%standard_deviation(&returns,annualized= TRUE, scale=&scale, VARDEF= &VARDEF, outData=_tempOut3);
 
 data _tempOut3;
 format _stat_ $32. &z %eval(&digits + 4).&digits;
