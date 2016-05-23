@@ -1,11 +1,11 @@
-%macro CAPM_alpha_beta_test1(keep=FALSE);
+%macro CAPM_alpha_beta_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\CAPM_alpha_beta_test1_submit.sas";
+	filename x "&dir\CAPM_alpha_beta_test_submit.sas";
 %end;
 
 data _null_;
@@ -98,12 +98,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST CAPM_alpha_beta_test1;
+	%put NOTE: NO ERROR IN TEST CAPM_alpha_beta_test;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST CAPM_alpha_beta_test1;
+	%put ERROR: PROBLEM IN TEST CAPM_alpha_beta_test;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
