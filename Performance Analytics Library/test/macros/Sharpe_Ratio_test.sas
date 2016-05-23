@@ -1,11 +1,11 @@
-%macro Sharpe_Ratio_test1(keep=FALSE);
+%macro Sharpe_Ratio_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Sharpe_Ratio_test1_submit.sas";
+	filename x "&dir\Sharpe_Ratio_test_submit.sas";
 %end;
 
 data _null_;
@@ -81,12 +81,15 @@ run;
 
 proc compare base=returns_from_r 
 			 compare=SharpeRatio 
+			 method=absolute
 			 out=diff(where=(_type_ = "DIF"
-			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY))
-					))
-			 noprint;
+			            and (abs(IBM) > 1e-4 or abs(GE) > 1e-4
+			              or abs(DOW) > 1e-4 or abs(GOOGL) > 1e-4 or abs(SPY) > 1e-4)
+			 		))
+			noprint
+			 ;
 run;
+
 
 data _null_;
 if 0 then set diff nobs=n;
@@ -95,19 +98,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST Sharpe_Ratio_TEST1;
+	%put NOTE: NO ERROR IN TEST Sharpe_Ratio_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Sharpe_Ratio_TEST1;
+	%put ERROR: PROBLEM IN TEST Sharpe_Ratio_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices;
+	delete diff prices returns_from_r SharpeRatio;
 	quit;
 %end;
 
