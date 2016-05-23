@@ -116,7 +116,7 @@ run;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices _meanRet _tempRP _tempStd;
+	delete diff prices _meanRet _tempRP _tempStd Sharpe_from_r Sharpe_Ratio;
 	quit;
 %end;
 

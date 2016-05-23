@@ -96,7 +96,7 @@ run;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Sharpe_Ratio_TEST1;
+	%put ERROR: PROBLEM IN TEST Systematic_Risk_TEST1;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

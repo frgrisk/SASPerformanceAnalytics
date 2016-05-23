@@ -1,11 +1,11 @@
-%macro MSquared_test1(keep=FALSE);
+%macro bull_bear_beta_test1(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\MSquared_test1_submit.sas";
+	filename x "&dir\bull_bear_beta_test1_submit.sas";
 %end;
 
 data _null_;
@@ -18,25 +18,16 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "tM2 = function(Ra,Rb,Rf=0){";
-put " "  ;
-put "  Period = Frequency(Ra)";
-put "  SR = SharpeRatio.annualized(Ra,Rf=Rf)";
-put "  sb = StdDev.annualized(Rb)";
-put "  ";
-put "  result = SR[1,]*sb[1,1] + (1+Rf)^252 - 1";
-put "  ";
-put "  ";
-put "  return(result)";
-put "}";
-put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/252)))";
+put "CAPMbull = CAPM.beta.bull(returns[, 1:4, drop= FALSE], returns[,5, drop= FALSE], 0.01/252)";
+put "CAPMbear = CAPM.beta.bear(returns[, 1:4, drop= FALSE], returns[,5, drop= FALSE], 0.01/252)";
+put "z = rbind(CAPMbull,CAPMbear)";
 put "endsubmit;";
 run;
 
 proc iml;
 %include x;
 
-call importdatasetfromr("returns_from_R","returns");
+call importdatasetfromr("returns_from_R","z");
 quit;
 
 data prices;
@@ -44,15 +35,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, outData= MSquared)
-
+%Bull_Bear_beta(prices, BM= SPY, Rf= 0.01/252)
 
 /*If tables have 0 records then delete them.*/
-proc sql;
+proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from MSquared;
+ select count(*) into :nv TRIMMED from bull_and_bear;
  %if ^&nv %then %do;
- 	drop table MSquared;
+ 	drop table bull_and_bear;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -61,9 +51,9 @@ proc sql;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(MSquared)) %then %do;
+%if ^%sysfunc(exist(bull_and_bear)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data MSquared;
+data bull_and_bear;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -85,18 +75,16 @@ data returns_from_r;
 run;
 %end;
 
+
 proc compare base=returns_from_r 
-			 compare=MSquared 
-			 method=absolute
-			 criterion= 0.0001
+			 compare=bull_and_bear 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
-			 		))
-			noprint
-			 ;
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY))
+					))
+			 noprint;
 run;
- 
+
 data _null_;
 if 0 then set diff nobs=n;
 call symputx("n",n,"l");
@@ -104,19 +92,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST MSquared_test1;
+	%put NOTE: NO ERROR IN TEST bull_bear_beta_TEST1;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST MSquared_test1;
+	%put ERROR: PROBLEM IN TEST bull_bear_beta_TEST1;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices returns_from_r MSquared;
+	delete diff prices bull_and_bear returns_from_r;
 	quit;
 %end;
 
