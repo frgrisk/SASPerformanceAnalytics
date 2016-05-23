@@ -1,11 +1,11 @@
-%macro ActivePremium_test2(keep=FALSE);
+%macro ActivePremium_test4(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\ActivePremium_test2_submit.sas";
+	filename x "&dir\ActivePremium_test4_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = ActivePremium(returns[, 1:4], returns[,5],scale=1)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = ActivePremium(returns[, 1:4], returns[,5],scale=12)";
 put "endsubmit;";
 run;
 
@@ -32,8 +32,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%ActivePremium(prices, BM= SPY, scale= 1, outData= active_premium)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%ActivePremium(prices, BM= SPY, scale= 12, outData= active_premium)
 
 
 /*If tables have 0 records then delete them.*/
@@ -93,12 +93,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST ActivePremium_test2;
+	%put NOTE: NO ERROR IN TEST ActivePremium_test4;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST ActivePremium_test2;
+	%put ERROR: PROBLEM IN TEST ActivePremium_test4;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
