@@ -1,11 +1,11 @@
-%macro SharpeRatio_annualized_test1(keep=FALSE);
+%macro SharpeRatio_annualized_test3(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-filename x "&dir\sharpe_ratio_annualized_test1.sas";
+filename x "&dir\sharpe_ratio_annualized_test3.sas";
 %end;
 data _null_;
 file x;
@@ -17,7 +17,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns= SharpeRatio.annualized(returns, Rf = .01/252, scale = 252, geometric = TRUE)";
+put "returns= SharpeRatio.annualized(returns, Rf = .01, scale = 1, geometric = TRUE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "names(returns) = c('date','IBM','GE','DOW','GOOGL','SPY')";
 put "endsubmit;";
@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SharpeRatio_annualized(prices, Rf= 0.01/252, scale= 252, method= DISCRETE, outData= Sharpe_Ratio)
+%SharpeRatio_annualized(prices, Rf= 0.01, scale= 1, method= DISCRETE, outData= Sharpe_Ratio)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -96,12 +96,12 @@ stop;
 run;
 %put n= &n;
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST SharpeRatio_annualized_test1;
+	%put NOTE: NO ERROR IN TEST SharpeRatio_annualized_test3;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST SharpeRatio_annualized_test1;
+	%put ERROR: PROBLEM IN TEST SharpeRatio_annualized_test3;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

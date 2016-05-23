@@ -1,11 +1,11 @@
-%macro SharpeRatio_annualized_test1(keep=FALSE);
+%macro SharpeRatio_annualized_test4(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-filename x "&dir\sharpe_ratio_annualized_test1.sas";
+filename x "&dir\sharpe_ratio_annualized_test4_submit.sas";
 %end;
 data _null_;
 file x;
@@ -16,8 +16,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns= SharpeRatio.annualized(returns, Rf = .01/252, scale = 252, geometric = TRUE)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns= SharpeRatio.annualized(returns, Rf = .01/12, scale = 12, geometric = FALSE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "names(returns) = c('date','IBM','GE','DOW','GOOGL','SPY')";
 put "endsubmit;";
@@ -33,8 +33,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SharpeRatio_annualized(prices, Rf= 0.01/252, scale= 252, method= DISCRETE, outData= Sharpe_Ratio)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%SharpeRatio_annualized(prices, Rf= 0.01/12, scale= 12, method= LOG, outData= Sharpe_Ratio)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -49,8 +49,9 @@ proc sql noprint;
  	drop table Sharpe_from_r;
  %end;
 quit ;
-%put nv= &nv;
-%if ^%sysfunc(exist(sharpe_ratio)) %then %do;
+
+%if ^%sysfunc(exist(Sharpe_ratio)) %then %do;
+
 /*Error creating the data set, ensure compare fails*/
 data Sharpe_Ratio;
 	date = -1;
@@ -63,7 +64,6 @@ run;
 %end;
 
 %if ^%sysfunc(exist(Sharpe_from_r)) %then %do;
-
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
 	date = 1;
@@ -94,21 +94,21 @@ if 0 then set diff nobs=n;
 call symputx("n",n,"l");
 stop;
 run;
-%put n= &n;
+
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST SharpeRatio_annualized_test1;
+	%put NOTE: NO ERROR IN TEST SharpeRatio_annualized_test4;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST SharpeRatio_annualized_test1;
+	%put ERROR: PROBLEM IN TEST SharpeRatio_annualized_test4;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices _meanRet _tempRP _tempStd Sharpe_from_r Sharpe_Ratio;
+	delete diff prices _meanRet _tempRP _tempStd Sharpe_from_R Sharpe_Ratio;
 	quit;
 %end;
 

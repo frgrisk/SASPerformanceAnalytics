@@ -5,7 +5,7 @@
 	filename x temp;
 %end;
 %else %do;
-filename x "&dir\temp.sas";
+filename x "&dir\sharpe_ratio_annualized_test2_submit.sas";
 %end;
 data _null_;
 file x;
@@ -16,8 +16,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns= SharpeRatio.annualized(returns, Rf = .01/252, scale = 252, geometric = FALSE)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns= SharpeRatio.annualized(returns, Rf = .01/4, scale = 4, geometric = FALSE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "names(returns) = c('date','IBM','GE','DOW','GOOGL','SPY')";
 put "endsubmit;";
@@ -29,17 +29,12 @@ proc iml;
 call importDataSetFromR("Sharpe_from_R","returns");
 quit;
 
-/*<<<<<<< .mine
-=======
-%put ;
-
->>>>>>> .r119*/
 data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SharpeRatio_annualized(prices, Rf= 0.01/252, scale= 252, method= LOG, outData= Sharpe_Ratio)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%SharpeRatio_annualized(prices, Rf= 0.01/4, scale= 4, method= LOG, outData= Sharpe_Ratio)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -55,11 +50,8 @@ proc sql noprint;
  %end;
 quit ;
 
-/*<<<<<<< .mine
-%if ^%sysfunc(exist(Sharpe_Ratio)) %then %do;
-=======*/
 %if ^%sysfunc(exist(Sharpe_ratio)) %then %do;
-/*>>>>>>> .r119*/
+
 /*Error creating the data set, ensure compare fails*/
 data Sharpe_Ratio;
 	date = -1;
