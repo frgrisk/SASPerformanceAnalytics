@@ -9,12 +9,14 @@
 * Rf - 
 * scale - 
 * digits -
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Specifies name of output Data Set of correlations.  Default="Correlations".
 * printTable - Optional. Option to print output table. {PRINT, NOPRINT} Default= [NOPRINT]
 * 
 * MODIFIED:
 * 5/20/2016 – QY - Initial Creation
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -24,6 +26,7 @@
 					Rf= 0,
 					scale= 1,
 					digits= 4,
+					VARDEF = DF, 
 					dateColumn= DATE, 
 					outData= CAPM,
 					printTable= NOPRINT);
@@ -86,7 +89,7 @@ do i=1 to dim(alpha);
 	alpha[i]=(1+alpha[i])**(&scale) - 1;
 end;
 if _stat_='alphas' then 
-	_stat_='annualized alphas';
+	_stat_='Annualized Alphas';
 run;
 
 /*calculate correlation and p-value*/
@@ -102,16 +105,16 @@ id var;
 run;
 
 /*calculate tracking error*/
-%TrackingError(&returns, BM=&BM, annualized= TRUE, scale= &scale,dateColumn= &dateColumn, outData= &tracking_error)
+%TrackingError(&returns, BM=&BM, annualized= TRUE, scale= &scale,VARDEF= &VARDEF,dateColumn= &dateColumn, outData= &tracking_error)
 
 /*calculate active premium*/
 %ActivePremium(&returns, BM=&BM, scale= &scale, dateColumn= &dateColumn, outData= &active_premium)
 
 /*calculate information ratio*/
-%Information_Ratio(&returns, BM=&BM, scale= &scale, dateColumn= &dateColumn, outData= &information_ratio)
+%Information_Ratio(&returns, BM=&BM, scale= &scale, VARDEF= &VARDEF, dateColumn= &dateColumn, outData= &information_ratio)
 
 /*calculate Treynor ratio*/
-%Treynor_Ratio(&returns, BM=&BM, Rf= &Rf, scale = &scale, modified = FALSE, dateColumn= &dateColumn, outData= &treynor_ratio)
+%Treynor_Ratio(&returns, BM=&BM, Rf= &Rf, scale = &scale, VARDEF= &VARDEF, modified = FALSE, dateColumn= &dateColumn, outData= &treynor_ratio)
 
 data &outData;
 format _stat_ $32. &vars %eval(&digits + 4).&digits;

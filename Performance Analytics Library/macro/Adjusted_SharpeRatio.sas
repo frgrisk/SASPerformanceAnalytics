@@ -11,6 +11,7 @@
 * Rf - Optional. the value or variable representing the risk free rate of return. Default=0
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. output Data Set with adjusted Sharpe Ratios.  Default="adjusted_SharpeRatio"
 *
@@ -24,6 +25,7 @@
 *				   Inserted parameter method= to allow user to choose LOG or DISCRETEaly chained returns.
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -32,6 +34,7 @@
 								Rf= 0, 
 								scale= 1,
 								method= DISCRETE,
+								VARDEF = DF, 
 								dateColumn= DATE, 
 								outData= adjusted_SharpeRatio);
 
@@ -58,7 +61,7 @@
 
 %return_annualized(&returns, scale= &scale, method= &method, outData= &annual_return);
 %return_excess(&annual_return, Rf= &Rf, dateColumn= &dateColumn, outData= &Chained_Ex_Ret);
-%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outData= &Ann_StD);
+%Standard_Deviation(&returns,annualized= TRUE, scale= &scale, VARDEF = &VARDEF, dateColumn= &dateColumn,outData= &Ann_StD);
 
 data &SR (drop= &j);
 set &Chained_Ex_Ret &Ann_StD (in=s);

@@ -10,6 +10,7 @@
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=Date
 * outData - Optional. Output Data Set of MSquared.  Default= "MSquared".
 * MODIFIED:
@@ -18,6 +19,7 @@
 *				   Renamed temporary data sets with %ranname
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -27,6 +29,7 @@
 						Rf= 0,
 						scale= 1,
 						method= DISCRETE, 
+						VARDEF = DF, 
 						dateColumn= DATE,
 						outData= MSquared);
 
@@ -40,8 +43,8 @@
 
 %let i= %ranname();
 
-%SharpeRatio_annualized(&returns,scale=&scale,Rf=&rf,outData=&_temp_sr,method=&method,dateColumn=&dateColumn)
-%StdDev_annualized(&returns,scale=&scale,outData= &_temp_std,dateColumn=&dateColumn)
+%SharpeRatio_annualized(&returns,scale=&scale,Rf=&rf,outData=&_temp_sr,method=&method,VARDEF = &VARDEF,dateColumn=&dateColumn)
+%StdDev_annualized(&returns,scale=&scale,VARDEF = &VARDEF,outData= &_temp_std,dateColumn=&dateColumn)
 
 data _null_;
 set &_temp_std;
