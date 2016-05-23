@@ -27,7 +27,7 @@
 
 
 
-%local lib ds nv ret ap te;
+%local nv ret ap te;
 
 
 /***********************************
@@ -64,19 +64,19 @@ quit;
 %ActivePremium(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&ap)
 %TrackingError(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&te,annualized=TRUE)
 
-data &outData;
-format _stat_ $32.;
-set &te &ap(in=&ap);
-array vars[&nv] &ret;
+data &outData(drop=date);
+	format _stat_ $32.;
+	set &te &ap(in=&ap);
+	array vars[&nv] &ret;
 
-_stat_ = "Information_Ratio";
+	_stat_ = "Information_Ratio";
 
-do i=1 to dim(vars);
-	vars[i] = vars[i]/lag(vars[i]);
-end;
+	do i=1 to dim(vars);
+		vars[i] = vars[i]/lag(vars[i]);
+	end;
 
-if &ap;
-drop i;
+	if &ap;
+	drop i;
 run;
 
 proc datasets lib= work nolist;

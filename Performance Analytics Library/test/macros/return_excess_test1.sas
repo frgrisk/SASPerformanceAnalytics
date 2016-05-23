@@ -68,7 +68,7 @@ run;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices returns returns_from_r;
+	delete diff prices returns returns_from_r risk_premium;
 	quit;
 %end;
 

@@ -30,7 +30,7 @@
 					  				 dateColumn= DATE, 
 					  				 outData= Annualized_SharpeRatio);
 
-%local ret nv j Chained_Ex_Ret Ann_StD SR;
+%local ret nv j Chained_Ex_Ret Ann_StD;
 /*Find all variable names excluding the date column and risk free variable*/
 %let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
 %put RET IN Adjusted_SharpeRatio: (&ret);
@@ -102,7 +102,7 @@ quit;
 /*proc datasets lib= work nolist;*/
 /*delete &_tempRP &_tempStd;*/
 /*run;*/
-/*quit;*/
+/*quit;*/;
 
 proc datasets lib=work nolist;
 delete &Ann_StD &Chained_Ex_Ret;

@@ -50,7 +50,6 @@
 %let Skew_Kurt_Table= %ranname();
 %let Chained_Ex_Ret= %ranname();
 %let annual_return=%ranname();
-%let agg_returns=%ranname();
 %let Ann_StD= %ranname();
 %let SR= %ranname();
 
@@ -184,7 +183,7 @@ _NAME_= 'Adj_SharpeRatio';
 run;
 
 proc datasets lib=work nolist;
-delete &Skew_Kurt_Table &SR &Ann_StD &Chained_Ex_Ret;
+delete &Skew_Kurt_Table &SR &Ann_StD &Chained_Ex_Ret &annual_return;
 run;
 quit;
 

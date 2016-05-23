@@ -1,9 +1,9 @@
 /*---------------------------------------------------------------
 * NAME: Bull_Bear_beta.sas
 *
-* PURPOSE: computes values of alpha and beta as defined in the capital asset pricing model.
+* PURPOSE: computes values of bull beta and bear beta as defined in the capital asset pricing model.
 *
-* NOTES: Alpha and Beta of a desired asset are calculated given returns, a risk free rate, and a benchmark. Option to
+* NOTES: Betas of a desired asset are calculated given returns, a risk free rate, and a benchmark. Option to
 * 		 input an unchanging value (0.02) or a variable risk free rate included in the return data set;
 *
 * MACRO OPTIONS:
@@ -36,10 +36,7 @@
 %let bull_Beta= %ranname();
 %let bear_Beta= %ranname();
 
-%return_excess(&returns, 
-					 	Rf= &Rf, 
-						dateColumn= &dateColumn, 
-						outData= &RP);
+%return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &RP);
 
 
 /***************************************

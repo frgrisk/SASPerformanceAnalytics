@@ -107,7 +107,7 @@ run;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices;
+	delete diff prices Annualized_returns returns_from_r;
 	quit;
 %end;
 

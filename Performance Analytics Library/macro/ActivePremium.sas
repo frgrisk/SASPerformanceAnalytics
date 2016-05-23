@@ -46,6 +46,7 @@
 				outData= &outData);
 
 data &outData;
+_stat_='active premium';
 set &outData;
 drop &BM &dateColumn;
 run; 

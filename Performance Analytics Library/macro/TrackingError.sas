@@ -47,6 +47,11 @@ run;
 						dateColumn= &dateColumn, 
 						outData= &outData);
 
+data &outData;
+_stat_='tracking error';
+set &outData(drop=date);
+run;
+
 proc datasets lib= work nolist;
 delete &rp;
 run;
