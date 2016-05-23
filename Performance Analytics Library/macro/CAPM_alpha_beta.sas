@@ -29,14 +29,13 @@
 						dateColumn= DATE,  
 						outData= alphas_and_betas);
 
-%local vars RP Betas Names;
+%local vars RP Betas;
 /*Find all variable names excluding the date column, benchmark, and risk free variables*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
 %put VARS IN CAPM_alpha_beta: (&vars);
 /*Define temporary data set names with random names*/
 %let RP= %ranname();
 %let Betas= %ranname();
-%let Names= %ranname();
 %return_excess(&returns, 
 					 	Rf= &Rf, 
 						dateColumn= &dateColumn, 
@@ -67,7 +66,7 @@ set &outData;
 run;
 
 proc datasets lib= work nolist;
-delete &RP &Betas &Names;
+delete &RP &Betas;
 run;
 quit;
 %mend;

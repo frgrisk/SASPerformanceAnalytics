@@ -14,11 +14,19 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro simple_normalize_by(data,var,by);
-proc summary data=&data;
-by &by;
-var &var;
-output out=_temp_summary_by sum=__total;
-run;
+/*Replace with SQL step so prior sort is not necessary*/
+/*proc summary data=&data;*/
+/*by &by;*/
+/*var &var;*/
+/*output out=_temp_summary_by sum=__total;*/
+/*run;*/
+
+proc sql noprint;
+create table _temp_summary_by as
+select &by, sum(&var) as __total
+	from &data
+	group by &by;
+quit;
 
 data &data(drop=__total rc);
 set &data;
