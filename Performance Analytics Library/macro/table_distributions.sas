@@ -17,6 +17,7 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 5/24/2016 - QY - Fix scale problem in Scaled Std Dev
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -119,19 +120,25 @@ run;
 
 %standard_deviation(&returns,annualized= TRUE, scale=&scale, VARDEF= &VARDEF, outData=_tempOut3);
 
-data _tempOut3;
-format _stat_ $32. &z %eval(&digits + 4).&digits;
-set _tempOut3;
-so = _n_;
+data _tempOut3(drop=i);
+	format _stat_ $32. &z %eval(&digits + 4).&digits;
+	set _tempOut3;
+	so = _n_;
 
-_stat_ = "Scaled Std Dev";
+	array STD_scaled[*] &z;
+
+	do i= 1 to dim(STD_scaled);
+	STD_scaled[i]= STD_scaled[i]/sqrt(&scale);
+	end;
+
+	_stat_ = "Scaled Std Dev";
 run;
 
 data &outData;
 set _tempOut1-_tempOut3;
 run;
 
-proc sort data=&outData out=&outData(drop=so);
+proc sort data=&outData out=&outData(drop=so &dateColumn);
 by so;
 run;
 
