@@ -1,11 +1,11 @@
-%macro return_annualized_test2(keep=FALSE);
+%macro return_annualized_test3(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\return_annualized_test2_submit.sas";
+	filename x "&dir\return_annualized_test3_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = Return.annualized(returns, scale= 1, geometric=TRUE)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = Return.annualized(returns, scale= 4, geometric=FALSE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -33,8 +33,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_annualized(prices,scale= 1, method=DISCRETE)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%return_annualized(prices,scale= 4, method=LOG)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -95,12 +95,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST RETURN_ANNUALIZED_TEST2;
+	%put NOTE: NO ERROR IN TEST RETURN_ANNUALIZED_TEST3;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST RETURN_ANNUALIZED_TEST2;
+	%put ERROR: PROBLEM IN TEST RETURN_ANNUALIZED_TEST3;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
