@@ -1,12 +1,13 @@
-%macro SharpeRatio_annualized_test1(keep=FALSE);
+%macro CAPM_alpha_beta_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-filename x "&dir\sharpe_ratio_annualized_test1.sas";
+	filename x "&dir\CAPM_alpha_beta_test_submit.sas";
 %end;
+
 data _null_;
 file x;
 put "submit /r;";
@@ -17,16 +18,17 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns= SharpeRatio.annualized(returns, Rf = .01/252, scale = 252, geometric = TRUE)";
-put "returns = data.frame(date=index(returns),returns)";
-put "names(returns) = c('date','IBM','GE','DOW','GOOGL','SPY')";
+put "alpha = CAPM.alpha(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], Rf= 0.01/252)";
+put "beta = CAPM.beta(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], Rf= 0.01/252)";
+put "df <-rbind(alpha, beta)";
+put "names(df)= c('IBM','GE','DOW','GOOGL')";
 put "endsubmit;";
 run;
 
 proc iml;
 %include x;
 
-call importDataSetFromR("Sharpe_from_R","returns");
+call importdatasetfromr("returns_from_R","df");
 quit;
 
 data prices;
@@ -34,25 +36,26 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SharpeRatio_annualized(prices, Rf= 0.01/252, scale= 252, method= DISCRETE, outData= Sharpe_Ratio)
+%CAPM_alpha_beta(prices, Rf= 0.01/252, BM= SPY)
+
 
 /*If tables have 0 records then delete them.*/
-proc sql noprint;
+proc sql;
  %local nv;
- select count(*) into :nv TRIMMED from Sharpe_Ratio;
+ select count(*) into :nv TRIMMED from alphas_and_betas;
  %if ^&nv %then %do;
- 	drop table Sharpe_Ratio;
+ 	drop table alphas_and_betas;
  %end;
  
- select count(*) into :nv TRIMMED from Sharpe_from_r;
+ select count(*) into :nv TRIMMED from returns_from_r;
  %if ^&nv %then %do;
- 	drop table Sharpe_from_r;
+ 	drop table returns_from_r;
  %end;
 quit ;
-%put nv= &nv;
-%if ^%sysfunc(exist(sharpe_ratio)) %then %do;
+
+%if ^%sysfunc(exist(alphas_and_betas)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data Sharpe_Ratio;
+data alphas_and_betas;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -62,8 +65,7 @@ data Sharpe_Ratio;
 run;
 %end;
 
-%if ^%sysfunc(exist(Sharpe_from_r)) %then %do;
-
+%if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
 	date = 1;
@@ -75,40 +77,40 @@ data returns_from_r;
 run;
 %end;
 
-data Sharpe_Ratio;
-	set Sharpe_Ratio end=last;
-	if last;
-run;
-
-proc compare base=Sharpe_from_r 
-			 compare=Sharpe_Ratio 
+proc compare base=returns_from_r 
+			 compare=alphas_and_betas 
+			 method=absolute
 			 out=diff(where=(_type_ = "DIF"
-			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY))
-					))
-			 noprint;
+			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
+			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
+			 		))
+			noprint
+			 ;
 run;
 
+
+proc print data= diff;
+run; 
 data _null_;
 if 0 then set diff nobs=n;
 call symputx("n",n,"l");
 stop;
 run;
-%put n= &n;
+
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST SharpeRatio_annualized_test1;
+	%put NOTE: NO ERROR IN TEST CAPM_alpha_beta_test;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST SharpeRatio_annualized_test1;
+	%put ERROR: PROBLEM IN TEST CAPM_alpha_beta_test;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices _meanRet _tempRP _tempStd Sharpe_from_r Sharpe_Ratio;
+	delete diff prices returns_from_r alphas_and_betas;
 	quit;
 %end;
 

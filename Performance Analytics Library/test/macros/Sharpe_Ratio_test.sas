@@ -1,11 +1,11 @@
-%macro CAPM_alpha_beta_test1(keep=FALSE);
+%macro Sharpe_Ratio_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\CAPM_alpha_beta_test1_submit.sas";
+	filename x "&dir\Sharpe_Ratio_test_submit.sas";
 %end;
 
 data _null_;
@@ -18,17 +18,15 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "alpha = CAPM.alpha(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], Rf= 0.01/252)";
-put "beta = CAPM.beta(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], Rf= 0.01/252)";
-put "df <-rbind(alpha, beta)";
-put "names(df)= c('IBM','GE','DOW','GOOGL')";
+put "returns = SharpeRatio(returns, Rf= 0.02, FUN= 'StdDev')";
+put "returns = data.frame(returns)";
 put "endsubmit;";
 run;
 
 proc iml;
 %include x;
 
-call importdatasetfromr("returns_from_R","df");
+call importdatasetfromr("returns_from_R","returns");
 quit;
 
 data prices;
@@ -36,15 +34,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%CAPM_alpha_beta(prices, Rf= 0.01/252, BM= SPY)
-
+%Sharpe_Ratio(prices, Rf= 0.02)
 
 /*If tables have 0 records then delete them.*/
-proc sql;
+proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from alphas_and_betas;
+ select count(*) into :nv TRIMMED from SharpeRatio;
  %if ^&nv %then %do;
- 	drop table alphas_and_betas;
+ 	drop table SharpeRatio;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -53,9 +50,9 @@ proc sql;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(alphas_and_betas)) %then %do;
+%if ^%sysfunc(exist(SharpeRatio)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data alphas_and_betas;
+data SharpeRatio;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -77,20 +74,23 @@ data returns_from_r;
 run;
 %end;
 
+data SharpeRatio;
+	set SharpeRatio end=last;
+	if last;
+run;
+
 proc compare base=returns_from_r 
-			 compare=alphas_and_betas 
+			 compare=SharpeRatio 
 			 method=absolute
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
+			            and (abs(IBM) > 1e-4 or abs(GE) > 1e-4
+			              or abs(DOW) > 1e-4 or abs(GOOGL) > 1e-4 or abs(SPY) > 1e-4)
 			 		))
 			noprint
 			 ;
 run;
 
 
-proc print data= diff;
-run; 
 data _null_;
 if 0 then set diff nobs=n;
 call symputx("n",n,"l");
@@ -98,19 +98,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST CAPM_alpha_beta_test1;
+	%put NOTE: NO ERROR IN TEST Sharpe_Ratio_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST CAPM_alpha_beta_test1;
+	%put ERROR: PROBLEM IN TEST Sharpe_Ratio_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices returns_from_r alphas_and_betas;
+	delete diff prices returns_from_r SharpeRatio;
 	quit;
 %end;
 
