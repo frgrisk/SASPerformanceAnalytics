@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = Return.annualized(returns, scale= 252, geometric=FALSE)";
+put "returns = Return.annualized(returns, scale= 1, geometric=TRUE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_annualized(prices,scale= 252, method=LOG)
+%return_annualized(prices,scale= 1, method=DISCRETE)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

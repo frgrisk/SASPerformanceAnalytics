@@ -5,7 +5,7 @@
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_distributions_test1_submit.sas";
+	filename x "&dir\table_distributions_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = table.Distributions(returns,digits=8,scale=1)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = table.Distributions(returns,scale=252)";
 put "names = c('_stat_',names(returns))";
 put "stats = data.frame(rownames(returns),returns)";
 put "names(stats) = names";
@@ -35,8 +35,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_distributions(prices,digits=8,scale=252)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%table_distributions(prices,scale=252)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -91,7 +91,7 @@ run;
 proc compare base=returns_from_r 
 			 compare= distribution_table 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 5e-9 or abs(GE)> 5e-9 or abs(DOW)> 5e-9 or abs(GOOGL)> 5e-9 or abs(SPY)> 5e-9)
+			            and (abs(IBM)> 5e-5 or abs(GE)> 5e-5 or abs(DOW)> 5e-5 or abs(GOOGL)> 5e-5 or abs(SPY)> 5e-5)
 					))
 			 noprint;
 	by _stat_;
@@ -113,12 +113,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_distribution_TEST1;
+	%put NOTE: NO ERROR IN TEST table_distribution_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_distribution_TEST1;
+	%put ERROR: PROBLEM IN TEST table_distribution_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

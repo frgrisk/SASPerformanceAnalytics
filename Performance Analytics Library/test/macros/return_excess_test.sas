@@ -1,12 +1,11 @@
-
-%macro return_excess_test1(keep=FALSE);
+%macro return_excess_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\return_excess_test1_submit.sas";
+	filename x "&dir\return_excess_test_submit.sas";
 %end;
 
 data _null_;
@@ -56,12 +55,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST RETURN_EXCESS_TEST1;
+	%put NOTE: NO ERROR IN TEST RETURN_EXCESS_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST RETURN_EXCESS_TEST1;
+	%put ERROR: PROBLEM IN TEST RETURN_EXCESS_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

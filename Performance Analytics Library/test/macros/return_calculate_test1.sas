@@ -1,5 +1,3 @@
-
-
 %macro return_calculate_test1(keep=FALSE);
 %global pass notes;
 

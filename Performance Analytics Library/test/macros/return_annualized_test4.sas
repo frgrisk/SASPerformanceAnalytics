@@ -1,11 +1,11 @@
-%macro return_accumulate_test3(keep=FALSE);
+%macro return_annualized_test4(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\return_accumulate_test3_submit.sas";
+	filename x "&dir\return_annualized_test4_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = apply.yearly(returns,FUN=Return.cumulative,geometric=TRUE)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = Return.annualized(returns, scale= 12, geometric=FALSE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -33,15 +33,15 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_accumulate(prices,method=DISCRETE,toFreq=YEAR,updateInPlace=FALSE)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%return_annualized(prices,scale= 12, method=LOG)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from agg_returns;
+ select count(*) into :nv TRIMMED from annualized_returns;
  %if ^&nv %then %do;
- 	drop table agg_returns;
+ 	drop table annualized_returns;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,9 +50,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(agg_returns)) %then %do;
+%if ^%sysfunc(exist(annualized_returns)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data agg_returns;
+data cumulative_returns;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -74,12 +74,13 @@ data returns_from_r;
 run;
 %end;
 
-data agg_returns;
-	set agg_returns (firstobs=2);
+data annualized_returns;
+	set annualized_returns end=last;
+	if last;
 run;
 
 proc compare base=returns_from_r 
-			 compare=agg_returns(drop=date) 
+			 compare=annualized_returns(drop=date) 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY))
@@ -94,19 +95,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST RETURN_ACCUMULATE_TEST3;
+	%put NOTE: NO ERROR IN TEST RETURN_ANNUALIZED_TEST4;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST RETURN_ACCUMULATE_TEST3;
+	%put ERROR: PROBLEM IN TEST RETURN_ANNUALIZED_TEST4;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices agg_returns returns_from_r;
+	delete diff prices annualized_returns returns_from_r;
 	quit;
 %end;
 
