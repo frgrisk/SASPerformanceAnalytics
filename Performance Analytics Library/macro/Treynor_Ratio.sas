@@ -54,7 +54,6 @@
 %let i= %ranname();
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &_tempRP);
-
 data &_tempRP(drop= &i &BM);
 	set &_tempRP;
 	array excess[*] &vars;
