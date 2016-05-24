@@ -1,11 +1,11 @@
-%macro StdDev_annualized_test1(keep=FALSE);
+%macro StdDev_annualized_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\StdDev_annualized_test1_submit.sas";
+	filename x "&dir\StdDev_annualized_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='log')";
-put "returns = StdDev.annualized(returns, scale= 4)";
+put "returns = Return.calculate(prices, method='discrete')";
+put "returns = StdDev.annualized(returns, scale= 12)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -33,8 +33,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=LOG)
-%StdDev_annualized(prices,scale= 4)
+%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
+%StdDev_annualized(prices,scale= 12)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -95,12 +95,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST StdDev_annualized_test1;
+	%put NOTE: NO ERROR IN TEST StdDev_annualized_test2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST StdDev_annualized_test1;
+	%put ERROR: PROBLEM IN TEST StdDev_annualized_test2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
