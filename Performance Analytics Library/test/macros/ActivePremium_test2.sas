@@ -5,7 +5,7 @@
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\ActivePremium_test1_submit.sas";
+	filename x "&dir\ActivePremium_test2_submit.sas";
 %end;
 
 data _null_;
@@ -93,12 +93,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST ActivePremium_test1;
+	%put NOTE: NO ERROR IN TEST ActivePremium_test2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST ActivePremium_test1;
+	%put ERROR: PROBLEM IN TEST ActivePremium_test2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

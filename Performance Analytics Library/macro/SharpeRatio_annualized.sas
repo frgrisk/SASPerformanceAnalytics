@@ -13,6 +13,7 @@
           Default=0
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=date
 * outData - Optional. Output Data Set with risk premium.  Default="Annualized_SharpeRatio".
 *
@@ -20,6 +21,7 @@
 * 6/12/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -27,6 +29,7 @@
 					  				 Rf= 0, 
 					 				 scale= 1,
 					  				 method= DISCRETE, 
+									 VARDEF = DF,
 					  				 dateColumn= DATE, 
 					  				 outData= Annualized_SharpeRatio);
 
@@ -48,6 +51,7 @@
 %Standard_Deviation(&returns, 
 							annualized= TRUE, 
 							scale= &scale,
+							VARDEF = &VARDEF, 
 							dateColumn= &dateColumn,
 							outData= &Ann_StD);
 

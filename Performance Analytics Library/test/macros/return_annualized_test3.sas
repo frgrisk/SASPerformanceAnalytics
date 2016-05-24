@@ -1,11 +1,11 @@
-%macro CAPM_alpha_beta_test2(keep=FALSE);
+%macro return_annualized_test3(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\CAPM_alpha_beta_test2_submit.sas";
+	filename x "&dir\return_annualized_test3_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = CAPM.beta(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], Rf= 0.01/252)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = Return.annualized(returns, scale= 4, geometric=FALSE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -33,15 +33,15 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%CAPM_alpha_beta(prices, Rf= 0.01/252, BM= SPY)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%return_annualized(prices,scale= 4, method=LOG)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from alphas_and_betas;
+ select count(*) into :nv TRIMMED from annualized_returns;
  %if ^&nv %then %do;
- 	drop table cumulative_returns;
+ 	drop table annualized_returns;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,7 +50,7 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(alphas_and_betas)) %then %do;
+%if ^%sysfunc(exist(annualized_returns)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data cumulative_returns;
 	date = -1;
@@ -74,14 +74,16 @@ data returns_from_r;
 run;
 %end;
 
-data alphas_and_betas;
-	set alphas_and_betas;
+data annualized_returns;
+	set annualized_returns end=last;
+	if last;
 run;
 
 proc compare base=returns_from_r 
-			 compare=alphas_and_betas(firstobs=2)
+			 compare=annualized_returns(drop=date) 
 			 out=diff(where=(_type_ = "DIF"
-			            and (IBM or GE or DOW or GOOGL)
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY))
 					))
 			 noprint;
 run;
@@ -93,22 +95,20 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST CAPM_alpha_beta_TEST2;
+	%put NOTE: NO ERROR IN TEST RETURN_ANNUALIZED_TEST3;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST CAPM_alpha_beta_TEST2;
+	%put ERROR: PROBLEM IN TEST RETURN_ANNUALIZED_TEST3;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices;
+	delete diff prices annualized_returns returns_from_r;
 	quit;
 %end;
-
-filename x clear;
 
 %mend;

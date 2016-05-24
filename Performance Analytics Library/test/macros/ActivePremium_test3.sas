@@ -1,11 +1,11 @@
-%macro return_accumulate_test6(keep=FALSE);
+%macro ActivePremium_test3(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\return_accumulate_test6_submit.sas";
+	filename x "&dir\ActivePremium_test3_submit.sas";
 %end;
 
 data _null_;
@@ -17,9 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='log'))";
-put "returns = apply.yearly(returns,FUN=Return.cumulative,geometric=FALSE)";
-put "returns = data.frame(date=index(returns),returns)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = ActivePremium(returns[, 1:4], returns[,5],scale=4)";
 put "endsubmit;";
 run;
 
@@ -34,14 +33,15 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=LOG)
-%return_accumulate(prices,method=LOG,toFreq=YEAR,updateInPlace=FALSE)
+%ActivePremium(prices, BM= SPY, scale= 4, outData= active_premium)
+
 
 /*If tables have 0 records then delete them.*/
-proc sql noprint;
+proc sql;
  %local nv;
- select count(*) into :nv TRIMMED from agg_returns;
+ select count(*) into :nv TRIMMED from active_premium;
  %if ^&nv %then %do;
- 	drop table agg_returns;
+ 	drop table active_premium;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,9 +50,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(agg_returns)) %then %do;
+%if ^%sysfunc(exist(active_premium)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data agg_returns;
+data active_premium;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -74,19 +74,18 @@ data returns_from_r;
 run;
 %end;
 
-data agg_returns;
-	set agg_returns (firstobs=2);
-run;
-
 proc compare base=returns_from_r 
-			 compare=agg_returns(drop=date) 
+			 compare=active_premium 
+			 method=absolute
+			 criterion= 0.0001
 			 out=diff(where=(_type_ = "DIF"
-			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY))
-					))
-			 noprint;
+			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
+			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
+			 		))
+			noprint
+			 ;
 run;
-
+ 
 data _null_;
 if 0 then set diff nobs=n;
 call symputx("n",n,"l");
@@ -94,19 +93,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST RETURN_ACCUMULATE_TEST6;
+	%put NOTE: NO ERROR IN TEST ActivePremium_test3;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST RETURN_ACCUMULATE_TEST6;
+	%put ERROR: PROBLEM IN TEST ActivePremium_test3;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices agg_returns returns_from_r;
+	delete diff prices returns_from_r active_premium;
 	quit;
 %end;
 

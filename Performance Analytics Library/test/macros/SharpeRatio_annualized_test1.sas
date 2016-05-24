@@ -5,7 +5,7 @@
 	filename x temp;
 %end;
 %else %do;
-filename x "&dir\temp.sas";
+filename x "&dir\sharpe_ratio_annualized_test1.sas";
 %end;
 data _null_;
 file x;
@@ -29,11 +29,6 @@ proc iml;
 call importDataSetFromR("Sharpe_from_R","returns");
 quit;
 
-/*<<<<<<< .mine*/
-/*=======*/
-/*%put ;*/
-/**/
-/*>>>>>>> .r119*/
 data prices;
 set input.prices;
 run;
@@ -55,11 +50,7 @@ proc sql noprint;
  %end;
 quit ;
 %put nv= &nv;
-/*<<<<<<< .mine
-%if ^%sysfunc(exist(Sharpe_Ratio)) %then %do;
-=======*/
 %if ^%sysfunc(exist(sharpe_ratio)) %then %do;
-/*>>>>>>> .r119*/
 /*Error creating the data set, ensure compare fails*/
 data Sharpe_Ratio;
 	date = -1;
@@ -72,6 +63,7 @@ run;
 %end;
 
 %if ^%sysfunc(exist(Sharpe_from_r)) %then %do;
+
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
 	date = 1;

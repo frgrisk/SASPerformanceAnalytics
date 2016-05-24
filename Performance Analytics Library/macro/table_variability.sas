@@ -9,6 +9,7 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * scale - Required. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Specifies the date column in the returns data set. [Default= Date]
 * outData - Optional. Output Data Set with variability statistics. [Default= variability_table]
 * printTable - Optional. Option to print output data set. {PRINT, NOPRINT} [Default= NOPRINT]
@@ -16,11 +17,13 @@
 * 6/29/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_variability(returns, 
 								scale= 1,
+								VARDEF = DF, 
 								dateColumn= DATE,
 								outData= variability_table,
 								printTable= NOPRINT);
@@ -52,8 +55,8 @@ select name
 quit;
 
 
-%Standard_Deviation(&returns, scale= &scale, annualized= TRUE, outData= annualized_StdDev);
-%Standard_Deviation(&returns, scale= 1, outData= Monthly);
+%Standard_Deviation(&returns, scale= &scale, annualized= TRUE, VARDEF= &VARDEF, outData= annualized_StdDev);
+%Standard_Deviation(&returns, scale= 1, VARDEF= &VARDEF, outData= Monthly);
 
 
 

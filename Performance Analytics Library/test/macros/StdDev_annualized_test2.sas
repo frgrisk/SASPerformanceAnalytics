@@ -1,11 +1,11 @@
-%macro Sharpe_Ratio_test2(keep=FALSE);
+%macro StdDev_annualized_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Sharpe_Ratio_test2_submit.sas";
+	filename x "&dir\StdDev_annualized_test2_submit.sas";
 %end;
 
 data _null_;
@@ -18,8 +18,8 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = SharpeRatio.annualized(returns, Rf= 0.02, scale= 252 geometric=TRUE)";
-put "returns = data.frame(returns)";
+put "returns = StdDev.annualized(returns, scale= 12)";
+put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
 
@@ -34,14 +34,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Sharpe_Ratio(those_prices, Rf= 0.02, scale= 252, annualized= TRUE, method= DISCRETE)
+%StdDev_annualized(prices,scale= 12)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from SharpeRatio;
+ select count(*) into :nv TRIMMED from annualized_stddev;
  %if ^&nv %then %do;
- 	drop table SharpeRatio;
+ 	drop table annualized_stddev;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,9 +50,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(SharpeRatio)) %then %do;
+%if ^%sysfunc(exist(annualized_stddev)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data SharpeRatio;
+data annualized_stddev;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -74,13 +74,13 @@ data returns_from_r;
 run;
 %end;
 
-data SharpeRatio;
-	set SharpeRatio end=last;
+data annualized_stddev;
+	set annualized_stddev end=last;
 	if last;
 run;
 
 proc compare base=returns_from_r 
-			 compare=SharpeRatio 
+			 compare=annualized_stddev(drop=date) 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY))
@@ -95,19 +95,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST Sharpe_Ratio_TEST2;
+	%put NOTE: NO ERROR IN TEST StdDev_annualized_test2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Sharpe_Ratio_TEST2;
+	%put ERROR: PROBLEM IN TEST StdDev_annualized_test2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices;
+	delete diff prices returns_from_r annualized_stddev;
 	quit;
 %end;
 

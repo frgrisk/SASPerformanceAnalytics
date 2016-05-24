@@ -17,7 +17,7 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
+put "returns = Return.calculate(prices, method='log')";
 put "returns = Return.cumulative(returns, geometric=FALSE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
@@ -33,7 +33,7 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
 %return_cumulative(prices,method=LOG)
 
 /*If tables have 0 records then delete them.*/

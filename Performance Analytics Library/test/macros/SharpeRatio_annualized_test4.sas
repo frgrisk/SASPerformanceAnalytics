@@ -1,13 +1,12 @@
-%macro return_accumulate_test5(keep=FALSE);
+%macro SharpeRatio_annualized_test4(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\return_accumulate_test5_submit.sas";
+filename x "&dir\sharpe_ratio_annualized_test4_submit.sas";
 %end;
-
 data _null_;
 file x;
 put "submit /r;";
@@ -17,42 +16,44 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = apply.yearly(returns,FUN=Return.cumulative,geometric=TRUE)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns= SharpeRatio.annualized(returns, Rf = .01/12, scale = 12, geometric = FALSE)";
 put "returns = data.frame(date=index(returns),returns)";
+put "names(returns) = c('date','IBM','GE','DOW','GOOGL','SPY')";
 put "endsubmit;";
 run;
 
 proc iml;
 %include x;
 
-call importdatasetfromr("returns_from_R","returns");
+call importDataSetFromR("Sharpe_from_R","returns");
 quit;
 
 data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_accumulate(prices,method=DISCRETE,toFreq=YEAR,updateInPlace=FALSE)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%SharpeRatio_annualized(prices, Rf= 0.01/12, scale= 12, method= LOG, outData= Sharpe_Ratio)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from agg_returns;
+ select count(*) into :nv TRIMMED from Sharpe_Ratio;
  %if ^&nv %then %do;
- 	drop table agg_returns;
+ 	drop table Sharpe_Ratio;
  %end;
  
- select count(*) into :nv TRIMMED from returns_from_r;
+ select count(*) into :nv TRIMMED from Sharpe_from_r;
  %if ^&nv %then %do;
- 	drop table returns_from_r;
+ 	drop table Sharpe_from_r;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(agg_returns)) %then %do;
+%if ^%sysfunc(exist(Sharpe_ratio)) %then %do;
+
 /*Error creating the data set, ensure compare fails*/
-data agg_returns;
+data Sharpe_Ratio;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -62,7 +63,7 @@ data agg_returns;
 run;
 %end;
 
-%if ^%sysfunc(exist(returns_from_r)) %then %do;
+%if ^%sysfunc(exist(Sharpe_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
 	date = 1;
@@ -74,12 +75,13 @@ data returns_from_r;
 run;
 %end;
 
-data agg_returns;
-	set agg_returns (firstobs=2);
+data Sharpe_Ratio;
+	set Sharpe_Ratio end=last;
+	if last;
 run;
 
-proc compare base=returns_from_r 
-			 compare=agg_returns(drop=date) 
+proc compare base=Sharpe_from_r 
+			 compare=Sharpe_Ratio 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY))
@@ -94,19 +96,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST RETURN_ACCUMULATE_TEST5;
+	%put NOTE: NO ERROR IN TEST SharpeRatio_annualized_test4;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST RETURN_ACCUMULATE_TEST5;
+	%put ERROR: PROBLEM IN TEST SharpeRatio_annualized_test4;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices agg_returns returns_from_r;
+	delete diff prices _meanRet _tempRP _tempStd Sharpe_from_R Sharpe_Ratio;
 	quit;
 %end;
 

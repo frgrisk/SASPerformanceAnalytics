@@ -1,11 +1,11 @@
-%macro return_accumulate_test3(keep=FALSE);
+%macro CAPM_alpha_beta_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\return_accumulate_test3_submit.sas";
+	filename x "&dir\CAPM_alpha_beta_test_submit.sas";
 %end;
 
 data _null_;
@@ -17,16 +17,18 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = apply.yearly(returns,FUN=Return.cumulative,geometric=TRUE)";
-put "returns = data.frame(date=index(returns),returns)";
+put "returns = Return.calculate(prices, method='discrete')";
+put "alpha = CAPM.alpha(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], Rf= 0.01/252)";
+put "beta = CAPM.beta(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], Rf= 0.01/252)";
+put "df <-rbind(alpha, beta)";
+put "names(df)= c('IBM','GE','DOW','GOOGL')";
 put "endsubmit;";
 run;
 
 proc iml;
 %include x;
 
-call importdatasetfromr("returns_from_R","returns");
+call importdatasetfromr("returns_from_R","df");
 quit;
 
 data prices;
@@ -34,14 +36,15 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_accumulate(prices,method=DISCRETE,toFreq=YEAR,updateInPlace=FALSE)
+%CAPM_alpha_beta(prices, Rf= 0.01/252, BM= SPY)
+
 
 /*If tables have 0 records then delete them.*/
-proc sql noprint;
+proc sql;
  %local nv;
- select count(*) into :nv TRIMMED from agg_returns;
+ select count(*) into :nv TRIMMED from alphas_and_betas;
  %if ^&nv %then %do;
- 	drop table agg_returns;
+ 	drop table alphas_and_betas;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,9 +53,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(agg_returns)) %then %do;
+%if ^%sysfunc(exist(alphas_and_betas)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data agg_returns;
+data alphas_and_betas;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -74,19 +77,20 @@ data returns_from_r;
 run;
 %end;
 
-data agg_returns;
-	set agg_returns (firstobs=2);
-run;
-
 proc compare base=returns_from_r 
-			 compare=agg_returns(drop=date) 
+			 compare=alphas_and_betas 
+			 method=absolute
 			 out=diff(where=(_type_ = "DIF"
-			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY))
-					))
-			 noprint;
+			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
+			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
+			 		))
+			noprint
+			 ;
 run;
 
+
+proc print data= diff;
+run; 
 data _null_;
 if 0 then set diff nobs=n;
 call symputx("n",n,"l");
@@ -94,19 +98,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST RETURN_ACCUMULATE_TEST3;
+	%put NOTE: NO ERROR IN TEST CAPM_alpha_beta_test;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST RETURN_ACCUMULATE_TEST3;
+	%put ERROR: PROBLEM IN TEST CAPM_alpha_beta_test;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices agg_returns returns_from_r;
+	delete diff prices returns_from_r alphas_and_betas;
 	quit;
 %end;
 

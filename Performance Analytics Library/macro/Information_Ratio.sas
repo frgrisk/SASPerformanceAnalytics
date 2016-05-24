@@ -8,6 +8,7 @@
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with information ratio.  Default="Info_Ratio".
 *
@@ -15,6 +16,7 @@
 * 7/13/2015 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/23/2016 - QY - Add VARDEF parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -22,6 +24,7 @@
 %macro Information_Ratio(returns,
 							BM=,
 							scale= 1,
+							VARDEF = DF, 
 							dateColumn= DATE,
 							outData= Info_Ratio);
 
@@ -62,9 +65,9 @@ quit;
 
 
 %ActivePremium(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&ap)
-%TrackingError(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&te,annualized=TRUE)
+%TrackingError(&returns,bm=&bm,scale=&scale,VARDEF= &VARDEF,dateColumn=&dateColumn,outData=&te,annualized=TRUE)
 
-data &outData(drop=date);
+data &outData(drop=&dateColumn);
 	format _stat_ $32.;
 	set &te &ap(in=&ap);
 	array vars[&nv] &ret;

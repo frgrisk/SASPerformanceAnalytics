@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = StdDev(returns)";
+put "returns = StdDev.annualized(returns, scale= 252)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -33,8 +33,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Standard_Deviation(prices, outData= annualized_stddev)
+%return_calculate(prices)
+%Standard_Deviation(prices,annualized= TRUE, scale= 252, outData= annualized_stddev)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -95,12 +95,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST Standard_Deviation_test1;
+	%put NOTE: NO ERROR IN TEST Standard_Deviation_test2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Standard_Deviation_test1;
+	%put ERROR: PROBLEM IN TEST Standard_Deviation_test2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
