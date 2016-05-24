@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = apply.monthly(returns,FUN=Return.cumulative,geometric=TRUE)";
+put "returns = apply.daily(returns,FUN=Return.cumulative,geometric=TRUE)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%return_accumulate(prices,method=DISCRETE,toFreq=MONTH,updateInPlace=FALSE)
+%return_accumulate(prices,method=DISCRETE,toFreq=DAY,updateInPlace=FALSE)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
