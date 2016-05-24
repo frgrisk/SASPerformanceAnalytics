@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = StdDev.annualized(returns, scale= 252)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = StdDev(returns)";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -33,8 +33,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices)
-%Standard_Deviation(prices,annualized= TRUE, scale= 252, outData= annualized_stddev)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%Standard_Deviation(prices, outData= annualized_stddev)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
