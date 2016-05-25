@@ -15,6 +15,7 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
+* digits - Optional. Specifies the amount of digits to display in output. Default= 4
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set of annualized returns statistics.  Default="annualized_table".
 * printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT

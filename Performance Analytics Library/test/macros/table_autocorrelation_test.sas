@@ -1,11 +1,11 @@
-%macro table_autocorrelation_test1(keep=FALSE);
+%macro table_autocorrelation_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_autocorrelation_test1_submit.sas";
+	filename x "&dir\table_autocorrelation_test_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = t(table.Autocorrelation(returns))";
+put "returns = t(table.Autocorrelation(returns, digits=6))";
 put "returns = data.frame(date=index(returns),returns)";
 put "endsubmit;";
 run;
@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_autocorrelation(prices, nlag= 6)
+%table_autocorrelation(prices, nlag= 6, digits= 6)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -94,12 +94,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_autocorrelation_TEST1;
+	%put NOTE: NO ERROR IN TEST table_autocorrelation_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_autocorrelation_TEST1;
+	%put ERROR: PROBLEM IN TEST table_autocorrelation_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

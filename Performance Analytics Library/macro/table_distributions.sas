@@ -7,7 +7,7 @@
 * returns - Required.  Data Set containing returns.
 * dateColumn - Optional. Specifies the date column in the data set.  Default= Date
 * outData - Optional. Output Data Set with distribution statistics. Default= distribution_table
-* digits- Optional. Specifies the amount of digits to display in output. Default= 4
+* digits - Optional. Specifies the amount of digits to display in output. Default= 4
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
