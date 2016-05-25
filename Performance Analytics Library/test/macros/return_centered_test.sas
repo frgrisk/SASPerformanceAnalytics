@@ -1,11 +1,11 @@
-%macro geo_mean_test(keep=FALSE);
+%macro return_centered_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\geo_mean_test_submit.sas";
+	filename x "&dir\return_centered_test_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = mean.geometric(returns)";
+put "returns = Return.centered(returns)";
 put "endsubmit;";
 run;
 
@@ -33,14 +33,18 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%geo_mean(prices)
+%return_centered(prices)
+
+data centered_returns;
+	set centered_returns(firstobs=2);
+run;
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from _geoMean;
+ select count(*) into :nv TRIMMED from centered_returns;
  %if ^&nv %then %do;
- 	drop table _geoMean;
+ 	drop table centered_returns;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +53,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(_geoMean)) %then %do;
+%if ^%sysfunc(exist(centered_returns)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data _geoMean;
+data centered_returns;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -74,7 +78,7 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=_geoMean(drop=date) 
+			 compare=centered_returns(drop=date) 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY))
@@ -89,19 +93,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST GEO_MEAN_TEST;
+	%put NOTE: NO ERROR IN TEST RETURN_MEAN_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST GEO_MEAN_TEST;
+	%put ERROR: PROBLEM IN TEST RETURN_MEAN_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices _geoMean returns_from_r;
+	delete diff prices centered_returns returns_from_r;
 	quit;
 %end;
 
