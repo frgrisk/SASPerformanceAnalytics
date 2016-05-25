@@ -43,7 +43,7 @@
 %let Jensen_Alpha= %ranname();
 %let divisor= %ranname();
 /*Find and count all variable names excluding date column, risk free and benchmark variables*/
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
 %put VARS IN Appraisal_Ratio: (&vars);
 %let nv= %sysfunc(countw(&vars));
 /*Assign random name to counter*/
@@ -71,14 +71,11 @@
 %end;
 
 %else %if %upcase(&option)= MODIFIED %then %do;
-%CAPM_alpha_beta(&returns, 
-						BM= &BM, 
-						Rf= &Rf, 
-						dateColumn= &dateColumn, 
-						outData= &divisor);
+%CAPM_alpha_beta(&returns, BM= &BM, Rf= &Rf, dateColumn= &dateColumn, outData= &divisor);
+
 data &divisor;
 set &divisor;
-if alphas_and_betas= 'alphas' then delete;
+if _stat_ = 'alphas' then delete;
 run;
 %end;
 
@@ -94,38 +91,38 @@ run;
 
 
 data &outData(drop= &i);
-set &divisor &Jensen_Alpha;
+	set &divisor &Jensen_Alpha;
 
-array vars[*] &vars;
-do &i= 1 to &nv;
+	array vars[*] &vars;
+	do &i= 1 to &nv;
 
-vars[&i]= vars[&i]/lag(vars[&i]);
-end;
+	vars[&i]= vars[&i]/lag(vars[&i]);
+	end;
 run;
 
-data &outData(rename= _name_= _STAT_);
-retain _name_;
+data &outData;
+retain _stat_;
 set &outData;
 
 %if %upcase(&option)= APPRAISAL %then %do;
-if stat= 'SpecRisk' then delete;
-drop stat;
+if _stat_= 'Specific Risk' then delete;
+drop _stat_;
 %end;
 %else %if %upcase(&option)= MODIFIED %then %do;
-if alphas_and_betas= 'betas' then delete;
-drop alphas_and_betas;
+if _stat_ = 'betas' then delete;
+drop _stat_;
 %end;
 %else %if %upcase(&option)= ALTERNATIVE %then %do;
-if stat= 'Sys_Risk' then delete;
-drop stat;
+if _stat_= 'Systematic Risk' then delete;
+drop _stat_;
 %end;
 run;
 
 data &outData;
-format _STAT_ $32.;
-set &outData;
-_STAT_= upcase("&option");
-drop Jensen_Alpha;
+	format _STAT_ $32.;
+	set &outData;
+	_STAT_= upcase("&option");
+	drop Jensen_Alpha;
 run;
 
 proc datasets lib= work nolist;

@@ -1,11 +1,11 @@
-%macro appraisal_ratio_test1(keep=FALSE);
+%macro appraisal_ratio_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\appraisal_ratio_test1_submit.sas";
+	filename x "&dir\appraisal_ratio_test2_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = AppraisalRatio(returns[, 1:4], returns[,5], Rf= 0.01/252, method= 'appraisal')";
+put "returns = AppraisalRatio(returns[, 1:4], returns[,5], Rf= 0.01/252, method= 'modified')";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Appraisal_Ratio(prices, BM= SPY, Rf= 0.01/252, scale= 252, option= APPRAISAL, method= DISCRETE) 
+%Appraisal_Ratio(prices, BM= SPY, Rf= 0.01/252, scale= 252, option= MODIFIED, method= DISCRETE) 
 
 
 /*If tables have 0 records then delete them.*/
@@ -93,12 +93,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST APPRAISAL_RATIO_TEST1;
+	%put NOTE: NO ERROR IN TEST APPRAISAL_RATIO_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST APPRAISAL_RATIO_TEST1;
+	%put ERROR: PROBLEM IN TEST APPRAISAL_RATIO_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

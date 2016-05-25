@@ -1,11 +1,11 @@
-%macro appraisal_ratio_test1(keep=FALSE);
+%macro appraisal_ratio_test3(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\appraisal_ratio_test1_submit.sas";
+	filename x "&dir\appraisal_ratio_test3_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = AppraisalRatio(returns[, 1:4], returns[,5], Rf= 0.01/252, method= 'appraisal')";
+put "returns = AppraisalRatio(returns[, 1:4], returns[,5], Rf= 0.01/252, method= 'alternative')";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Appraisal_Ratio(prices, BM= SPY, Rf= 0.01/252, scale= 252, option= APPRAISAL, method= DISCRETE) 
+%Appraisal_Ratio(prices, BM= SPY, Rf= 0.01/252, scale= 252, option= ALTERNATIVE, method= DISCRETE) 
 
 
 /*If tables have 0 records then delete them.*/
@@ -77,14 +77,14 @@ run;
 proc compare base=returns_from_r 
 			 compare=Appraisal_Ratio 
 			 method=absolute
-			 criterion= 0.0001
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
+			            and (abs(IBM) > 1e-3 or abs(GE) > 1e-3
+			              or abs(DOW) > 1e-3 or abs(GOOGL) > 1e-3)
 			 		))
 			noprint
 			 ;
 run;
+
  
 data _null_;
 if 0 then set diff nobs=n;
@@ -93,12 +93,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST APPRAISAL_RATIO_TEST1;
+	%put NOTE: NO ERROR IN TEST APPRAISAL_RATIO_TEST3;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST APPRAISAL_RATIO_TEST1;
+	%put ERROR: PROBLEM IN TEST APPRAISAL_RATIO_TEST3;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
