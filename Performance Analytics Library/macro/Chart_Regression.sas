@@ -56,7 +56,7 @@ PROC SGSCATTER data = &returns;
 plot &yvar*&xvar
 /
 %if &loess= TRUE %then %do;
-loess=(alpha= &alpha degree=&degree &cl lineattrs= (pattern= mediumdash))
+loess=(alpha= &alpha degree=&degree CLM lineattrs= (pattern= mediumdash))
 %end;
 
 %if &grid= TRUE %then %do;
