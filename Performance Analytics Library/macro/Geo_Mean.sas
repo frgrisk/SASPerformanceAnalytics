@@ -42,6 +42,7 @@ select exp(mean(log(1+col1)))-1 as GeoMean,
 	from &_geo
 	where col1^=.
 	group by _name_;
+quit;
 
 proc transpose data= &outData out= &outData;
 id _name_;
