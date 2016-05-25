@@ -26,24 +26,6 @@
 
 %local vars varStats;
 
-/*%let lib= %scan(&returns, 1, %str(.));*/
-/*%let ds= %scan(&returns, 2, %str(.));*/
-/*%if "&ds" = "" %then %do;*/
-/*	%let ds=&lib;*/
-/*	%let lib=work;*/
-/*%end;*/
-/*%put lib:&lib ds:&ds;*/
-/**/
-/*proc sql noprint;*/
-/*select name*/
-/*into :vars separated by ' '*/
-/*     from sashelp.vcolumn*/
-/*where libname = upcase("&lib")*/
-/* and memname = upcase("&ds")*/
-/* and type = "num"*/
-/* and upcase(name) ^= upcase("&dateColumn");*/
-/*quit;*/
-
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Table_correlation: (&vars);
 
@@ -63,16 +45,6 @@ data &outData;
 set &outData;
 drop NObs zval biasadj correst;
 run;
-
-/*proc sql noprint;*/
-/*select name*/
-/*	into :varStats separated by ' '*/
-/*	from sashelp.vcolumn*/
-/*		where libname = upcase("work")*/
-/* 		and memname = upcase("&outData")*/
-/* 		and type = "num"*/
-/*		and upcase(name) ^= upcase("&dateColumn");*/
-/*quit;*/
 
 %let varStats= %get_number_column_names(_table= &outData, _exclude= &dateColumn);
 %put VARSTATS IN Table_correlation: (&varStats);
