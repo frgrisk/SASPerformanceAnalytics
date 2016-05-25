@@ -20,6 +20,7 @@
 * 6/2/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
+* 5/25/2016 - QY - Edit format of output
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -40,41 +41,41 @@
 
 /*Create a series for taking STDev and Calculate Mean*/
 data &_tempRAnn(drop=i) &outData(drop=i);
-set &returns end= last nobs=nobs;
+	set &returns end= last nobs=nobs;
 
-array ret[&nv] &ret;
-array prod[&nv] _temporary_;
+	array ret[&nv] &ret;
+	array prod[&nv] _temporary_;
 
-if _n_ = 1 then do;
+	if _n_ = 1 then do;
+		do i=1 to &nv;
+			/*DISCRETE*/
+		%if %upcase(&method) = DISCRETE %then %do;
+				prod[i] = 1;
+		%end;
+
+				/*LOG*/
+		%else %if %upcase(&method) = LOG %then %do;
+				prod[i] = 0;
+		%end;
+		end;
+		delete;
+	end;
+
 	do i=1 to &nv;
 		/*DISCRETE*/
-%if %upcase(&method) = DISCRETE %then %do;
-		prod[i] = 1;
-%end;
-
+	%if %upcase(&method) = DISCRETE %then %do;
+		prod[i] = prod[i] * (1+ret[i])**(&scale);
+		
+	%end;
 		/*LOG*/
-%else %if %upcase(&method) = LOG %then %do;
-		prod[i] = 0;
-%end;
+	%else %if %upcase(&method) = LOG %then %do;
+		prod[i] = prod[i] + ret[i]*sqrt(&scale);
+		ret[i] = ret[i] * sqrt(&scale);
+	%end;
 	end;
-	delete;
-end;
+	output &_tempRAnn;
 
-do i=1 to &nv;
-	/*DISCRETE*/
-%if %upcase(&method) = DISCRETE %then %do;
-	prod[i] = prod[i] * (1+ret[i])**(&scale);
-	
-%end;
-	/*LOG*/
-%else %if %upcase(&method) = LOG %then %do;
-	prod[i] = prod[i] + ret[i]*sqrt(&scale);
-	ret[i] = ret[i] * sqrt(&scale);
-%end;
-end;
-output &_tempRAnn;
-
-if last then do;
+	if last then do;
 	do i=1 to &nv;
 	%if %upcase(&method) = DISCRETE %then %do;
 
@@ -89,9 +90,15 @@ if last then do;
 	
 	end;
 	output &outData;
-end;
+	end;
 run;
 quit;
+
+data &outData;
+	format _stat_ $32.;
+	set &outData(drop=&dateColumn);
+	_stat_="Ann_Return";
+run;
 
 proc datasets lib= work nolist;
 delete &_tempRAnn;

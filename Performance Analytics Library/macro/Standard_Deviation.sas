@@ -21,6 +21,7 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 5/25/2016 - QY - Edit format of output
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -63,6 +64,13 @@ do &i= 1 to dim(stdDev);
 	%end;
 end;
 run;
+
+data &outData;
+	format _stat_ $32.;
+	set &outData(drop=&dateColumn);
+	_stat_="Std_Dev";
+run;
+
 %mend;
 
 	
