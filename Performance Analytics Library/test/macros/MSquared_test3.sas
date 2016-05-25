@@ -1,11 +1,11 @@
-%macro MSquared_test1(keep=FALSE);
+%macro MSquared_test3(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\MSquared_test1_submit.sas";
+	filename x "&dir\MSquared_test3_submit.sas";
 %end;
 
 data _null_;
@@ -17,7 +17,7 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
+put "returns = na.omit(Return.calculate(prices, method='log'))";
 put "tM2 = function(Ra,Rb,Rf=0,scale=NA,geometric=TRUE){";
 put "  SR = SharpeRatio.annualized(Ra,Rf=Rf,scale=scale,geometric=geometric)";
 put "  sb = StdDev.annualized(Rb,scale=scale)";
@@ -31,7 +31,7 @@ put "  }";
 put "  result = SR[1,]*sb[1,1] + Rf";
 put "  return(result)";
 put "}";
-put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/252, scale=252, geometric=TRUE)))";
+put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/4, scale=4, geometric=FALSE)))";
 put "endsubmit;";
 run;
 
@@ -45,8 +45,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, method = DISCRETE, outData= MSquared)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%MSquared(prices, BM= SPY, Rf= 0.01/4, scale= 4, method = LOG, outData= MSquared)
 
 
 /*If tables have 0 records then delete them.*/
@@ -106,12 +106,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST MSQUARED_TEST1;
+	%put NOTE: NO ERROR IN TEST MSQUARED_TEST3;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST MSQUARED_TEST1;
+	%put ERROR: PROBLEM IN TEST MSQUARED_TEST3;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

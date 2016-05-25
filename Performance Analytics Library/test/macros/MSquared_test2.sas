@@ -1,11 +1,11 @@
-%macro MSquared_test1(keep=FALSE);
+%macro MSquared_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\MSquared_test1_submit.sas";
+	filename x "&dir\MSquared_test2_submit.sas";
 %end;
 
 data _null_;
@@ -31,7 +31,7 @@ put "  }";
 put "  result = SR[1,]*sb[1,1] + Rf";
 put "  return(result)";
 put "}";
-put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/252, scale=252, geometric=TRUE)))";
+put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01, scale=1, geometric=TRUE)))";
 put "endsubmit;";
 run;
 
@@ -46,7 +46,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, method = DISCRETE, outData= MSquared)
+%MSquared(prices, BM= SPY, Rf= 0.01, scale= 1, method = DISCRETE, outData= MSquared)
 
 
 /*If tables have 0 records then delete them.*/
@@ -106,12 +106,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST MSQUARED_TEST1;
+	%put NOTE: NO ERROR IN TEST MSQUARED_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST MSQUARED_TEST1;
+	%put ERROR: PROBLEM IN TEST MSQUARED_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
