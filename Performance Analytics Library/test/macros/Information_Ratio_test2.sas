@@ -1,11 +1,11 @@
-%macro table_SpecificRisk_test1(keep=FALSE);
+%macro Information_Ratio_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_SpecificRisk_test1_submit.sas";
+	filename x "&dir\Information_Ratio_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,9 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices))";
-put "returns = table.SpecificRisk(returns[, 1:4], returns[, 5], Rf= 0.01/252, digits= 8)";
+put "returns = na.omit(Return.calculate(prices, method='discrete'))";
+put "returns = InformationRatio(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], scale = 1)";
+put "returns = data.frame(returns)";
 put "endsubmit;";
 run;
 
@@ -33,14 +34,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_SpecificRisk(prices, BM= SPY, Rf= 0.01/252, scale= 252)
+%Information_Ratio(prices, BM= SPY);
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from table_SpecificRisk;
+ select count(*) into :nv TRIMMED from Info_Ratio;
  %if ^&nv %then %do;
- 	drop table table_SpecificRisk;
+ 	drop table Info_Ratio;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +50,10 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(table_SpecificRisk)) %then %do;
+%if ^%sysfunc(exist(Info_Ratio)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data table_SpecificRisk;
+data Info_Ratio;
+	date = -1;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -63,6 +65,7 @@ run;
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
+	date = 1;
 	IBM = 999;
 	GE = IBM;
 	DOW = IBM;
@@ -72,12 +75,10 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare= table_SpecificRisk 
-			 method= absolute
-			 criterion= 0.0001
-			 outnoequal
+			 compare=Info_Ratio 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4)
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY))
 					))
 			 noprint;
 run;
@@ -89,22 +90,20 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_SpecificRisk_TEST1;
+	%put NOTE: NO ERROR IN TEST Information_Ratio_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_SpecificRisk_TEST1;
+	%put ERROR: PROBLEM IN TEST Information_Ratio_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r table_SpecificRisk;
+	delete diff prices Info_Ratio returns_from_r;
 	quit;
 %end;
-
-filename x clear;
 
 %mend;
