@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = CAPM.epsilon(returns[, 1:4, drop= FALSE], returns[, 5, drop= FALSE], Rf= 0)";
+put "returns = na.omit(Return.calculate(prices, method='discrete'))";
+put "returns = CAPM.epsilon(returns[, 1:4, drop= FALSE], returns[, 5, drop= FALSE], Rf= 0.01/252)";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%CAPM_epsilon(prices, BM= SPY, Rf= 0, scale= 252)
+%CAPM_epsilon(prices, BM= SPY, Rf= 0.01/252, scale= 252)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
