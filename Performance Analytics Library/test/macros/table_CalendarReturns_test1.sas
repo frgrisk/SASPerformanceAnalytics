@@ -17,7 +17,7 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices))";
+put "returns = na.omit(Return.calculate(prices, method='discrete'))";
 put "m = apply.monthly(returns,FUN=function(x) {";
 put " y = exp(colSums(log(x + 1)))-1";
 put "} )";
@@ -127,11 +127,11 @@ run;
 	%let notes=Differences detected in outputs.;
 %end;
 
-%if &keep=FALSE %then %do;
-	proc datasets lib=work nolist;
-	delete prices diff returns_from_r Calendar_Returns;
-	quit;
-%end;
+/*%if &keep=FALSE %then %do;*/
+/*	proc datasets lib=work nolist;*/
+/*	delete prices diff returns_from_r Calendar_Returns;*/
+/*	quit;*/
+/*%end;*/
 
 filename x clear;
 
