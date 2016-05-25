@@ -1,11 +1,11 @@
-%macro table_CAPM_test1(keep=FALSE);
+%macro table_CAPM_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_CAPM_test1_submit.sas";
+	filename x "&dir\table_CAPM_test2_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = table.CAPM(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], scale = 252, Rf = 0.01/252, digits = 4)";
+put "returns = table.CAPM(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], scale = 1, Rf = 0.01, digits = 6)";
 put "endsubmit;";
 run;
 
@@ -38,7 +38,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_CAPM(prices, BM=SPY, Rf= 0.01/252, scale= 252);
+%table_CAPM(prices, BM=SPY, Rf= 0.01, scale= 1, digits=6);
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -78,6 +78,7 @@ data returns_from_r;
 run;
 %end;
 
+
 proc compare base=returns_from_r 
 			 compare= capm 
 			 method= absolute
@@ -95,12 +96,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_CAPM_TEST1;
+	%put NOTE: NO ERROR IN TEST table_CAPM_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_CAPM_TEST1;
+	%put ERROR: PROBLEM IN TEST table_CAPM_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
