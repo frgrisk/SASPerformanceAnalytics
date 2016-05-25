@@ -78,16 +78,6 @@ data returns_from_r;
 run;
 %end;
 
-
-/*proc compare base=returns_from_r */
-/*			 compare=CAPM */
-/*			 out=diff(where=(_type_ = "DIF"*/
-/*			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) */
-/*			              or fuzz(GOOGL) or fuzz(SPY))*/
-/*					))*/
-/*			 noprint;*/
-/*run;*/
-
 proc compare base=returns_from_r 
 			 compare= capm 
 			 method= absolute

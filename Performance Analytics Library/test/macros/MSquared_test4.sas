@@ -1,11 +1,11 @@
-%macro CAPM_epsilon_test1(keep=FALSE);
+%macro MSquared_test4(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\CAPM_epsilon_test1_submit.sas";
+	filename x "&dir\MSquared_test4_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,21 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = CAPM.epsilon(returns[, 1:4, drop= FALSE], returns[, 5, drop= FALSE], Rf= 0.01/252)";
+put "returns = na.omit(Return.calculate(prices, method='log'))";
+put "tM2 = function(Ra,Rb,Rf=0,scale=NA,geometric=TRUE){";
+put "  SR = SharpeRatio.annualized(Ra,Rf=Rf,scale=scale,geometric=geometric)";
+put "  sb = StdDev.annualized(Rb,scale=scale)";
+put "  if (geometric) {";
+put "    # simple returns";
+put "    Rf = (1+Rf)^scale - 1";
+put "  } else {";
+put "    # compound returns";
+put "    Rf = Rf * scale";
+put "  }";
+put "  result = SR[1,]*sb[1,1] + Rf";
+put "  return(result)";
+put "}";
+put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/12, scale=12, geometric=FALSE)))";
 put "endsubmit;";
 run;
 
@@ -32,15 +45,16 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%CAPM_epsilon(prices, BM= SPY, Rf= 0.01/252, scale= 252)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%MSquared(prices, BM= SPY, Rf= 0.01/12, scale= 12, method = LOG, outData= MSquared)
+
 
 /*If tables have 0 records then delete them.*/
-proc sql noprint;
+proc sql;
  %local nv;
- select count(*) into :nv TRIMMED from epsilon;
+ select count(*) into :nv TRIMMED from MSquared;
  %if ^&nv %then %do;
- 	drop table epsilon;
+ 	drop table MSquared;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +63,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(epsilon)) %then %do;
+%if ^%sysfunc(exist(MSquared)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data epsilon;
+data MSquared;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -73,19 +87,18 @@ data returns_from_r;
 run;
 %end;
 
-data epsilon;
-	set epsilon;
-run;
-
 proc compare base=returns_from_r 
-			 compare= epsilon 
-			 method= absolute
+			 compare=MSquared 
+			 method=absolute
+			 criterion= 0.0001
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4)
-					))
-			 noprint;
+			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
+			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
+			 		))
+			noprint
+			 ;
 run;
-
+ 
 data _null_;
 if 0 then set diff nobs=n;
 call symputx("n",n,"l");
@@ -93,22 +106,20 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST CAPM_epsilon_TEST1;
+	%put NOTE: NO ERROR IN TEST MSQUARED_TEST4;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST CAPM_epsilon_TEST1;
+	%put ERROR: PROBLEM IN TEST MSQUARED_TEST4;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices epsilon returns_from_r;
+	delete diff prices returns_from_r MSquared;
 	quit;
 %end;
-
-filename x clear;
 
 %mend;

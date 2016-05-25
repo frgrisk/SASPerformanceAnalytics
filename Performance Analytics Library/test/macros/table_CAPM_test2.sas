@@ -1,11 +1,11 @@
-%macro CAPM_epsilon_test1(keep=FALSE);
+%macro table_CAPM_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\CAPM_epsilon_test1_submit.sas";
+	filename x "&dir\table_CAPM_test2_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = CAPM.epsilon(returns[, 1:4, drop= FALSE], returns[, 5, drop= FALSE], Rf= 0.01/252)";
+put "returns = table.CAPM(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], scale = 1, Rf = 0.01, digits = 6)";
 put "endsubmit;";
 run;
 
@@ -28,19 +28,24 @@ proc iml;
 call importdatasetfromr("returns_from_R","returns");
 quit;
 
+data returns_from_r;
+set returns_from_r;
+rename ibm_to_spy=ibm ge_to_spy=ge dow_to_spy=dow googl_to_spy=googl;
+run;
+
 data prices;
 set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%CAPM_epsilon(prices, BM= SPY, Rf= 0.01/252, scale= 252)
+%table_CAPM(prices, BM=SPY, Rf= 0.01, scale= 1, digits=6);
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from epsilon;
+ select count(*) into :nv TRIMMED from CAPM;
  %if ^&nv %then %do;
- 	drop table epsilon;
+ 	drop table CAPM;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +54,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(epsilon)) %then %do;
+%if ^%sysfunc(exist(CAPM)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data epsilon;
+data CAPM;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -73,18 +78,16 @@ data returns_from_r;
 run;
 %end;
 
-data epsilon;
-	set epsilon;
-run;
 
 proc compare base=returns_from_r 
-			 compare= epsilon 
+			 compare= capm 
 			 method= absolute
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4)
+			            and (abs(ibm)> 1e-4 or abs(ge)> 1e-4 or abs(dow)> 1e-4 or abs(googl)> 1e-4)
 					))
 			 noprint;
 run;
+
 
 data _null_;
 if 0 then set diff nobs=n;
@@ -93,22 +96,20 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST CAPM_epsilon_TEST1;
+	%put NOTE: NO ERROR IN TEST table_CAPM_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST CAPM_epsilon_TEST1;
+	%put ERROR: PROBLEM IN TEST table_CAPM_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices epsilon returns_from_r;
+	delete diff prices capm returns_from_r;
 	quit;
 %end;
-
-filename x clear;
 
 %mend;

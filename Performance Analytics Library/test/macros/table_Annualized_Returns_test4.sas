@@ -1,11 +1,11 @@
-%macro table_autocorrelation_test1(keep=FALSE);
+%macro table_Annualized_Returns_test4(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_autocorrelation_test1_submit.sas";
+	filename x "&dir\table_Annualized_Returns_test4_submit.sas";
 %end;
 
 data _null_;
@@ -17,9 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = t(table.Autocorrelation(returns))";
-put "returns = data.frame(date=index(returns),returns)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = table.AnnualizedReturns(returns, Rf= 0.01/12, scale= 12, geometric=FALSE, digits=6)";
 put "endsubmit;";
 run;
 
@@ -33,15 +32,15 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_autocorrelation(prices, nlag= 6)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%table_Annualized_Returns(prices, Rf= 0.01/12, scale= 12, method=LOG, digits=6)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from AutoCorrelations;
+ select count(*) into :nv TRIMMED from annualized_Table;
  %if ^&nv %then %do;
- 	drop table AutoCorrelations;
+ 	drop table annualized_Table;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,41 +49,41 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(AutoCorrelations)) %then %do;
+%if ^%sysfunc(exist(annualized_Table)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data AutoCorrelations;
-	lag1 = -999;
-	lag2 = lag1;
-	lag3 = lag1;
-	lag4 = lag1;
-	lag5 = lag1;
-	lag6 = lag1;
-	p_value= lag1;
+data annualized_Table;
+	date = -1;
+	IBM = -999;
+	GE = IBM;
+	DOW = IBM;
+	GOOGL = IBM;
+	SPY = IBM;
 run;
 %end;
 
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
-	rho1 = 999;
-	rho2 = rho1;
-	rho3 = rho1;
-	rho4 = rho1;
-	rho5 = rho1;
-	rho6 = rho1;
-	Q_6__p_value= rho1;
+	date = 1;
+	IBM = 999;
+	GE = IBM;
+	DOW = IBM;
+	GOOGL = IBM;
+	SPY = IBM;
 run;
-%end; 
+%end;
 
-proc compare base= AutoCorrelations 
-			 compare= returns_from_r
+data annualized_Table;
+	set annualized_Table;
+run;
+
+proc compare base=returns_from_r 
+			 compare= annualized_Table 
 			 method= absolute
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(lag1)> 1e-4 or abs(lag2)> 1e-4 or abs(lag3)> 1e-4 or abs(lag4)> 1e-4 or abs(lag5)> 1e-4 or abs(lag6)> 1e-4 or abs(p_value)> 1e-4)
+			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4 or abs(SPY)> 1e-4)
 					))
 			 noprint;
-			 var lag1 lag2 lag3 lag4 lag5 lag6 P_Value;
-			 with rho1 rho2 rho3 rho4 rho5 rho6 Q_6__p_value;
 run;
 
 data _null_;
@@ -94,19 +93,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_autocorrelation_TEST1;
+	%put NOTE: NO ERROR IN TEST table_Annualized_Returns_TEST4;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_autocorrelation_TEST1;
+	%put ERROR: PROBLEM IN TEST table_Annualized_Returns_TEST4;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices returns_from_r AutoCorrelations;
+	delete diff prices annualized_table returns_from_r;
 	quit;
 %end;
 

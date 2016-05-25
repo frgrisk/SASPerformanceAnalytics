@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = FamaBeta(returns[, 1:4], returns[,5], Rf= 0.01/252)";
+put "returns = na.omit(Return.calculate(prices, method='discrete'))";
+put "returns = FamaBeta(returns[, 1:4], returns[,5])";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%fama_beta(prices, BM= SPY, dateColumn= dateColumn, outData= fama_beta)
+%fama_beta(prices, BM= SPY)
 
 
 /*If tables have 0 records then delete them.*/
