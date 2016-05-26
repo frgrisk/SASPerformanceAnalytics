@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------
 * NAME: table_CAPM.sas
 *
-* PURPOSE: 
+* PURPOSE: Create a table containing a series of measures of asset excess returns against a benchmark.
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns of the portfolio.
-* BM - 
-* Rf - 
-* scale - 
-* digits -
+* BM - Required. Specifies the variable name of benchmark asset or index in the returns data set.
+* Rf - Optional. The value or variable representing the risk free rate of return. [Default=0]
+* scale - Optional. Number of periods in a year. {daily=252, monthly=12, quarterly=4, yearly=1} [Default=1]
+* digits - Optional. Specifies number of digits displayed in the output. 
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Specifies name of output Data Set of correlations.  Default="Correlations".
