@@ -1,11 +1,11 @@
-%macro table_HigherMoments_test1(keep=FALSE);
+%macro table_HigherMoments_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_HigherMoments_test1_submit.sas";
+	filename x "&dir\table_HigherMoments_test_submit.sas";
 %end;
 
 data _null_;
@@ -92,12 +92,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_HigherMoments_TEST1;
+	%put NOTE: NO ERROR IN TEST table_HigherMoments_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_HigherMoments_TEST1;
+	%put ERROR: PROBLEM IN TEST table_HigherMoments_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
