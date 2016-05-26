@@ -1,11 +1,11 @@
-%macro table_correlation_test1(keep=FALSE);
+%macro Information_Ratio_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_correlation_test1_submit.sas";
+	filename x "&dir\Information_Ratio_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,9 +17,9 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = table.Correlation(returns[, 1:4, drop= FALSE], returns[, 5, drop= FALSE])";
-put "returns = data.frame(date=index(returns),returns)";
+put "returns = na.omit(Return.calculate(prices, method='discrete'))";
+put "returns = InformationRatio(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], scale = 1)";
+put "returns = data.frame(returns)";
 put "endsubmit;";
 run;
 
@@ -34,14 +34,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_correlation(prices,returnsCompare= SPY)
+%Information_Ratio(prices, BM= SPY);
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from Correlations;
+ select count(*) into :nv TRIMMED from Info_Ratio;
  %if ^&nv %then %do;
- 	drop table Correlations;
+ 	drop table Info_Ratio;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,40 +50,35 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(Correlations)) %then %do;
+%if ^%sysfunc(exist(Info_Ratio)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data Correlations;
-	Correlation = -999;
-	pvalue = Correlation;
-	Lower_CI = Correlation;
-	Upper_CI = Correlation;
+data Info_Ratio;
+	date = -1;
+	IBM = -999;
+	GE = IBM;
+	DOW = IBM;
+	GOOGL = IBM;
+	SPY = IBM;
 run;
 %end;
 
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
-	Correlation = 999;
-	p_value = Correlation;
-	Lower_CI = Correlation;
-	Upper_CI = Correlation;
+	date = 1;
+	IBM = 999;
+	GE = IBM;
+	DOW = IBM;
+	GOOGL = IBM;
+	SPY = IBM;
 run;
 %end;
 
-data Correlations;
-	set Correlations;
-run;
-
-data Correlations;
-set Correlations;
-if Upper_CI= 1 then delete;
-run; 
-
 proc compare base=returns_from_r 
-			 compare= Correlations 
-			 method= absolute
+			 compare=Info_Ratio 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(Correlation)> 1e-4 or abs(p_value)> 1e-4 or abs(Lower_CI)> 1e-4 or abs(Upper_CI)> 1e-4)
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY))
 					))
 			 noprint;
 run;
@@ -95,22 +90,20 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_correlation_TEST1;
+	%put NOTE: NO ERROR IN TEST Information_Ratio_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_correlation_TEST1;
+	%put ERROR: PROBLEM IN TEST Information_Ratio_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices returns_from_r correlations;
+	delete diff prices Info_Ratio returns_from_r;
 	quit;
 %end;
-
-filename x clear;
 
 %mend;

@@ -9,6 +9,7 @@
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
+* digits - Optional. Specifies the amount of digits to display in output. Default= 4
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * outData - Optional. Output Data Set with information ratio and tracking error.  Default="table_InformationRatio".
@@ -19,6 +20,7 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 5/25/2016 - QY - Add digits parameter
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -26,16 +28,22 @@
 %macro table_InformationRatio(returns,
 								BM=,
 								scale= 1,
+								digits = 4,
 								VARDEF = DF, 
 								dateColumn= DATE,
 								outData= table_InformationRatio, 
 								printTable= NOPRINT);
 
-%local tea teb ir;
+%local tea teb ir vars;
 
 %let tea=%ranname();
 %let teb=%ranname();
 %let ir=%ranname();
+
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &BM); 
+%put VARS IN table_InformationRatio: (&vars);
+
+
 
 %TrackingError(&returns,
 						BM= &BM,
@@ -65,12 +73,15 @@ _stat_= 'Annualized_TE';
 run;
 
 data &teb;
+
 format _stat_ $32.;
 set &teb;
 _stat_= 'Tracking_Error';
 run;
 
 data &outData;
+retain _stat_;
+format &vars %eval(&digits + 4).&digits;
 set &teb &tea &ir ;
 run;
 

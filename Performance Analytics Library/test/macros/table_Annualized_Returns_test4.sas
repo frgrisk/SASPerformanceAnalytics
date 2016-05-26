@@ -1,11 +1,11 @@
-%macro table_SpecificRisk_test1(keep=FALSE);
+%macro table_Annualized_Returns_test4(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_SpecificRisk_test1_submit.sas";
+	filename x "&dir\table_Annualized_Returns_test4_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices))";
-put "returns = table.SpecificRisk(returns[, 1:4], returns[, 5], Rf= 0.01/252, digits= 8)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = table.AnnualizedReturns(returns, Rf= 0.01/12, scale= 12, geometric=FALSE, digits=6)";
 put "endsubmit;";
 run;
 
@@ -32,15 +32,15 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_SpecificRisk(prices, BM= SPY, Rf= 0.01/252, scale= 252)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%table_Annualized_Returns(prices, Rf= 0.01/12, scale= 12, method=LOG, digits=6)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from table_SpecificRisk;
+ select count(*) into :nv TRIMMED from annualized_Table;
  %if ^&nv %then %do;
- 	drop table table_SpecificRisk;
+ 	drop table annualized_Table;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +49,10 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(table_SpecificRisk)) %then %do;
+%if ^%sysfunc(exist(annualized_Table)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data table_SpecificRisk;
+data annualized_Table;
+	date = -1;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -63,6 +64,7 @@ run;
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
+	date = 1;
 	IBM = 999;
 	GE = IBM;
 	DOW = IBM;
@@ -71,13 +73,15 @@ data returns_from_r;
 run;
 %end;
 
+data annualized_Table;
+	set annualized_Table;
+run;
+
 proc compare base=returns_from_r 
-			 compare= table_SpecificRisk 
+			 compare= annualized_Table 
 			 method= absolute
-			 criterion= 0.0001
-			 outnoequal
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4)
+			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4 or abs(SPY)> 1e-4)
 					))
 			 noprint;
 run;
@@ -89,19 +93,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_SpecificRisk_TEST1;
+	%put NOTE: NO ERROR IN TEST table_Annualized_Returns_TEST4;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_SpecificRisk_TEST1;
+	%put ERROR: PROBLEM IN TEST table_Annualized_Returns_TEST4;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r table_SpecificRisk;
+	delete diff prices annualized_table returns_from_r;
 	quit;
 %end;
 

@@ -108,10 +108,10 @@ run;
 	%let notes=Differences detected in outputs.;
 %end;
 
-%if &keep=FALSE %then %do;
-	proc datasets lib=work nolist;
-	delete diff prices returns_from_r SharpeRatio;
-	quit;
-%end;
+/*%if &keep=FALSE %then %do;*/
+/*	proc datasets lib=work nolist;*/
+/*	delete diff prices returns_from_r SharpeRatio;*/
+/*	quit;*/
+/*%end;*/
 
 %mend;

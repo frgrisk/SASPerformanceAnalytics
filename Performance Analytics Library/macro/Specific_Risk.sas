@@ -47,5 +47,4 @@ data &outData;
 	set &outData(where=(_STAT_ = "Specific Risk"));
 run;
 
-
 %mend;

@@ -1,11 +1,11 @@
-%macro CAPM_epsilon_test1(keep=FALSE);
+%macro table_SpecificRisk_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\CAPM_epsilon_test1_submit.sas";
+	filename x "&dir\table_SpecificRisk_test_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = CAPM.epsilon(returns[, 1:4, drop= FALSE], returns[, 5, drop= FALSE], Rf= 0.01/252)";
+put "returns = na.omit(Return.calculate(prices))";
+put "returns = table.SpecificRisk(returns[, 1:4], returns[, 5], Rf= 0.01/252, digits= 8)";
 put "endsubmit;";
 run;
 
@@ -33,14 +33,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%CAPM_epsilon(prices, BM= SPY, Rf= 0.01/252, scale= 252)
+%table_SpecificRisk(prices, BM= SPY, Rf= 0.01/252, scale= 252)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from epsilon;
+ select count(*) into :nv TRIMMED from table_SpecificRisk;
  %if ^&nv %then %do;
- 	drop table epsilon;
+ 	drop table table_SpecificRisk;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,10 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(epsilon)) %then %do;
+%if ^%sysfunc(exist(table_SpecificRisk)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data epsilon;
-	date = -1;
+data table_SpecificRisk;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -64,7 +63,6 @@ run;
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
-	date = 1;
 	IBM = 999;
 	GE = IBM;
 	DOW = IBM;
@@ -73,13 +71,11 @@ data returns_from_r;
 run;
 %end;
 
-data epsilon;
-	set epsilon;
-run;
-
 proc compare base=returns_from_r 
-			 compare= epsilon 
+			 compare= table_SpecificRisk 
 			 method= absolute
+			 criterion= 0.0001
+			 outnoequal
 			 out=diff(where=(_type_ = "DIF"
 			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4)
 					))
@@ -93,19 +89,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST CAPM_epsilon_TEST1;
+	%put NOTE: NO ERROR IN TEST table_SpecificRisk_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST CAPM_epsilon_TEST1;
+	%put ERROR: PROBLEM IN TEST table_SpecificRisk_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices epsilon returns_from_r;
+	delete prices diff returns_from_r table_SpecificRisk;
 	quit;
 %end;
 

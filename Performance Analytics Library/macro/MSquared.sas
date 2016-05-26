@@ -20,6 +20,7 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 5/25/2016 - QY - Replace calculation of annualized Rf by %scalar_annualized
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -59,7 +60,7 @@ array vars[*] &vars;
 _STAT_ = "MSquared";
 
 do &i=1 to dim(vars);
-	vars[&i] = vars[&i]*&sb + (1+&rf)**&scale - 1;
+	vars[&i] = vars[&i]*&sb + %scalar_annualized(&rf,scale=&scale,method=&method,type=VALUE);
 end;
 run;
 

@@ -18,18 +18,20 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "tM2 = function(Ra,Rb,Rf=0){";
-put " "  ;
-put "  Period = Frequency(Ra)";
-put "  SR = SharpeRatio.annualized(Ra,Rf=Rf)";
-put "  sb = StdDev.annualized(Rb)";
-put "  ";
-put "  result = SR[1,]*sb[1,1] + (1+Rf)^252 - 1";
-put "  ";
-put "  ";
+put "tM2 = function(Ra,Rb,Rf=0,scale=NA,geometric=TRUE){";
+put "  SR = SharpeRatio.annualized(Ra,Rf=Rf,scale=scale,geometric=geometric)";
+put "  sb = StdDev.annualized(Rb,scale=scale)";
+put "  if (geometric) {";
+put "    # simple returns";
+put "    Rf = (1+Rf)^scale - 1";
+put "  } else {";
+put "    # compound returns";
+put "    Rf = Rf * scale";
+put "  }";
+put "  result = SR[1,]*sb[1,1] + Rf";
 put "  return(result)";
 put "}";
-put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/252)))";
+put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/252, scale=252, geometric=TRUE)))";
 put "endsubmit;";
 run;
 
@@ -44,7 +46,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, outData= MSquared)
+%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, method = DISCRETE, outData= MSquared)
 
 
 /*If tables have 0 records then delete them.*/
@@ -104,12 +106,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST MSquared_test1;
+	%put NOTE: NO ERROR IN TEST MSQUARED_TEST1;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST MSquared_test1;
+	%put ERROR: PROBLEM IN TEST MSQUARED_TEST1;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

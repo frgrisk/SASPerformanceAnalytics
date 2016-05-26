@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = table.InformationRatio(returns[, 1:4], returns[, 5], digits= 10)";
+put "returns = table.InformationRatio(returns[, 1:4], returns[, 5], digits= 8)";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_InformationRatio(prices, BM= SPY, scale= 252)
+%table_InformationRatio(prices, BM= SPY, scale= 252, digits=8)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -98,11 +98,11 @@ run;
 	%let notes=Differences detected in outputs.;
 %end;
 
-%if &keep=FALSE %then %do;
-	proc datasets lib=work nolist;
-	delete diff prices returns_from_r table_InformationRatio ;
-	quit;
-%end;
+/*%if &keep=FALSE %then %do;*/
+/*	proc datasets lib=work nolist;*/
+/*	delete diff prices returns_from_r table_InformationRatio ;*/
+/*	quit;*/
+/*%end;*/
 
 filename x clear;
 

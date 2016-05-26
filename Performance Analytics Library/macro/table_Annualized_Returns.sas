@@ -15,6 +15,7 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
+* digits - Optional. Specifies the amount of digits to display in output. Default= 4
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set of annualized returns statistics.  Default="annualized_table".
 * printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT
@@ -24,6 +25,8 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 5/25/2015 - QY - Add parameter digits 
+*                  Edit format of output
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -32,15 +35,19 @@
 								scale= 1, 
 								method= DISCRETE, 
 								VARDEF = DF,
+								digits = 4,
 								dateColumn= DATE, 
 								outData= annualized_table, 
 								printTable= NOPRINT);
-%local Sharpe_Ratio Ann_Return Std_Dev _tempTable charTable;
+%local Sharpe_Ratio Ann_Return Std_Dev _tempTable charTable vars;
 %let Sharpe_Ratio= %ranname();
 %let Ann_Return= %ranname();
 %let Std_Dev= %ranname();
 %let _tempTable= %ranname();
 %let charTable= %ranname();
+
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
+%put VARS IN table_Annualized_Return: (&vars);
 
 %SharpeRatio_annualized(&returns, 
 					  Rf= &Rf, 
@@ -66,14 +73,10 @@
 
 
 data &outData (drop= &dateColumn n);
-		retain _STAT_;
-		format _STAT_ $12.;
+	format _stat_ $32. &vars %eval(&digits + 4).&digits;
 	set &Ann_Return &Std_Dev &Sharpe_Ratio;
-	n=_n_;
-	if n=1 then _STAT_= 'Ann_Return';
-	if n=2 then _STAT_= 'Std_Dev';
-	if n=3 then _STAT_= 'Sharpe_Ratio';
 run;
+
 
 proc transpose data= &outData out= &_tempTable(rename= (col1= Ann_Return) rename= (col2= Std_Dev) rename= (col3= Sharpe_Ratio));
 run;
@@ -88,6 +91,7 @@ run;
 data &charTable;
 	set &_tempTable;
 	if _STAT_= '_NAME_' then delete;
+
 	drop _label_ &dateColumn;
 run;
 
