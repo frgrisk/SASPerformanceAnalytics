@@ -18,136 +18,36 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 5/26/2016 - QY - Replace part of mean absolution deviation by %Mean_Abs_Deivation
+*				   Add parameter digits
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro table_variability(returns, 
 								scale= 1,
 								VARDEF = DF, 
+								digits= 4,
 								dateColumn= DATE,
 								outData= variability_table,
 								printTable= NOPRINT);
-%local lib ds vars set1;
 
-/***********************************
-*Figure out 2 level ds name of PRICES
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%local vars;
 
-
-/*******************************
-*Get numeric fields in data set
-*******************************/
-proc sql noprint;
-select name
-	into :set1 separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
-
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%put VARS IN tabel_variability: (&vars);
 
 %Standard_Deviation(&returns, scale= &scale, annualized= TRUE, VARDEF= &VARDEF, outData= annualized_StdDev);
-%Standard_Deviation(&returns, scale= 1, VARDEF= &VARDEF, outData= Monthly);
-
-
-
-proc means data= &returns mean noprint;
-output out= meanData;
-run;
-
-data meanData;
-set meanData;
-drop _freq_ _type_ Date;
-if _stat_ = 'N' then delete;
-if _stat_ = 'STD' then delete;
-if _stat_ = 'MIN' then delete;
-if _stat_ = 'MAX' then delete;
-run;
-
-proc transpose data= meanData out= meanData;
-run;
-data meanData;
-set meanData;
-rename col1= Mean;
-run;
-
-proc transpose data= &returns out= price_t;
-run;
-data price_t;
-set price_t;
-if _name_= 'Date' then delete;
-run;
-proc sort data= price_t;
-by _name_;
-run;
-
-proc sort data=  meanData;
-by _name_;
-run;
-
-data merged;
-merge price_t meanData;
-by _name_;
-run;
-
-proc sql noprint;
-select name
-	into :vars separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("work")
-	  and memname = upcase("merged")
-	  and type= "num"
-	  and upcase(name) ^= upcase("col1");
-quit;
-
-data merged(drop= i);
-set merged;
-
-array vars[*] &vars;
-
-do i= 1 to dim(vars);
-vars[i]= sum(vars[i], -(Mean));
-vars[i]= abs(vars[i]);
-end;
-
-proc transpose data= merged out= merged;
-run;
-
-proc means data= merged mean noprint;
-output out= MAD;
-
-data MAD;
-retain _stat_ &set1;
-set MAD;
-drop _type_ _freq_;
-if _stat_ = 'N' then delete;
-if _stat_ = 'STD' then delete;
-if _stat_ = 'MIN' then delete;
-if _stat_ = 'MAX' then delete;
-drop _stat_;
-run;
+%Standard_Deviation(&returns, VARDEF= &VARDEF, outData= Monthly);
+%Mean_Abs_Deviation(&returns, outData= MAD)
 
 data &outData;
-/*retain Variability;*/
-set MAD Monthly Annualized_StdDev;
-if _n_= 1 then Variability= 'Mean Absolute Deviation';
-if _n_= 2 then Variability= 'Monthly Standard Deviation';
-if _n_= 3 then Variability= 'Annualized Standard Deviation';
+	format _stat_ $32. &vars %eval(&digits + 4).&digits;
+	set MAD Monthly Annualized_StdDev;
+	if _n_= 1 then _STAT_= 'Mean Absolute Deviation';
+	if _n_= 2 then _STAT_= 'Monthly Standard Deviation';
+	if _n_= 3 then _STAT_= 'Annualized Standard Deviation';
 run;
 
-data &outData;
-retain Variability;
-set &outData;
-run;
 
 %if %upcase(&printTable) = PRINT %then %do;
 	proc print data=&outData noobs;
@@ -155,7 +55,7 @@ run;
 %end;
 
 proc datasets lib= work nolist;
-delete Monthly Annualized_StdDev MAD meanData merged price_t;
+delete Monthly Annualized_StdDev MAD;
 quit;
 
 %mend;
