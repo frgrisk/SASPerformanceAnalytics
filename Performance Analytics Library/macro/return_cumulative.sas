@@ -36,32 +36,33 @@
 
 data &outData(drop=&i);
 	set &returns ;
-array ret[*] &ret;
-array cprod [&nvar] _temporary_;
+	array ret[*] &ret;
+	array cprod [&nvar] _temporary_;
 
-do &i=1 to dim(ret);
+	do &i=1 to dim(ret);
 
-	if ret[&i] = . then 
-		ret[&i] = 0;
+		if ret[&i] = . then 
+			ret[&i] = 0;
 
-	if cprod[&i]= . then
-		cprod[&i]= 0;
+		if cprod[&i]= . then
+			cprod[&i]= 0;
 
-%if %upcase(&method) = DISCRETE %then %do;
-	cprod[&i]= (1+ret[&i])*(1+cprod[&i])-1;
-	ret[&i]= cprod[&i];
-%end;
+		%if %upcase(&method) = DISCRETE %then %do;
+			cprod[&i]= (1+ret[&i])*(1+cprod[&i])-1;
+			ret[&i]= cprod[&i];
+		%end;
 
-%else %if %upcase(&method) = LOG %then %do;
-	cprod[&i]= sum(cprod[&i], ret[&i]); 
-	ret[&i]= cprod[&i];
-%end;
+		%else %if %upcase(&method) = LOG %then %do;
+			cprod[&i]= sum(cprod[&i], ret[&i]); 
+			ret[&i]= cprod[&i];
+		%end;
 
-%else %do;
-%put ERROR: Invalid value in METHOD=&method.  Please use DISCRETE, or LOG;
-stop;
-%end;
-end;
+		%else %do;
+		%put ERROR: Invalid value in METHOD=&method.  Please use DISCRETE, or LOG;
+		stop;
+		%end;
+	end;
 run;
+
 %mend;
 

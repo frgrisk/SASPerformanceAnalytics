@@ -1,11 +1,11 @@
-%macro table_CalendarReturns_test1(keep=FALSE);
+%macro table_CalendarReturns_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_CalendarReturns_test1_submit.sas";
+	filename x "&dir\table_CalendarReturns_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,9 +17,9 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = apply.monthly(returns,FUN=Return.cumulative,geometric=TRUE)";
-put "returns = table.CalendarReturns(returns[,'SPY'], digits=6, as.perc = FALSE, geometric=TRUE)";
+put "returns = na.omit(Return.calculate(prices, method='log'))";
+put "returns = apply.monthly(returns,FUN=Return.cumulative,geometric=FALSE)";
+put "returns = table.CalendarReturns(returns[,'SPY'], digits=8, as.perc = FALSE, geometric=FALSE)";
 put "endsubmit;";
 run;
 
@@ -33,8 +33,8 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_CalendarReturns(prices, method= DISCRETE, digits= 6, name=SPY)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%table_CalendarReturns(prices, method= LOG, digits= 8, name=SPY)
 
 data Calendar_Returns;
 set Calendar_Returns;
@@ -113,12 +113,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_CalendarReturns_TEST1;
+	%put NOTE: NO ERROR IN TEST table_CalendarReturns_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_CalendarReturns_TEST1;
+	%put ERROR: PROBLEM IN TEST table_CalendarReturns_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
