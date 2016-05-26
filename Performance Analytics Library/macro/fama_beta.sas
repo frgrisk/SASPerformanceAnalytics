@@ -46,7 +46,7 @@
 						dateColumn= &dateColumn, 
 						outData= &StdDev);
 
-data &outData(drop= &i &BM date);
+data &outData(drop= &i &BM &dateColumn);
 retain _STAT_;
 set &StdDev;
 

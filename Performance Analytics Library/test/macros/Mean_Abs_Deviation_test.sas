@@ -1,11 +1,11 @@
-%macro table_variability_test1(keep=FALSE);
+%macro Mean_Abs_Deviation_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\table_variability_test1_submit.sas";
+	filename x "&dir\Mean_Abs_Deviation_test_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = table.Variability(returns, scale= 252)";
+put "returns = na.omit(Return.calculate(prices))";
+put "returns = MeanAbsoluteDeviation(returns)";
 put "endsubmit;";
 run;
 
@@ -33,14 +33,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_variability(prices,scale= 252)
+%Mean_Abs_Deviation(prices)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from variability_table;
+ select count(*) into :nv TRIMMED from mean_abs_dev;
  %if ^&nv %then %do;
- 	drop table variability_table;
+ 	drop table mean_abs_dev;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(variability_table)) %then %do;
+%if ^%sysfunc(exist(mean_abs_dev)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data variability_table;
+data mean_abs_dev;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -71,12 +71,13 @@ data returns_from_r;
 run;
 %end;
 
+
 proc compare base=returns_from_r 
-			 compare= variability_table 
-			 method= absolute
+			 compare=mean_abs_dev 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4 or abs(SPY)> 1e-4)
-					))
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY)
+					)))
 			 noprint;
 run;
 
@@ -87,21 +88,21 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST table_variability_TEST1;
+	%put NOTE: NO ERROR IN TEST mean_abs_dev_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST table_variability_TEST1;
+	%put ERROR: PROBLEM IN TEST mean_abs_dev_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
-%if &keep=FALSE %then %do;
-	proc datasets lib=work nolist;
-	delete diff prices returns_from_r variability_table;
-	quit;
-%end;
+/*%if &keep=FALSE %then %do;*/
+/*	proc datasets lib=work nolist;*/
+/*	delete prices diff returns_from_r mean_abs_dev;*/
+/*	quit;*/
+/*%end;*/
 
 filename x clear;
 
