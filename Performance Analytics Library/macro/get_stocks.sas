@@ -8,7 +8,7 @@
 *        This macro manipulates the output data set from download_yahoo.sas
 *
 * MACRO OPTIONS:
-* stocks - Required. Stickers of the stocks. {ie.stocks=IBM GE}
+* stocks - Required. Tickers of the stocks. {ie.stocks=IBM GE}
 * from - Optional. Starting date (inclusive). {ie. 31DEC2004} [Default = 1 year before today's date]
 * to - Optional. Ending data (inclusive). {ie. 01JAN2015} [Default = 1 day before today's date]
 * keepPrice - Optional. Specify whether to keep the price data. {0,1} [Default = 0]
