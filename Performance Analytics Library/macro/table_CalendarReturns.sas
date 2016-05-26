@@ -4,7 +4,7 @@
 * PURPOSE: Table of Calendar Returns with month as column and year as row with a total value for the year
 *		   in the last column.
 * MACRO OPTIONS:
-* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* returns - Required.  Data Set containing returns.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=Date.
