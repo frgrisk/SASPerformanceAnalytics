@@ -7,7 +7,7 @@
 * NOTES: Calculates the Treynor ratio of a desired asset given returns, the benchmark and a risk free rate. Option to
 * 		 input an unchanging value (0.02) or a variable risk free rate included in a return data set. Number of periods
 *        in a year (scale) and way of compounding (method) are inputs in calculating annualized returns. To calculate
-*        the modified Treynor ratio, we replace the denumerator by systematic risk. 
+*        the modified Treynor ratio, we replace the denominator by systematic risk. 
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.

@@ -1,9 +1,9 @@
 /*---------------------------------------------------------------
 * NAME: Mean_Abs_Deviation.sas
 *
-* PURPOSE: 
+* PURPOSE: Calculate mean absolute deviation. 
 *
-* NOTES: 
+* NOTES: It is defined as the sum of absolute value of difference between the returns and average return divided by total number.
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
