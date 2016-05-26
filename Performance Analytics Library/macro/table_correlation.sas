@@ -35,11 +35,14 @@ set &returns;
 drop date;
 run;
 
+ods exclude all;
 ods output FisherPearsonCorr= &outData;
 proc corr data= _tempRet fisher;
 var &vars;
 with &returnsCompare;
 run;
+ods exclude none;
+
 
 data &outData;
 set &outData;
