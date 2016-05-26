@@ -8,6 +8,7 @@
 * Rf - Optional. The value or variable representing the risk free rate of return. [Default=0]
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           [Default=1]
+* digits - Optional. Specifies the amount of digits to display in output. Default= 4
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set of systematic risk.  Default="table_SpecificRisk".
@@ -20,6 +21,7 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 5/26/2016 - QY - Add parameter digits
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -28,6 +30,7 @@
 							BM=, 
 							Rf= 0,
 							scale= 1,
+							digits= 4,
 							VARDEF = DF,
 							dateColumn= DATE,
 							outData= table_SpecificRisk,
@@ -89,37 +92,37 @@ quit;
 
 /*Transpose the Vol values and create the _STAT_ column*/
 data &outData(keep=_stat_ &vars);
-	format _STAT_ $32.;
-set &outData;
+	format _STAT_ $32. &vars %eval(&digits + 4).&digits;
+	set &outData;
 
-array tRisk[&n] &vars;
-array sysRisk[&n] 
-	%do i=1 %to &n;
-		%let var=%scan(&vars,&i);
-		&&&p&var
-	%end;
-;
-array spRisk[&n] 
-	%do i=1 %to &n;
-		%let var=%scan(&vars,&i);
-		&&&r&var
-	%end;
-;
+	array tRisk[&n] &vars;
+	array sysRisk[&n] 
+		%do i=1 %to &n;
+			%let var=%scan(&vars,&i);
+			&&&p&var
+		%end;
+	;
+	array spRisk[&n] 
+		%do i=1 %to &n;
+			%let var=%scan(&vars,&i);
+			&&&r&var
+		%end;
+	;
 
-%let i=%ranname();
+	%let i=%ranname();
 
-_stat_ = "Total Risk";
-output;
-_stat_ = "Specific Risk";
-do &i=1 to 4;
-	tRisk[&i] = spRisk[&i];
-end;
-output;
-_stat_ = "Systematic Risk";
-do &i=1 to 4;
-	tRisk[&i] = sysRisk[&i];
-end;
-output;
+	_stat_ = "Total Risk";
+	output;
+	_stat_ = "Specific Risk";
+	do &i=1 to 4;
+		tRisk[&i] = spRisk[&i];
+	end;
+	output;
+	_stat_ = "Systematic Risk";
+	do &i=1 to 4;
+		tRisk[&i] = sysRisk[&i];
+	end;
+	output;
 run;
 
 proc sort data=&outData;
