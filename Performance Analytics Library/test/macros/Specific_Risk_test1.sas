@@ -1,11 +1,11 @@
-%macro Specific_Risk_test(keep=FALSE);
+%macro Specific_Risk_test1(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Specific_Risk_test_submit.sas";
+	filename x "&dir\Specific_Risk_test1_submit.sas";
 %end;
 
 data _null_;
@@ -89,12 +89,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST Specific_Risk_TEST;
+	%put NOTE: NO ERROR IN TEST Specific_Risk_TEST1;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Specific_Risk_TEST;
+	%put ERROR: PROBLEM IN TEST Specific_Risk_TEST1;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
