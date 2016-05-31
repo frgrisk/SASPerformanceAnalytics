@@ -13,6 +13,8 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
+* SortDrawdoen - Optional. Specifies whether to sort the data on drawdown depth. 
+*				 {TRUE, FALSE} Default=FALSE
 * outData - Optional. Output Data Set with drawdowns.  Default="FindDrawdowns".
 *
 * MODIFIED:
