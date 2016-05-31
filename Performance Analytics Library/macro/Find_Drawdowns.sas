@@ -24,6 +24,7 @@
 							assetName=,
 							method= DISCRETE,
 							dateColumn= DATE,
+							SortDrawdown= FALSE,
 							outData= FindDrawdowns);
 
 %local vars nvar ret_drawdown ret_drawdown2;
