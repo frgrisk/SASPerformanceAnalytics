@@ -4,8 +4,8 @@
 * PURPOSE: Find the starting and ending points of drawdown. Length of the interval
 *          will also be found.
 *
-* NOTES: The function in R returns a list of seven matrices. In this SAS macro, one 
-*        table will be form containing all results.
+* NOTES: The function in R returns a list of seven vectors. In this SAS macro, one 
+*        table will be formed which contains all results.
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
