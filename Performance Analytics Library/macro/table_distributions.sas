@@ -52,6 +52,8 @@
 %let z= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
 %put VARS IN table_distribution: (&z);
 
+%let i= %ranname();
+
 
 proc transpose data=&returns out=_temp;
 by &dateColumn;
@@ -99,20 +101,20 @@ else if _stat_ = "Skewness" then do;
 end;
 run;
 
-data _tempOut2(drop=i);
+data _tempOut2(drop=&i);
 format _stat_ $32. &z %eval(&digits + 4).&digits;
 set _tempOut2;
 array vars[*] &z;
 so = 10 + _n_;
 if _stat_ = "Kurtosis" then do;
-	do i=1 to dim(vars);
-		vars[i] = vars[i] + 3;
+	do &i=1 to dim(vars);
+		vars[&i] = vars[&i] + 3;
 	end;	
 	output;
 	so = so + 1;
 	_stat_ = "Excess kurtosis";
-	do i=1 to dim(vars);
-		vars[i] = vars[i] - 3;
+	do &i=1 to dim(vars);
+		vars[&i] = vars[&i] - 3;
 	end;	
 end;
 output;
@@ -120,15 +122,15 @@ run;
 
 %standard_deviation(&returns,annualized= TRUE, scale=&scale, VARDEF= &VARDEF, outData=_tempOut3);
 
-data _tempOut3(drop=i);
+data _tempOut3(drop=&i);
 	format _stat_ $32. &z %eval(&digits + 4).&digits;
 	set _tempOut3;
 	so = _n_;
 
 	array STD_scaled[*] &z;
 
-	do i= 1 to dim(STD_scaled);
-	STD_scaled[i]= STD_scaled[i]/sqrt(&scale);
+	do &i= 1 to dim(STD_scaled);
+	STD_scaled[&i]= STD_scaled[&i]/sqrt(&scale);
 	end;
 
 	_stat_ = "Scaled Std Dev";

@@ -26,12 +26,13 @@
 							dateColumn= DATE,
 							outData= max_dd);
 							
-%local vars drawdown;
+%local vars drawdown i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
 %put VARS IN max_drawdown: (&vars);
 
 %let drawdown= %ranname();
+%let i = %ranname();
 
 %Drawdowns(&returns, method=&method, outdata=&drawdown)
 
@@ -39,7 +40,7 @@ proc means data= &drawdown min noprint;
 output out= &outData;
 run;
 
-data &outData(drop=i);
+data &outData(drop=&i);
 	format _stat_ $32.;
 	set &outData;
 	drop _freq_  _type_ &dateColumn;
@@ -48,8 +49,8 @@ data &outData(drop=i);
 		_stat_='Worst Drawdowns';
 	%if %upcase(&invert) = TRUE %then %do;
 		array ret[*] &vars;
-		do i=1 to dim(ret);
-			ret[i]=-ret[i];
+		do &i=1 to dim(ret);
+			ret[&i]=-ret[&i];
 		end;
 	%end;
 run;

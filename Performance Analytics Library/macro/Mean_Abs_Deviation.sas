@@ -20,11 +20,12 @@
 						dateColumn= DATE, 
 						outData= mean_abs_dev);
 
-%local vars z meandata merged price_t;
+%local vars z meandata merged price_t i;
 
 %let meandata=%ranname();
 %let merged=%ranname();
 %let price_t=%ranname();
+%let i=%ranname();
 
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
@@ -71,14 +72,14 @@ run;
 
 %let z= %get_number_column_names(_table= &merged, _exclude= col1);
 
-data &merged(drop= i mean);
+data &merged(drop= &i mean);
 	set &merged;
 
 	array z[*] &z;
 
-	do i= 1 to dim(z);
-		z[i]= sum(z[i], -(Mean));
-		z[i]= abs(z[i]);
+	do &i= 1 to dim(z);
+		z[&i]= sum(z[&i], -(Mean));
+		z[&i]= abs(z[&i]);
 	end;
 run;
 

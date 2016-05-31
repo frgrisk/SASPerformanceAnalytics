@@ -31,7 +31,7 @@
 					outData= CAPM,
 					printTable= NOPRINT);
 
-%local vars RP alphaBeta bullBear R_square AnnuAlpha Corr tracking_error active_premium information_ratio treynor_ratio;
+%local vars RP alphaBeta bullBear R_square AnnuAlpha Corr tracking_error active_premium information_ratio treynor_ratio i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
 %put VARS IN table_CAPM: (&vars);
@@ -46,15 +46,16 @@
 %let active_premium= %ranname();
 %let information_ratio= %ranname();
 %let treynor_ratio= %ranname();
+%let i= %ranname();
 
 
 %return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &RP);
-data &RP(drop= i);
+data &RP(drop= &i);
 	set &RP;
 	array excess[*] &vars;
 	if _n_=1 then
-	do i= 1 to dim(excess);
-		excess[i]= .;
+	do &i= 1 to dim(excess);
+		excess[&i]= .;
 	end;
 run;
 
@@ -79,14 +80,14 @@ id _depvar_;
 run;
 
 /*calculate annualized alpha*/
-data &AnnuAlpha(drop=i);
+data &AnnuAlpha(drop=&i);
 format _stat_ $32.;
 set &alphaBeta;
 where _STAT_='alphas';
 array alpha[*] &vars;
 retain alpha;
-do i=1 to dim(alpha);
-	alpha[i]=(1+alpha[i])**(&scale) - 1;
+do &i=1 to dim(alpha);
+	alpha[&i]=(1+alpha[&i])**(&scale) - 1;
 end;
 if _stat_='alphas' then 
 	_stat_='Annualized Alphas';

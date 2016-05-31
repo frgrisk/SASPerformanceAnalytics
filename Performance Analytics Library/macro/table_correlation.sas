@@ -24,11 +24,12 @@
 								outData= Correlations,
 								printTable= NOPRINT);
 
-%local vars varStats;
+%local vars varStats i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Table_correlation: (&vars);
 
+%let i = %ranname();
 
 data _tempRet;
 set &returns;
@@ -53,13 +54,13 @@ run;
 %put VARSTATS IN Table_correlation: (&varStats);
 
 
-data &outData(drop= i);
+data &outData(drop= &i);
 set &outData;
 
 array fixStats[*] &varStats;
 
-do i= 1 to dim(fixStats);
-if fixStats[i]= . then fixStats[i]= 1;
+do &i= 1 to dim(fixStats);
+if fixStats[&i]= . then fixStats[&i]= 1;
 end;
 
 data &outData;

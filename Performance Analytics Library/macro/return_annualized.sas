@@ -31,61 +31,62 @@
 								dateColumn= DATE, 
 								outData= annualized_returns);
 
-%local _tempRP nv ret;
+%local _tempRP nv ret i;
 
 %let ret=%get_number_column_names(_table=&returns,_exclude=&dateColumn);
 
 %let nv = %sysfunc(countw(&ret));
 
 %let _tempRAnn = %ranname();
+%let i = %ranname();
 
 /*Create a series for taking STDev and Calculate Mean*/
-data &_tempRAnn(drop=i) &outData(drop=i);
+data &_tempRAnn(drop=&i) &outData(drop=&i);
 	set &returns end= last nobs=nobs;
 
 	array ret[&nv] &ret;
 	array prod[&nv] _temporary_;
 
 	if _n_ = 1 then do;
-		do i=1 to &nv;
+		do &i=1 to &nv;
 			/*DISCRETE*/
 		%if %upcase(&method) = DISCRETE %then %do;
-				prod[i] = 1;
+				prod[&i] = 1;
 		%end;
 
 				/*LOG*/
 		%else %if %upcase(&method) = LOG %then %do;
-				prod[i] = 0;
+				prod[&i] = 0;
 		%end;
 		end;
 		delete;
 	end;
 
-	do i=1 to &nv;
+	do &i=1 to &nv;
 		/*DISCRETE*/
 	%if %upcase(&method) = DISCRETE %then %do;
-		prod[i] = prod[i] * (1+ret[i])**(&scale);
+		prod[&i] = prod[&i] * (1+ret[&i])**(&scale);
 		
 	%end;
 		/*LOG*/
 	%else %if %upcase(&method) = LOG %then %do;
-		prod[i] = prod[i] + ret[i]*sqrt(&scale);
-		ret[i] = ret[i] * sqrt(&scale);
+		prod[&i] = prod[&i] + ret[&i]*sqrt(&scale);
+		ret[&i] = ret[&i] * sqrt(&scale);
 	%end;
 	end;
 	output &_tempRAnn;
 
 	if last then do;
-	do i=1 to &nv;
+	do &i=1 to &nv;
 	%if %upcase(&method) = DISCRETE %then %do;
 
-		ret[i] =(prod[i])**(1/(nobs-1)) - 1;
+		ret[&i] =(prod[&i])**(1/(nobs-1)) - 1;
 	%end;
 
 		/*LOG*/
 	%else %if %upcase(&method) = LOG %then %do;
-		ret[i] = prod[i]/(nobs-1);
-		ret[i] = ret[i] *sqrt(&scale);
+		ret[&i] = prod[&i]/(nobs-1);
+		ret[&i] = ret[&i] *sqrt(&scale);
 	%end;
 	
 	end;

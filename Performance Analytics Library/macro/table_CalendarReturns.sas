@@ -32,13 +32,14 @@
 									printTable= NOPRINT,
 									name=);
 
-%local ret name;
+%local ret name i;
 
 
 %let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put RET IN Specific_Risk: (&ret);
 
-%let year_month= %ranname();
+%let year_month = %ranname();
+%let i = %ranname();
 
 /*%let nvar = %sysfunc(countw(&ret));*/
 
@@ -101,18 +102,18 @@ proc transpose data=&year_month out=&outData;
 	id month;
 run;
 
-data &outData(drop=i);
+data &outData(drop=&i);
 	format _name_ $32. YEAR 4. JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC TOTAL percent12.&digits;
 	set &outData;
 	array mths[12] JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC;
 	total = 0;
-	do i=1 to 12;
+	do &i=1 to 12;
 		%if %upcase(&method) = DISCRETE %then %do;
-		TOTAL = (1+TOTAL) * sum(1,mths[i]) - 1;
+		TOTAL = (1+TOTAL) * sum(1,mths[&i]) - 1;
 		%end;
 
 		%if %upcase(&method) = LOG %then %do;
-		TOTAL = sum(TOTAL, mths[i]);
+		TOTAL = sum(TOTAL, mths[&i]);
 		%end;
 	end;
 run;
