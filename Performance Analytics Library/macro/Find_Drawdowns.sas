@@ -9,7 +9,7 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* assetName - Required. Name of the variable to find drawdown interval for.
+* asset - Required. Name of the variable to find drawdown interval for.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
@@ -23,18 +23,15 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro Find_Drawdowns(returns,
-							assetName=,
+							asset=,
 							method= DISCRETE,
 							dateColumn= DATE,
 							SortDrawdown= FALSE,
 							outData= FindDrawdowns);
 
-%local vars nvar ret_drawdown ret_drawdown2;
-
+%local vars ret_drawdown ret_drawdown2;
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
-%put VARS IN Find_Drawdowns: (&vars);
-
-%let nvar = %sysfunc(countw(&vars));
+%put VARS IN Find_Drawdowns: (&asset);
 
 %let ret_drawdown= %ranname();
 %let ret_drawdown2= %ranname();
@@ -47,15 +44,15 @@ data &ret_drawdown &ret_drawdown2;
 	retain prior_sign sofar from 1 to 1 dmin 1 index 1;
 					
 	if _n_ = 1 then do;
-		prior_sign = sign(&assetName);
-		sofar = &assetName;
+		prior_sign = sign(&asset);
+		sofar = &asset;
 	end;
 
-	current_sign=sign(&assetName);
+	current_sign=sign(&asset);
 
 	if current_sign = prior_sign then do;
-		if &assetName < sofar then do;
-			sofar = &assetName;
+		if &asset < sofar then do;
+			sofar = &asset;
 			dmin = _n_;
 		end;
 		to = _n_+1;
@@ -67,7 +64,7 @@ data &ret_drawdown &ret_drawdown2;
 		end = to;
 
 		from = _n_;
-		sofar = &assetName;
+		sofar = &asset;
 		to = _n_+1;
 		dmin = _n_;
 		index = index+1;
