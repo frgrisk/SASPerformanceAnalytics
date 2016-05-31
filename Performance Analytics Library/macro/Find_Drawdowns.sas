@@ -38,8 +38,6 @@
 
 %Drawdowns(&returns, method= &method, dateColumn= DATE, outData=&ret_drawdown)
 
-
-
 data &ret_drawdown &ret_drawdown2;
 	set &ret_drawdown(firstobs=2) end=eof;
 	
@@ -118,6 +116,12 @@ data &outData;
 		output;
 	end;
 run;
+
+%if %upcase(&SortDrawdown) = TRUE %then %do;
+proc sort data=&outData out=&outData;
+	by return;
+run;
+%end;
 
 proc datasets lib=work nolist;
 	delete &ret_drawdown &ret_drawdown2;
