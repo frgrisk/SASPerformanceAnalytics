@@ -25,34 +25,35 @@
 							dateColumn= DATE,
 							outData= CalmarRatio);
 							
-%local vars annualized drawdown;
+%local vars annualized drawdown i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Calmar_Ratio: (&vars);
 
 %let annualized= %ranname();
 %let drawdown= %ranname();
+%let i = %ranname();
 
 %return_annualized(&returns, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
 %max_drawdown(&returns, method= &method, dateColumn= &dateColumn, outData= &drawdown)
 
-data &drawdown(drop=i);
+data &drawdown(drop=&i);
 	set &drawdown;
 	array ret[*] &vars;
 
-	do i= 1 to dim(ret);
-	ret[i]= abs(ret[i]);
+	do &i= 1 to dim(ret);
+	ret[&i]= abs(ret[&i]);
 	end;
 run;
 
 
-data &outData (drop= i);
+data &outData (drop=&i);
 	set &annualized &drawdown;
 
 	array ret[*] &vars;
 
-	do i= 1 to dim(ret);
-	ret[i]= lag(ret[i])/ret[i];
+	do &i= 1 to dim(ret);
+	ret[&i]= lag(ret[&i])/ret[&i];
 	end;
 run;
 
