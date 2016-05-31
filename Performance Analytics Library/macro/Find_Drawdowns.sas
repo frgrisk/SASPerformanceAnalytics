@@ -1,19 +1,22 @@
 /*---------------------------------------------------------------
 * NAME: Find_Drawdowns.sas
 *
-* PURPOSE: Calculate the drawdown levels in a timeseries
+* PURPOSE: Find the starting and ending points of drawdown. Length of the interval
+*          will also be found.
 *
-* NOTES: 
+* NOTES: The function in R returns a list of seven matrices. In this SAS macro, one 
+*        table will be form containing all results.
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* assetName - Required. Name of the variable to find drawdown interval for.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with drawdowns.  Default="drawdowns".
 *
 * MODIFIED:
-* 5/27/2016 – QY - Initial Creation
+* 5/31/2016 – RM - Initial Creation
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -30,26 +33,12 @@
 
 %let nvar = %sysfunc(countw(&vars));
 
-/*%let first_drawdown= %ranname();*/
 %let ret_drawdown= %ranname();
 %let ret_drawdown2= %ranname();
-/*%let both= %ranname();*/
 
 %Drawdowns(&returns, method= &method, dateColumn= DATE, outData=&ret_drawdown)
 
-/*data &first_drawdown;*/
-/*	set &ret_drawdown(keep=&dateColumn &assetName obs=1);*/
-/*	first_sign = sign(&assetName);*/
-/*	first_sofar = &assetName;*/
-/*	from = 1;*/
-/*	to = 1;*/
-/*	dmin = 1;*/
-/*	first_index = 1;*/
-/*run;*/
-/**/
-/*data &both;*/
-/*	set &first_drawdown &ret_drawdown(keep=&dateColumn &assetName);*/
-/*run;*/
+
 
 data &ret_drawdown &ret_drawdown2;
 	set &ret_drawdown(firstobs=2) end=eof;
