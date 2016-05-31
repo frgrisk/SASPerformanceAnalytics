@@ -8,7 +8,7 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* assetName - Required. Name of the variable to find drawdown interval for.
+* asset - Required. Name of the variable to find drawdown interval for.
 * TOP - Required. The number of the drawdowns with worst depth to include.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
@@ -22,7 +22,7 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro Table_Drawdowns(returns,
-							assetName=,
+							asset=,
 							TOP=,
 							method= DISCRETE,
 							digits= 4,
@@ -43,7 +43,7 @@
 %let troughTable = %ranname();
 %let endTable = %ranname();
 
-%Find_Drawdowns(&returns, assetName=&assetName, method=&method, dateColumn=&dateColumn, outData=&find_drawdown);
+%Find_Drawdowns(&returns, asset=&asset, method=&method, dateColumn=&dateColumn, outData=&find_drawdown);
 
 data &dateTable;
 	set &returns;

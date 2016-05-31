@@ -5,7 +5,7 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* assetName - Required. Name of the variable to find drawdown interval for.
+* asset - Required. Name of the variable to find drawdown interval for.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
@@ -17,12 +17,12 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro Sort_Drawdowns(returns,
-							assetName=,
+							asset=,
 							method= DISCRETE,
 							dateColumn= DATE,
 							outData= FindDrawdowns);
 
 
-%Find_Drawdowns(&returns, assetName=&assetName, method=&method, dateColumn=&dateColumn, SortDrawdown= TRUE, outData=&SortDrawdown);
+%Find_Drawdowns(&returns, asset=&asset, method=&method, dateColumn=&dateColumn, SortDrawdown= TRUE, outData=&SortDrawdown);
 
 %mend;
