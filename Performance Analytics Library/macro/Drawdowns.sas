@@ -22,7 +22,7 @@
 							dateColumn= DATE,
 							outData= drawdowns);
 							
-%local vars nvar cumul_ret ;
+%local vars nvar cumul_ret i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Drawdowns: (&vars);
@@ -31,31 +31,32 @@
 
 %let cumul_ret= %ranname();
 %let max_cumul= %ranname();
+%let i = %ranname();
 
 
 %return_cumulative(&returns, method= &method, outData=&cumul_ret)
 
-data &cumul_ret(drop=i);
+data &cumul_ret(drop=&i);
 	set &cumul_ret;
 
 	array var[*] &vars;
 
-	do i= 1 to dim(var);
-	var[i]=var[i]+1;
+	do &i= 1 to dim(var);
+	var[&i]=var[&i]+1;
 	end;
 run;
 
-data &outData(drop=i &dateColumn);
+data &outData(drop=&i &dateColumn);
 	set &cumul_ret;
 	array ret[*] &vars;
 	array max[&nvar] _temporary_;
 
-	do i=1 to dim(ret);
+	do &i=1 to dim(ret);
 		if _n_=1 then 
-			max[i]=ret[i];
-		if ret[i]>max[i] then
-			max[i]=ret[i];
-		ret[i]=ret[i]/max[i]-1;
+			max[&i]=ret[&i];
+		if ret[&i]>max[&i] then
+			max[&i]=ret[&i];
+		ret[&i]=ret[&i]/max[&i]-1;
 	end;
 run;
 

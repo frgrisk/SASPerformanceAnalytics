@@ -29,7 +29,9 @@
 								outData= AutoCorrelations,
 								printTable= NOPRINT);
 
-%local lib ds vars n z;
+%local lib ds vars n z i;
+
+%let i = %ranname();
 
 %let lib = %scan(&returns,1,%str(.));
 %let ds = %scan(&returns,2,%str(.));
@@ -63,14 +65,14 @@ run;
 
 data &outData;
 	set &outData;
-	drop _label_ _stat_ lag0 Q i;
+	drop _label_ _stat_ lag0 Q &i;
 	rename _name_= StockId;
 
 	/*Ljung-Box Test*/
 	array lag[&nlag];
 	Q = 0;
-	do i=1 to &nlag;
-		Q = Q + (lag[i]**2)/(&n-i);
+	do &i=1 to &nlag;
+		Q = Q + (lag[&i]**2)/(&n-&i);
 	end;
 	Q = Q*&n*(&n+2);
 	P_Value = 1-cdf('chisq',Q,6);

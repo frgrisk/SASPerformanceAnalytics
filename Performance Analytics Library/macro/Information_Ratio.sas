@@ -30,7 +30,7 @@
 
 
 
-%local nv ret ap te;
+%local nv ret ap te i;
 
 
 /***********************************
@@ -62,6 +62,7 @@ quit;
 %let nv = %sysfunc(countw(&ret));
 %let te = %ranname();
 %let ap = %ranname();
+%let i = %ranname();
 
 
 %ActivePremium(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&ap)
@@ -74,12 +75,12 @@ data &outData(drop=&dateColumn);
 
 	_stat_ = "Information_Ratio";
 
-	do i=1 to dim(vars);
-		vars[i] = vars[i]/lag(vars[i]);
+	do &i=1 to dim(vars);
+		vars[&i] = vars[&i]/lag(vars[&i]);
 	end;
 
 	if &ap;
-	drop i;
+	drop &i;
 run;
 
 proc datasets lib= work nolist;
