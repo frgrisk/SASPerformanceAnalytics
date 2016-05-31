@@ -13,7 +13,7 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with drawdowns.  Default="drawdowns".
+* outData - Optional. Output Data Set with drawdowns.  Default="FindDrawdowns".
 *
 * MODIFIED:
 * 5/31/2016 – RM - Initial Creation
