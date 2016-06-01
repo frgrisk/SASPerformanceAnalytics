@@ -34,7 +34,7 @@
 							xvar=, 
 							yvar=, 
 							title= &xvar versus &yvar Scatter,
-							grid= FALSE,
+							grid= TRUE,
 							transparency= 0.35,
 							color= cornflowerblue,
 							size= 6,
