@@ -1,33 +1,31 @@
 /*---------------------------------------------------------------
-* NAME: Pain_Index.sas
+* NAME: Ulcer_Index.sas
 *
-* PURPOSE: Pain index of the return distribution
+* PURPOSE: Calculate the Ulcer Index
 *
-* NOTES: The pain index is the mean value of the drawdowns over the entire 
-*        analysis period. The measure is similar to the Ulcer index except that 
-*        the drawdowns are not squared.  Also, it's different than the average
-*        drawdown, in that the numerator is the total number of observations 
-*        rather than the number of drawdowns.
-*        Visually, the pain index is the area of the region that is enclosed by 
-*        the horizontal line at zero percent and the drawdown line in the 
-*        Drawdown chart.
+* NOTES: This is similar to drawdown deviation except that the impact of the duration of 
+*        drawdowns is incorporated by selecting the negative return for each period below 
+*        the previous peak or high water mark.  The impact of long, deep drawdowns will 
+*        have significant impact because the underperformance since the last peak is squared.
+*        This approach is sensitive to the frequency of the time periods involved 
+*        and penalizes managers that take time to recover to previous highs.
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with pain index.  Default="PainIndex".
+* outData - Optional. Output Data Set with ulcer index.  Default="UlcerIndex".
 *
 * MODIFIED:
 * 5/31/2016 – QY - Initial Creation
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro Pain_Index(returns,
+%macro Ulcer_Index(returns,
 							method= DISCRETE,
 							dateColumn= DATE,
-							outData= PainIndex);
+							outData= UlcerIndex);
 							
 %local vars drawdown stat_sum stat_n i;
 
@@ -46,29 +44,48 @@ data &drawdown(drop=&i);
 	array ret[*] &vars;
 
 	do &i= 1 to dim(ret);
-	ret[&i]= abs(ret[&i]);
+	ret[&i]= ret[&i]**2;
 	end;
 run;
 
 proc means data= &drawdown sum n noprint;
-output out= &stat_sum sum=;
-output out= &stat_n n=;
+	output out= &stat_sum sum=;
+	output out= &stat_n n=;
 run;
 
-data &outData (drop= &i _type_ _freq_);
+data &stat_sum(drop=&i);
+	set &stat_sum;
+	drop _freq_  _type_;
+	array ret[*] &vars;
+		do &i=1 to dim(ret);
+			ret[&i]=sqrt(ret[&i]);
+		end;
+run;
+
+data &stat_n(drop=&i);
+	set &stat_n;
+	drop _freq_  _type_;
+	array ret[*] &vars;
+		do &i=1 to dim(ret);
+			ret[&i]=sqrt(ret[&i]);
+		end;
+run;
+
+
+data &outData (drop= &i);
 	set &stat_sum &stat_n;
 
-	array Pain[*] &vars;
+	array Ulcer[*] &vars;
 
-	do &i= 1 to dim(Pain);
-		Pain[&i]= lag(Pain[&i])/Pain[&i];
+	do &i= 1 to dim(Ulcer);
+		Ulcer[&i]= lag(Ulcer[&i])/Ulcer[&i];
 	end;
 run;
 
 data &outData;
 	format _stat_ $32.;
 	set &outData end= last;
-	_STAT_= 'Pain Index';
+	_STAT_= 'Ulcer Index';
 	if last; 
 run;
 
