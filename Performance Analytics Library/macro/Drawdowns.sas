@@ -30,7 +30,6 @@
 %let nvar = %sysfunc(countw(&vars));
 
 %let cumul_ret= %ranname();
-%let max_cumul= %ranname();
 %let i = %ranname();
 
 
