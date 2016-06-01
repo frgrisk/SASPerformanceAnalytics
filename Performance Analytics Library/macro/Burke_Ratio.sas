@@ -29,7 +29,7 @@
 							Rf= 0,
 							scale= 1,
 							method= DISCRETE,
-							modified= FALSE;
+							modified= FALSE,
 							dateColumn= DATE,
 							outData= BurkeRatio);
 							
