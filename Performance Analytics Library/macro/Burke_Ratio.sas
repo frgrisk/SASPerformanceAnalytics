@@ -36,7 +36,7 @@
 %local vars i j nvar annualized drawdown divisor;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
-%put VARS IN Calmar_Ratio: (&vars);
+%put VARS IN Burke_Ratio: (&vars);
 
 %let annualized= %ranname();
 %let drawdown= %ranname();

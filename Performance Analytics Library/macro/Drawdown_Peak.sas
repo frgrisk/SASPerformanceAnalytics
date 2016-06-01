@@ -25,7 +25,7 @@
 %local vars nvar cumul_ret peak merged i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
-%put VARS IN Drawdowns: (&vars);
+%put VARS IN Drawdown_Peak: (&vars);
 
 %let nvar = %sysfunc(countw(&vars));
 
