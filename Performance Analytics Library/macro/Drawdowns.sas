@@ -3,12 +3,10 @@
 *
 * PURPOSE: Calculate the drawdown levels in a timeseries
 *
-* NOTES: Drawdown is calculated as the cumulative return divieded by max cumulative return, then minus 1.
-* 		 Drawdown is zero if the resulting number is positive. First row of the output data set is set to
-*        be zero, assuming the first row of input return data set apprears as missing.
+* NOTES: 
 *
 * MACRO OPTIONS:
-* returns - Required.  Data Set containing returns.
+* returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
