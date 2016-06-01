@@ -30,7 +30,7 @@
 %local vars drawdown stat_sum stat_n i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
-%put VARS IN Calmar_Ratio: (&vars);
+%put VARS IN Ulcer_Index: (&vars);
 
 %let drawdown= %ranname();
 %let stat_sum= %ranname();

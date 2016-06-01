@@ -11,7 +11,7 @@
 * dateColumn - Optional. Date column in Data Set. Default=Date.
 * outData - Optional. Output Data Set of calendar_returns.  Default="Calendar_Returns".
 * printTable - Optional. Option to print returns of all or one asset. {PRINT, NOPRINT}. Default= NOPRINT
-* name - Required. Name of the variable to print if printTable= PRINT.
+* asset - Required. Name of the variable to print if printTable= PRINT.
 
 * MODIFIED:
 * 7/14/2015 – DP - Initial Creation
@@ -21,6 +21,7 @@
 *                  Add calculation of TOTAL for compound returns
 *                  Add parameter digits
 *                  Fix printout problem
+* 6/01/2016 - QY - Change parameter name to asset
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -30,7 +31,7 @@
 									dateColumn= DATE,
 									outData= Calendar_Returns, 
 									printTable= NOPRINT,
-									name=);
+									asset=);
 
 %local ret name i;
 
@@ -134,10 +135,10 @@ quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
 
-	%if %upcase(&name)^= %then %do;
+	%if %upcase(&asset)^= %then %do;
 		proc print data= &outData(firstobs=2) noobs;
 				title 'Aggregated Monthly Returns';
-		 		where _name_= "&name";
+		 		where _name_= "&asset";
 		run; 
 	%end;
 	%else %do;
