@@ -15,6 +15,7 @@
 * digits - Optional. Specifies number of digits displayed in the output. 
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with drawdowns.  Default="TableDrawdowns".
+* printTable - Optional. Option to print table.  {PRINT, NOPRINT} Default= NOPRINT
 *
 * MODIFIED:
 * 5/31/2016 – RM - Initial Creation
@@ -27,7 +28,8 @@
 							method= DISCRETE,
 							digits= 4,
 							dateColumn= DATE,
-							outData= TableDrawdowns);
+							outData= TableDrawdowns,
+							printTable= NOPRINT);
 
 %local vars nvar ncol find_drawdown dateTable beginTable troughTable endTable;
 
@@ -104,4 +106,8 @@ proc datasets lib = work nolist;
 run;
 quit;
 
+%if %upcase(&printTable)= PRINT %then %do;
+	proc print data= &outData noobs;
+	run; 
+%end;
 %mend;
