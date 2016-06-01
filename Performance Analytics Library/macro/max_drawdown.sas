@@ -3,12 +3,13 @@
 *
 * PURPOSE: Calculate the maximum drawdown from peak equity
 *
-* NOTES: 
+* NOTES: The drawdown is calculated based on cumulative return. The ‘invert’ option allows 
+*		 user to output drawdown as either positive or negative numbers to serve different purposes.
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.    
-*         Default=1
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
+*          Default=DISCRETE
 * invert - Optional. Specify whether to invert the drawdown measure.  Default=TRUE.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with maximum drawdowns.  Default="max_dd".

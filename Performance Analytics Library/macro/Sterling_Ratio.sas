@@ -15,8 +15,7 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * excess - Optional. The yield of risk-free investment compared by any investment with a return stream.
-*          If putting in the drawdown as a negative number, then substract the value of excess. If putting
-*          in the drawdown as a positive number, then add the value of excess.  Default=0.1.
+*          Default=0.1.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with Sterling ratios.  Default="SterlingRatio".
 *

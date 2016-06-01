@@ -20,9 +20,9 @@
 							asset=,
 							method= DISCRETE,
 							dateColumn= DATE,
-							outData= FindDrawdowns);
+							outData= SortDrawdowns);
 
 
-%Find_Drawdowns(&returns, asset=&asset, method=&method, dateColumn=&dateColumn, SortDrawdown= TRUE, outData=&SortDrawdown);
+%Find_Drawdowns(&returns, asset=&asset, method=&method, dateColumn=&dateColumn, SortDrawdown= TRUE, outData=&outData);
 
 %mend;
