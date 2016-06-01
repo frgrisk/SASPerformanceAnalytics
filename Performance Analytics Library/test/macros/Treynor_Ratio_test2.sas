@@ -76,7 +76,7 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=alphas_and_betas 
+			 compare=TreynorRatio 
 			 method=absolute
 			 out=diff(where=(_type_ = "DIF"
 			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
