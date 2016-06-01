@@ -1,11 +1,11 @@
-%macro Drawdown_Peak_test1(keep=FALSE);
+%macro Pain_Index_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Drawdown_Peak_test1_submit.sas";
+	filename x "&dir\Pain_Index_test_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = DrawdownPeak(returns[,1]*100)/100";
+put "returns = PainIndex(returns*100)/100";
 put "returns = data.frame(returns)";
 put "endsubmit;";
 run;
@@ -34,16 +34,13 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Drawdown_Peak(prices)
+%Pain_Index(prices)
 
-data drawdownPeak;
-	set drawdownPeak(keep=ibm firstobs=2);
-run;
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from drawdownPeak;
+ select count(*) into :nv TRIMMED from PainIndex;
  %if ^&nv %then %do;
  	drop table TreynorRatio;
  %end;
@@ -54,9 +51,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(drawdownPeak)) %then %do;
+%if ^%sysfunc(exist(PainIndex)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data drawdownPeak;
+data PainIndex;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -79,7 +76,7 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=drawdownPeak 
+			 compare=PainIndex 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY)
@@ -95,20 +92,20 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST DRAWDOWN_PEAK_TEST1;
+	%put NOTE: NO ERROR IN TEST PAIN_INDEX_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST DRAWDOWN_PEAK_TEST1;
+	%put ERROR: PROBLEM IN TEST PAIN_INDEX_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
-%if &keep=FALSE %then %do;
-	proc datasets lib=work nolist;
-	delete diff prices drawdownPeak returns_from_r;
-	quit;
-%end;
+/*%if &keep=FALSE %then %do;*/
+/*	proc datasets lib=work nolist;*/
+/*	delete diff prices PainIndex returns_from_r;*/
+/*	quit;*/
+/*%end;*/
 
 %mend;
