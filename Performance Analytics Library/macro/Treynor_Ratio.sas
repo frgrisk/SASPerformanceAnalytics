@@ -77,7 +77,7 @@ run;
 	%Systematic_Risk(&returns,BM= &BM, Rf= &Rf, scale= &scale, VARDEF= &VARDEF, dateColumn= DATE, outData= &_tempBeta)
 %end;
 
-data &_tempTreynor (drop= &i _stat_ &BM date);
+data &_tempTreynor (drop= &i _stat_ &BM &dateColumn);
 set &_tempRP &_tempBeta;
 
 array Treynor[*] &vars;
