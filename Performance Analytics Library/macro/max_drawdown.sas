@@ -1,15 +1,16 @@
 /*---------------------------------------------------------------
 * NAME: max_drawdown.sas
 *
-* PURPOSE: Calculate the maximum drawdown from peak equity
+* PURPOSE: Calculate the maximum drawdown from peak equity.
 *
-* NOTES: 
+* NOTES: For different purposes, user could choose to output drawdown as either positive
+*        or negative number.
 *
 * MACRO OPTIONS:
-* returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.    
-*         Default=1
-* invert - Optional. Specify whether to invert the drawdown measure.  Default=TRUE.
+* returns - Required.  Data Set containing returns.
+* method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
+*          Default=DISCRETE
+* invert - Optional. Specifies whether to invert the drawdown measure.  Default=TRUE.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with maximum drawdowns.  Default="max_dd".
 *

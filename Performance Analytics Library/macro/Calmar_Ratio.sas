@@ -1,12 +1,12 @@
 /*---------------------------------------------------------------
 * NAME: Calmar_Ratio.sas
 *
-* PURPOSE: 
+* PURPOSE: Calmar Ratio measures an asset’s return against its drawdown risk. 
 *
-* NOTES: 
+* NOTES: Similar to Sharpe Ratio and Sterling Ratio, it is one of the statistics that measures return vs. risk.
 *
 * MACRO OPTIONS:
-* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* returns - Required.  Data Set containing returns.
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.    
 *         Default=1
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
