@@ -42,7 +42,6 @@
 %let drawdown= %ranname();
 %let divisor= %ranname();
 %let i=%ranname();
-%let j=%ranname();
 %let nvar = %sysfunc(countw(&vars));
 
 
@@ -82,8 +81,8 @@ data &drawdown(drop=&i);
 run;
 
 proc expand data=&drawdown out=&drawdown method=none; 
-	%do &j=1 %to &nvar;
-		convert down&&&j / transformout=(lead 1); 
+	%do j=1 %to &nvar;
+		convert down&j / transformout=(lead 1); 
 	%end;
 run;
 
