@@ -1,11 +1,11 @@
-%macro Treynor_Ratio_test1(keep=FALSE);
+%macro max_drawdown_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Treynor_Ratio_test1_submit.sas";
+	filename x "&dir\max_drawdown_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,8 +17,8 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = TreynorRatio(returns[, 1:4, drop= FALSE],checkData(returns [,5, drop= FALSE]),Rf=0.01/252, scale = 252, modified = FALSE)";
+put "returns = Return.calculate(prices, method='log')";
+put "returns = maxDrawdown(returns,geometric = FALSE, invert=FALSE)";
 put "returns = data.frame(returns)";
 put "endsubmit;";
 run;
@@ -33,14 +33,14 @@ data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Treynor_Ratio(prices, BM = SPY , Rf= 0.01/252, scale = 252, method = DISCRETE, modified = FALSE)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%max_drawdown(prices, method=LOG, invert=FALSE)
 
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from TreynorRatio;
+ select count(*) into :nv TRIMMED from max_dd;
  %if ^&nv %then %do;
  	drop table TreynorRatio;
  %end;
@@ -51,9 +51,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(TreynorRatio)) %then %do;
+%if ^%sysfunc(exist(max_dd)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data TreynorRatio;
+data max_dd;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -76,15 +76,15 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=TreynorRatio 
-			 method=absolute
+			 compare=max_dd 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
-			 		))
-			noprint
-			 ;
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY)
+					)))
+			 noprint;
+by date;
 run;
+
 
 data _null_;
 if 0 then set diff nobs=n;
@@ -93,19 +93,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST Treynor_Ratio_TEST1;
+	%put NOTE: NO ERROR IN TEST MAX_DRAWDOWN_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Treynor_Ratio_TEST1;
+	%put ERROR: PROBLEM IN TEST MAX_DRAWDOWN_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices TreynorRatio returns_from_r;
+	delete diff prices max_dd returns_from_r;
 	quit;
 %end;
 
