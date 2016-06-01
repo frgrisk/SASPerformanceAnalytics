@@ -3,7 +3,7 @@
 *
 * PURPOSE: Martin ratio of the return distribution
 *
-* NOTES: To calculate Pain ratio we divide the difference of the portfolio return
+* NOTES: To calculate Martin ratio we divide the difference of the portfolio return
 *        and the risk free rate by the ulcer index
 *
 * MACRO OPTIONS:
