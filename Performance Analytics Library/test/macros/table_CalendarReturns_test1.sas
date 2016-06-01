@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%table_CalendarReturns(prices, method= DISCRETE, digits= 6, name=SPY)
+%table_CalendarReturns(prices, method= DISCRETE, digits= 6, asset=SPY)
 
 data Calendar_Returns;
 set Calendar_Returns;
