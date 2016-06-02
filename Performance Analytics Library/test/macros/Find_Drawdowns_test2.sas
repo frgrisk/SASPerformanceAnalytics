@@ -1,11 +1,11 @@
-%macro Calmar_Ratio_test2(keep=FALSE);
+%macro Find_Drawdowns_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Calmar_Ratio_test2_submit.sas";
+	filename x "&dir\Find_Drawdowns_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,9 +17,12 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = CalmarRatio(returns,scale=252)";
-put "returns = data.frame(returns)";
+put "returns = na.omit(Return.calculate(prices, method='log'))";
+put "drawdowns=findDrawdowns(returns, geometric=FALSE)";
+put "returns=drawdowns[[1]]";
+put "for(i in 2:7) {";
+put "  returns=cbind(returns,drawdowns[[i]])";
+put "}";
 put "endsubmit;";
 run;
 
@@ -29,20 +32,21 @@ proc iml;
 call importdatasetfromr("returns_from_R","returns");
 quit;
 
+
 data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Calmar_Ratio(prices, scale=252)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%Find_Drawdowns(prices,asset=IBM,method= LOG,SortDrawdown= FALSE);
 
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from CalmarRatio;
+ select count(*) into :nv TRIMMED from FindDrawdowns;
  %if ^&nv %then %do;
- 	drop table CalmarRatio;
+ 	drop table FindDrawdowns;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -51,9 +55,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(CalmarRatio)) %then %do;
+%if ^%sysfunc(exist(FindDrawdowns)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data CalmarRatio;
+data FindDrawdowns;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -76,13 +80,12 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=CalmarRatio 
+			 compare=UlcerIndex 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY)
 					)))
 			 noprint;
-by date;
 run;
 
 
@@ -93,19 +96,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST CALMAR_RATIO_TEST2;
+	%put NOTE: NO ERROR IN TEST FIND_DRAWDOWNS_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST CALMAR_RATIO_TEST2;
+	%put ERROR: PROBLEM IN TEST FIND_DRAWDOWNS_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices CalmarRatio returns_from_r;
+	delete diff prices FindDrawdowns returns_from_r;
 	quit;
 %end;
 

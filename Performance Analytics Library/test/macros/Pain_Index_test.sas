@@ -42,7 +42,7 @@ proc sql noprint;
  %local nv;
  select count(*) into :nv TRIMMED from PainIndex;
  %if ^&nv %then %do;
- 	drop table TreynorRatio;
+ 	drop table PainIndex;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
