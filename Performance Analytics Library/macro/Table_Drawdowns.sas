@@ -9,7 +9,7 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * asset - Required. Name of the variable to find drawdown interval for.
-* TOP - Required. The number of the drawdowns with worst depth to include.
+* TOP - Optional. The number of the drawdowns with worst depth to include.  Default=5.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * digits - Optional. Specifies number of digits displayed in the output. 
@@ -24,7 +24,7 @@
 *-------------------------------------------------------------*/
 %macro Table_Drawdowns(returns,
 							asset=,
-							TOP=,
+							TOP= 5,
 							method= DISCRETE,
 							digits= 4,
 							dateColumn= DATE,
