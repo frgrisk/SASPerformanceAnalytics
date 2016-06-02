@@ -3,10 +3,11 @@
 *
 * PURPOSE: Calculate the drawdown levels in a timeseries
 *
-* NOTES: 
+* NOTES: A drawdown is the decline of an investment since its most recent peak price. 
+*		 If the return of the investment is positive, the drawdown is zero. 
 *
 * MACRO OPTIONS:
-* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* returns - Required.  Data Set containing returns.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
