@@ -23,6 +23,7 @@ put "returns=drawdowns[[1]]";
 put "for(i in 2:7) {";
 put "  returns=cbind(returns,drawdowns[[i]])";
 put "}";
+put "colnames(returns) = c('return','begin','trough','end','length','peaktotrough','recovery')";
 put "endsubmit;";
 run;
 
@@ -58,32 +59,34 @@ quit ;
 %if ^%sysfunc(exist(FindDrawdowns)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data FindDrawdowns;
-	date = -1;
-	IBM = -999;
-	GE = IBM;
-	DOW = IBM;
-	GOOGL = IBM;
-	SPY = IBM;
+	return = -999;
+	begin = return;
+	trough = return;
+	end = return;
+	length = return;
+	peaktotrough = return;
+	recovery = return;
 run;
 %end;
 
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
-	date = 1;
-	IBM = 999;
-	GE = IBM;
-	DOW = IBM;
-	GOOGL = IBM;
-	SPY = IBM;
+	return = -999;
+	begin = return;
+	trough = return;
+	end = return;
+	length = return;
+	peaktotrough = return;
+	recovery = return;
 run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=UlcerIndex 
+			 compare=FindDrawdowns 
 			 out=diff(where=(_type_ = "DIF"
-			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY)
+			            and (fuzz(return) or fuzz(begin) or fuzz(trough) 
+			              or fuzz(end) or fuzz(length) or fuzz(peaktotrough) or fuzz(recovery)
 					)))
 			 noprint;
 run;
