@@ -8,8 +8,10 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
-* Rf - 
-* scale - 
+* Rf - Optional. the value or variable representing the risk free rate of return.    
+*      Default=0
+* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.    
+*         Default=1
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE

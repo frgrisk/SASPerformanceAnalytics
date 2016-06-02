@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: Drawdown_Peak.sas
+* NAME: Drawdowns.sas
 *
 * PURPOSE: Calculate the drawdowns since the previous peak
 *
@@ -19,7 +19,7 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
-%macro Drawdown_Peak(returns,
+%macro Drawdowns(returns,
 							method= DISCRETE,
 							dateColumn= DATE,
 							outData= drawdowns);
