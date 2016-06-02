@@ -8,6 +8,8 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* Rf - 
+* scale - 
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
@@ -20,6 +22,7 @@
 *-------------------------------------------------------------*/
 %macro Pain_Ratio(returns,
 							Rf= 0,
+							scale= 1,
 							method= DISCRETE,
 							dateColumn= DATE,
 							outData= PainRatio);

@@ -36,7 +36,7 @@
 %let ret_drawdown= %ranname();
 %let ret_drawdown2= %ranname();
 
-%Drawdowns(&returns, method= &method, dateColumn= DATE, outData=&ret_drawdown)
+%Drawdown_Peak(&returns, method= &method, dateColumn= DATE, outData=&ret_drawdown)
 
 data &ret_drawdown &ret_drawdown2;
 	set &ret_drawdown(firstobs=2) end=eof;
