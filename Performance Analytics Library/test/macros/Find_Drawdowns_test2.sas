@@ -1,11 +1,11 @@
-%macro Drawdown_Peak_test1(keep=FALSE);
+%macro Find_Drawdowns_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Drawdown_Peak_test1_submit.sas";
+	filename x "&dir\Find_Drawdowns_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,9 +17,13 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = Return.calculate(prices, method='discrete')";
-put "returns = DrawdownPeak(returns[,1]*100)/100";
-put "returns = data.frame(returns)";
+put "returns = na.omit(Return.calculate(prices, method='log'))";
+put "drawdowns=findDrawdowns(returns, geometric=FALSE)";
+put "returns=drawdowns[[1]]";
+put "for(i in 2:7) {";
+put "  returns=cbind(returns,drawdowns[[i]])";
+put "}";
+put "colnames(returns) = c('return','begin','trough','end','length','peaktotrough','recovery')";
 put "endsubmit;";
 run;
 
@@ -29,23 +33,21 @@ proc iml;
 call importdatasetfromr("returns_from_R","returns");
 quit;
 
+
 data prices;
 set input.prices;
 run;
 
-%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Drawdown_Peak(prices)
+%return_calculate(prices,updateInPlace=TRUE,method=LOG)
+%Find_Drawdowns(prices,asset=IBM,method= LOG,SortDrawdown= FALSE);
 
-data drawdownPeak;
-	set drawdownPeak(keep=ibm firstobs=2);
-run;
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from drawdownPeak;
+ select count(*) into :nv TRIMMED from FindDrawdowns;
  %if ^&nv %then %do;
- 	drop table TreynorRatio;
+ 	drop table FindDrawdowns;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -54,35 +56,37 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(drawdownPeak)) %then %do;
+%if ^%sysfunc(exist(FindDrawdowns)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data drawdownPeak;
-	date = -1;
-	IBM = -999;
-	GE = IBM;
-	DOW = IBM;
-	GOOGL = IBM;
-	SPY = IBM;
+data FindDrawdowns;
+	return = -999;
+	begin = return;
+	trough = return;
+	end = return;
+	length = return;
+	peaktotrough = return;
+	recovery = return;
 run;
 %end;
 
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
-	date = 1;
-	IBM = 999;
-	GE = IBM;
-	DOW = IBM;
-	GOOGL = IBM;
-	SPY = IBM;
+	return = -999;
+	begin = return;
+	trough = return;
+	end = return;
+	length = return;
+	peaktotrough = return;
+	recovery = return;
 run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=drawdownPeak 
+			 compare=FindDrawdowns 
 			 out=diff(where=(_type_ = "DIF"
-			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY)
+			            and (fuzz(return) or fuzz(begin) or fuzz(trough) 
+			              or fuzz(end) or fuzz(length) or fuzz(peaktotrough) or fuzz(recovery)
 					)))
 			 noprint;
 run;
@@ -95,19 +99,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST DRAWDOWN_PEAK_TEST1;
+	%put NOTE: NO ERROR IN TEST FIND_DRAWDOWNS_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST DRAWDOWN_PEAK_TEST1;
+	%put ERROR: PROBLEM IN TEST FIND_DRAWDOWNS_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices drawdownPeak returns_from_r;
+	delete diff prices FindDrawdowns returns_from_r;
 	quit;
 %end;
 
