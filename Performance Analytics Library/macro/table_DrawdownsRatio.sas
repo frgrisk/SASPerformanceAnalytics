@@ -10,9 +10,9 @@
 * scale - Optional. Number of periods in a year. {daily=252, monthly=12, quarterly=4, yearly=1}.  Default=1.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE.
-* digits - Optional. Specifies number of digits displayed in the output. 
+* digits - Optional. Specifies number of digits displayed in the output. Default=4.
 * dateColumn - Optional. Date column in Data Set.  Default=DATE.
-* outData - Optional. Specifies name of output Data Set of correlations.  Default="Correlations".
+* outData - Optional. Output table with ratio statistics.  Default="table_DrawdpwmsRatio".
 * printTable - Optional. Option to print output table. {PRINT, NOPRINT}.  Default= NOPRINT.
 * 
 * MODIFIED:
