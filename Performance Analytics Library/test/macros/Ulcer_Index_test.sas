@@ -42,7 +42,7 @@ proc sql noprint;
  %local nv;
  select count(*) into :nv TRIMMED from UlcerIndex;
  %if ^&nv %then %do;
- 	drop table TreynorRatio;
+ 	drop table UlcerIndex;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;

@@ -1,7 +1,7 @@
 /*---------------------------------------------------------------
 * NAME: Drawdowns.sas
 *
-* PURPOSE: Calculate the drawdown levels in a timeseries
+* PURPOSE: Calculate the drawdowns since the previous peak
 *
 * NOTES: A drawdown is the decline of an investment since its most recent peak price. 
 *		 If the return of the investment is positive, the drawdown is zero. 
@@ -14,10 +14,11 @@
 * outData - Optional. Output Data Set with drawdowns.  Default="drawdowns".
 *
 * MODIFIED:
-* 5/27/2016 – QY - Initial Creation
+* 5/31/2016 – QY - Initial Creation
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
+
 %macro Drawdowns(returns,
 							method= DISCRETE,
 							dateColumn= DATE,
