@@ -35,7 +35,7 @@
 %let drawdown= %ranname();
 %let i = %ranname();
 
-%Drawdowns(&returns, method=&method, outdata=&drawdown)
+%Drawdown_Peak(&returns, method=&method, outdata=&drawdown)
 
 proc means data= &drawdown min noprint;
 output out= &outData;

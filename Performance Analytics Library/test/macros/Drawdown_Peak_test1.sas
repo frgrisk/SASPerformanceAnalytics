@@ -18,15 +18,14 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = DrawdownPeak(returns[,1]*100)/100";
-put "returns = data.frame(returns)";
+put "ibm = DrawdownPeak(returns[,1]*100)/100";
 put "endsubmit;";
 run;
 
 proc iml;
 %include x;
 
-call importdatasetfromr("returns_from_R","returns");
+call importdatasetfromr("returns_from_R","ibm");
 quit;
 
 data prices;
@@ -81,8 +80,7 @@ run;
 proc compare base=returns_from_r 
 			 compare=drawdownPeak 
 			 out=diff(where=(_type_ = "DIF"
-			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY)
+			            and (fuzz(IBM)
 					)))
 			 noprint;
 run;
