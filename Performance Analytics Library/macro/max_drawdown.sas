@@ -7,7 +7,7 @@
 *		 user to output drawdown as either positive or negative numbers to serve different purposes.
 *
 * MACRO OPTIONS:
-* returns - Required.  Data Set containing returns with option to include risk free rate variable.
+* returns - Required.  Data Set containing returns.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * invert - Optional. Specify whether to invert the drawdown measure.  Default=TRUE.
