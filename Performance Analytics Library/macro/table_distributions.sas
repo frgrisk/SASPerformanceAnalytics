@@ -48,7 +48,7 @@
 /*	  and upcase(name) ^= upcase("&dateColumn");*/
 /*quit;*/
 
-
+%local z i;
 %let z= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
 %put VARS IN table_distribution: (&z);
 
