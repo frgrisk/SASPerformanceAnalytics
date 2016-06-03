@@ -37,15 +37,15 @@
 %local _temp_sr _temp_std vars i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &BM &Rf); 
-%put VARS IN CoMoments: (&vars);
+%put VARS IN MSquared: (&vars);
 
 %let _temp_std= %ranname();
 %let _temp_sr= %ranname();
 
 %let i= %ranname();
 
-%SharpeRatio_annualized(&returns,scale=&scale,Rf=&rf,outData=&_temp_sr,method=&method,VARDEF = &VARDEF,dateColumn=&dateColumn)
-%StdDev_annualized(&returns,scale=&scale,VARDEF = &VARDEF,outData= &_temp_std,dateColumn=&dateColumn)
+%SharpeRatio_annualized(&returns,scale=&scale,Rf=&Rf,method=&method,VARDEF = &VARDEF,dateColumn=&dateColumn, outData=&_temp_sr)
+%StdDev_annualized(&returns,scale=&scale,VARDEF = &VARDEF,dateColumn=&dateColumn ,outData= &_temp_std)
 
 data _null_;
 set &_temp_std;
