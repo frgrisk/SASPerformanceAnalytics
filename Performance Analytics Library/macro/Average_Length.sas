@@ -8,7 +8,7 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
 *          Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with drawdowns.  Default="AverageLength".
+* outData - Optional. Output Data Set with average length.  Default="AverageLength".
 *
 * MODIFIED:
 * 6/03/2016 – RM - Initial Creation
