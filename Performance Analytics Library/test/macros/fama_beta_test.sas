@@ -1,11 +1,11 @@
-%macro fama_beta_test1(keep=FALSE);
+%macro fama_beta_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\fama_beta_test1_submit.sas";
+	filename x "&dir\fama_beta_test_submit.sas";
 %end;
 
 data _null_;
@@ -58,7 +58,6 @@ data fama_beta;
 	GE = IBM;
 	DOW = IBM;
 	GOOGL = IBM;
-	SPY = IBM;
 run;
 %end;
 
@@ -70,20 +69,16 @@ data returns_from_r;
 	GE = IBM;
 	DOW = IBM;
 	GOOGL = IBM;
-	SPY = IBM;
 run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=fama_beta 
-			 method=absolute
-			 criterion= 0.0001
+			 compare=fama_beta
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
-			 		))
-			noprint
-			 ;
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL))
+					))
+			 noprint;
 run;
  
 data _null_;
@@ -93,12 +88,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST fama_beta_test1;
+	%put NOTE: NO ERROR IN TEST FAMA_BETA_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST fama_beta_test1;
+	%put ERROR: PROBLEM IN TEST FAMA_BETA_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
