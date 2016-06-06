@@ -11,7 +11,7 @@
 * digits - Optional. Specifies number of digits displayed in the output. 
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF}.  Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Specifies name of output Data Set of correlations.  Default="Correlations".
+* outData - Optional. Specifies name of output Data Set of CAPM statistics.  Default="CAPM".
 * printTable - Optional. Option to print output table. {PRINT, NOPRINT}.  Default= NOPRINT
 * 
 * MODIFIED:

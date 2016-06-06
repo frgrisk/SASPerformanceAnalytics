@@ -9,7 +9,7 @@
 * MACRO OPTIONS:
 * data - Required. Data set that contains the data of interest. {ie. data = my_data_set}
 * var - Required. Name of the variable to be manipulated.
-* by - Required. Speficies the variable that divides data into subgroups.
+* by - Required. Specifies the variable that divides data into subgroups.
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

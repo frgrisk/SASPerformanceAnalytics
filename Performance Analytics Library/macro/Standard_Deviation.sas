@@ -14,7 +14,7 @@
           Default=1
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with annualized standard deviation.  Default="StdDev". 
+* outData - Optional. Output Data Set with standard deviation.  Default="StdDev". 
 *
 * MODIFIED:
 * 6/3/2015 – DP - Initial Creation
