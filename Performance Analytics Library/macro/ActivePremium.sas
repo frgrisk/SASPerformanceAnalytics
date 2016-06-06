@@ -14,7 +14,7 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. output Data Set with annualized returns.  Default="active_premium"
+* outData - Optional. Output Data Set with active premium.  Default="active_premium"
 *
 * MODIFIED:
 * 7/22/2015 – CJ - Initial Creation

@@ -12,7 +12,7 @@
 *          Default=DISCRETE.
 * digits - Optional. Specifies number of digits displayed in the output. Default=4.
 * dateColumn - Optional. Date column in Data Set.  Default=DATE.
-* outData - Optional. Output table with ratio statistics.  Default="table_DrawdpwmsRatio".
+* outData - Optional. Output table with drawdown ratios.  Default="table_DrawdownsRatio".
 * printTable - Optional. Option to print output table. {PRINT, NOPRINT}.  Default= NOPRINT.
 * 
 * MODIFIED:

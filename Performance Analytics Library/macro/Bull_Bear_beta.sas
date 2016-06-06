@@ -11,7 +11,7 @@
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set of asset Alphas and Betas. Default= "alphas_and_betas"
+* outData - Optional. Output Data Set of bull and bear betas. Default= "bull_and_bear"
 *
 * MODIFIED:
 * 5/18/2016 – QY - Initial Creation

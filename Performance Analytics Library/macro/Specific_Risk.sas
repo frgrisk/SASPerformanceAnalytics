@@ -14,7 +14,7 @@ the benchmark. The systematic risk is annualized.
           Default=1
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set of systematic risk.  Default="Risk_specific".
+* outData - Optional. Output Data Set of specific risk.  Default="Risk_specific".
 
 * MODIFIED:
 * 7/14/2015 – CJ - Initial Creation
