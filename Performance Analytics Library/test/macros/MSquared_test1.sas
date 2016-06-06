@@ -21,6 +21,7 @@ put "returns = na.omit(Return.calculate(prices, method='discrete'))";
 put "tM2 = function(Ra,Rb,Rf=0,scale=NA,geometric=TRUE){";
 put "  SR = SharpeRatio.annualized(Ra,Rf=Rf,scale=scale,geometric=geometric)";
 put "  sb = StdDev.annualized(Rb,scale=scale)";
+put "  rm = Return.annualized(Rb,scale=scale,geometric=geometric)";
 put "  if (geometric) {";
 put "    # simple returns";
 put "    Rf = (1+Rf)^scale - 1";
@@ -28,7 +29,7 @@ put "  } else {";
 put "    # compound returns";
 put "    Rf = Rf * scale";
 put "  }";
-put "  result = SR[1,]*sb[1,1] + Rf";
+put "  result = SR[1,]*sb[1,1] + Rf -rm[1,1]";
 put "  return(result)";
 put "}";
 put "returns = data.frame(t(tM2(returns[, 1:4], returns[,5], Rf= 0.01/252, scale=252, geometric=TRUE)))";
@@ -46,7 +47,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, method = DISCRETE, outData= MSquared)
+%MSquared(prices, BM= SPY, Rf= 0.01/252, scale= 252, method = DISCRETE, NET=TRUE, outData= MSquared)
 
 
 /*If tables have 0 records then delete them.*/
@@ -88,17 +89,14 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=MSquared 
-			 method=absolute
-			 criterion= 0.0001
+			 compare=MSquared
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
-			 		))
-			noprint
-			 ;
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL))
+					))
+			 noprint;
 run;
- 
+
 data _null_;
 if 0 then set diff nobs=n;
 call symputx("n",n,"l");
