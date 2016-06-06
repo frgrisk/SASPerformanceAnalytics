@@ -15,7 +15,7 @@
            Default=DISCRETE
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=date
-* outData - Optional. Output Data Set with risk premium.  Default="Annualized_SharpeRatio".
+* outData - Optional. Output Data Set with annualized Sharpe Ratio.  Default="Annualized_SharpeRatio".
 *
 * MODIFIED:
 * 6/12/2015 – DP - Initial Creation

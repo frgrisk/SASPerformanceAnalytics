@@ -9,7 +9,7 @@
            Default=DISCRETE
 * digits - Optional. Specifies the amount of digits to display in output. Default= 4
 * dateColumn - Optional. Date column in Data Set. Default=Date.
-* outData - Optional. Output Data Set of calendar_returns.  Default="Calendar_Returns".
+* outData - Optional. Output Data Set of calendar returns.  Default="Calendar_Returns".
 * printTable - Optional. Option to print returns of all or one asset. {PRINT, NOPRINT}. Default= NOPRINT
 * asset - Required. Name of the variable to print if printTable= PRINT.
 

@@ -11,7 +11,7 @@
 * digits - Optional. Specifies the amount of digits to display in output. Default= 4
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set of systematic risk.  Default="table_SpecificRisk".
+* outData - Optional. Output Data Set of specific risk.  Default="table_SpecificRisk".
 * printTable - Optional. Option to print output data set.  {PRINT, NOPRINT} [Default= NOPRINT]
 
 * MODIFIED:
