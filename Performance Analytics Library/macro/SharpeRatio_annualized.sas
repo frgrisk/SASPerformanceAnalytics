@@ -56,57 +56,19 @@
 							outData= &Ann_StD);
 
 data &outData (drop= &j);
-retain _STAT_;
-format _STAT_ $32.;
-set &Chained_Ex_Ret &Ann_StD (in=s);
-drop &dateColumn;
-_STAT_= 'Sharpe_Ratio';
-array minRf[&nv] &ret;
+	format _STAT_ $32.;
+	set &Chained_Ex_Ret &Ann_StD (in=s);
+	drop &dateColumn;
+	_STAT_= 'Sharpe_Ratio';
+	array minRf[&nv] &ret;
 
-do &j=1 to &nv;
-	minRf[&j] = lag(minRf[&j])/minRf[&j];
-end;
+	do &j=1 to &nv;
+		minRf[&j] = lag(minRf[&j])/minRf[&j];
+	end;
 
-if s;
+	if s;
 run;
 
-quit;
-/*%local vars nv _tempRP _tempStd _tempRPStd;*/
-/**/
-/*/*Find all variable names excluding the date column and risk free variable*/*/
-/*%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf); */
-/*%put VARS IN SharpeRatio_annualized: (&vars);*/
-/**/
-/*%let nv = %sysfunc(countw(&vars));*/
-/**/
-/*%let _tempRP= %ranname();*/
-/*%let _tempStd= %ranname();*/
-/*%let Ann_St= %ranname();*/
-/**/
-/*%let i= %ranname();*/
-/**/
-/*%return_annualized(&returns, scale= &scale, method= &method, outData= &Chained_Ex_Ret);*/
-/*%return_excess(&Chained_Ex_Ret, Rf= &Rf, dateColumn= &dateColumn, outReturn= &Chained_Ex_Ret);*/
-/*%Standard_Deviation(&returns,annualized= TRUE, scale= &scale,dateColumn= &dateColumn,outData= &Ann_StD);*/
-/**/
-/*data &outData;*/
-/*set RP Std (in=s);*/
-/*drop &i &dateColumn;*/
-/*array vars[&nv] &vars;*/
-/**/
-/*do &i=1 to &nv;*/
-/*	vars[&i] = lag(vars[&i])/vars[&i];*/
-/*end;*/
-
-/*if s;*/
-/*run;*/
-
-/*quit; */
-
-/*proc datasets lib= work nolist;*/
-/*delete &_tempRP &_tempStd;*/
-/*run;*/
-/*quit;*/;
 
 proc datasets lib=work nolist;
 delete &Ann_StD &Chained_Ex_Ret;

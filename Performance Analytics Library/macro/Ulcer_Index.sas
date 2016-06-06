@@ -37,7 +37,7 @@
 %let stat_n= %ranname();
 %let i = %ranname();
 
-%Drawdown_Peak(&returns, method= &method, dateColumn= &dateColumn, outData= &drawdown)
+%Drawdowns(&returns, method= &method, dateColumn= &dateColumn, outData= &drawdown)
 
 data &drawdown(drop=&i);
 	set &drawdown(firstobs=2);

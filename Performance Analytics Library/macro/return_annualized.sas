@@ -17,7 +17,7 @@
 * outData - Optional. Output Data Set with annualized returns.  Default="annualized_returns". 
 *
 * MODIFIED:
-* 6/2/2015 – DP - Initial Creation
+* 6/02/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/25/2016 - QY - Edit format of output
