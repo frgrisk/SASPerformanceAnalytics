@@ -98,11 +98,11 @@ run;
 	%let notes=Differences detected in outputs.;
 %end;
 
-/*%if &keep=FALSE %then %do;*/
-/*	proc datasets lib=work nolist;*/
-/*	delete prices diff returns_from_r mean_abs_dev;*/
-/*	quit;*/
-/*%end;*/
+%if &keep=FALSE %then %do;
+	proc datasets lib=work nolist;
+	delete prices diff returns_from_r mean_abs_dev;
+	quit;
+%end;
 
 filename x clear;
 

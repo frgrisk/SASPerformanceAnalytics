@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Adjusted_SharpeRatio(prices,Rf= 0.01/252, scale= 252)
+%Adjusted_SharpeRatio(prices,Rf= 0.01/252, scale= 252,VARDEF=N)
 
 
 /*If tables have 0 records then delete them.*/
@@ -82,14 +82,13 @@ run;
 
 proc compare base=returns_from_r 
 			 compare=adjusted_SharpeRatio
-			 method= absolute
-			 criterion= 0.0001 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 
-			              or abs(GOOGL)> 1e-4 or abs(SPY)>1e-4)
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL) or fuzz(SPY))
 					))
 			 noprint;
 run;
+
 
 data _null_;
 if 0 then set diff nobs=n;
