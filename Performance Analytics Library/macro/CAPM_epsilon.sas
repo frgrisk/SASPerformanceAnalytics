@@ -39,7 +39,7 @@
 %local vars _tempRP Betas meanRet exBM _tempAlpha _tempBeta betaVal_t i s;
 /*Find all variable names excluding the date column, benchmark, and risk free variables*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
-%put VARS IN CAPM_alpha_beta: (&vars);
+%put VARS IN CAPM_epsilon: (&vars);
 /*Find number of variables in data set excluding the date column, benchmark, and risk free variables*/
 %let nvars = %sysfunc(countw(&vars));
 /*Define temporary data set names with random names*/
