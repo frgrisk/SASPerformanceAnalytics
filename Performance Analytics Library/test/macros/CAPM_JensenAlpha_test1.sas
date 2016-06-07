@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = CAPM.jensenAlpha(returns[, 1:4], returns[,5], Rf= 0.01/252, scale= 252)";
+put "returns = CAPM.jensenAlpha(returns[, 1:4], returns[,5], Rf= 0.01/252)";
 put "endsubmit;";
 run;
 
@@ -75,16 +75,14 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=Jensen_Alpha 
-			 method=absolute
-			 criterion= 0.0001
+			 compare=Jensen_Alpha
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
-			 		))
-			noprint
-			 ;
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL))
+					))
+			 noprint;
 run;
+
  
 data _null_;
 if 0 then set diff nobs=n;

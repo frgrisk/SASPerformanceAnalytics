@@ -59,14 +59,12 @@ data _null_;
 	set &_temp_std;
 	call symputx("sb",put(&Bm,best32.),"l");
 run;
-%put &sb;
 
 %return_annualized(&_temp_bm, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &_temp_bm);
 data _null_;
 	set &_temp_bm;
 	call symputx("rm",put(&Bm,best32.),"l");
 run;
-%put &rm;
 
 data &outData(drop=&i);
 	format _STAT_ $32.;
