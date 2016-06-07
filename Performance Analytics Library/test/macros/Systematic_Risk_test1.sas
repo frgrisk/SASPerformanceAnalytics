@@ -79,7 +79,7 @@ proc compare base=returns_from_r
 			 compare=Risk_systematic 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
-			              or fuzz(GOOGL) or fuzz(SPY))
+			              or fuzz(GOOGL))
 					))
 			 noprint;
 run;

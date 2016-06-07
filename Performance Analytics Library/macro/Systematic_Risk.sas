@@ -43,8 +43,12 @@ the benchmark. The systematic risk is annualized.
 					outData= &outData,
 					printTable= NOPRINT);
 
+%local vars;
+%let vars= %get_number_column_names(_table= &returns, _exclude=&dateColumn _stat_ &BM);
+
 data &outData;
 	set &outData(where=(_STAT_ = "Systematic Risk"));
+	format &vars best12.;
 run;
 
 %mend;

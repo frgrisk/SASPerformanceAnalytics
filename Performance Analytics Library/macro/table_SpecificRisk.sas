@@ -44,8 +44,12 @@
 *Get Variables in the RETURNS data set
 ************************************/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM);
-%put VARS IN Specific_Risk: (&vars);
+%put VARS IN table_SpecificRisk: (&vars);
 %let n=%sysfunc(countw(&vars));
+
+data &returns;
+	set &returns(firstobs=2);
+run;
 
 /*Calculate excess from benchmark*/
 %let out_excess = %ranname();
@@ -67,7 +71,7 @@
 %let out_reg=%ranname();
 proc reg data=&out_excess noprint ;
 model &vars  = &bm;
-output out=&out_reg(drop=&dateColumn) 
+output out=&out_reg 
 	pred=
 	%do i=1 %to &n;
 		%let var=%scan(&vars,&i);
