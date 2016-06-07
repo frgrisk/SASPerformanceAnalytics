@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Specific_Risk(prices, BM= SPY, Rf= 0.01/252, scale= 252)
+%Specific_Risk(prices, BM= SPY, Rf= 0.01/252, scale= 252, VARDEF=N)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -71,16 +71,16 @@ data returns_from_r;
 run;
 %end;
 
+
 proc compare base=returns_from_r 
-			 compare= Risk_specific 
-			 method= absolute
-			 criterion= 0.0001
-			 outnoequal
+			 compare=Risk_specific 
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM)> 1e-4 or abs(GE)> 1e-4 or abs(DOW)> 1e-4 or abs(GOOGL)> 1e-4)
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL))
 					))
 			 noprint;
 run;
+
 
 data _null_;
 if 0 then set diff nobs=n;
