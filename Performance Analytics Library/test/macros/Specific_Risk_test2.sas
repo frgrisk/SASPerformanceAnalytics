@@ -1,11 +1,11 @@
-%macro Systematic_Risk_test2(keep=FALSE);
+%macro Specific_Risk_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Systematic_Risk_test2_submit.sas";
+	filename x "&dir\Specific_Risk_test2_submit.sas";
 %end;
 
 data _null_;
@@ -17,9 +17,9 @@ put "                 sep=',',";
 put "                 header=TRUE";
 put "                 )";
 put "		)";
-put "returns = na.omit(Return.calculate(prices, method='discrete'))";
-put "returns = SystematicRisk(returns[, 1:4, drop= FALSE], returns [,5, drop= FALSE], 0.01, scale = 1)";
-put "returns = data.frame(returns)";
+put "returns = na.omit(Return.calculate(prices))";
+put "returns = apply.monthly(returns,FUN=Return.cumulative,geometric=TRUE)";
+put "returns = SpecificRisk(returns[, 1:4], returns[, 5], Rf= 0.01/12)";
 put "endsubmit;";
 run;
 
@@ -34,14 +34,32 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Systematic_Risk(prices, BM= SPY, Rf= 0.01);
+%return_accumulate(prices,method=DISCRETE,toFreq=MONTH,updateInPlace=TRUE)
+
+%macro Edit_returns(returns, dateColumn=DATE);
+%local ret i;
+%let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%let i= %ranname();
+
+data prices(drop=&i);
+	set prices;
+	array vars[*] &ret;
+	do &i=1 to dim(vars);
+	if _n_=1 then
+		vars[&i] = .;
+	end;
+run;
+%mend;
+
+%Edit_returns(prices)
+%Specific_Risk(prices, BM= SPY, Rf= 0.01/12, scale= 12, VARDEF=N)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from Risk_systematic;
+ select count(*) into :nv TRIMMED from Risk_specific;
  %if ^&nv %then %do;
- 	drop table Risk_systematic;
+ 	drop table Risk_specific;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,10 +68,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(Risk_systematic)) %then %do;
+%if ^%sysfunc(exist(Risk_specific)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data Risk_systematic;
-	date = -1;
+data Risk_specific;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -65,7 +82,6 @@ run;
 %if ^%sysfunc(exist(returns_from_r)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data returns_from_r;
-	date = 1;
 	IBM = 999;
 	GE = IBM;
 	DOW = IBM;
@@ -76,13 +92,14 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=Risk_systematic 
+			 compare=Risk_specific 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
 					))
 			 noprint;
 run;
+
 
 data _null_;
 if 0 then set diff nobs=n;
@@ -91,20 +108,22 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST Systematic_Risk_TEST2;
+	%put NOTE: NO ERROR IN TEST Specific_Risk_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Systematic_Risk_TEST2;
+	%put ERROR: PROBLEM IN TEST Specific_Risk_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices Risk_systematic returns_from_r;
+	delete prices diff returns_from_r Risk_specific;
 	quit;
 %end;
+
+filename x clear;
 
 %mend;
