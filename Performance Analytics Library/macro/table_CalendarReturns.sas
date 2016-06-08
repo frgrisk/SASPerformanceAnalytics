@@ -37,7 +37,7 @@
 
 
 %let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
-%put RET IN Specific_Risk: (&ret);
+%put RET IN table_CalendarReturns: (&ret);
 
 %let year_month = %ranname();
 %let i = %ranname();

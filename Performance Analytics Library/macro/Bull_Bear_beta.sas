@@ -28,7 +28,7 @@
 %local vars RP bull bear bull_Beta bear_Beta;
 /*Find all variable names excluding the date column, benchmark, and risk free variables*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
-%put VARS IN CAPM_alpha_beta: (&vars);
+%put VARS IN Bull_Bear_beta: (&vars);
 /*Define temporary data set names with random names*/
 %let RP= %ranname();
 %let bull= %ranname();
