@@ -34,9 +34,10 @@
 						dateColumn= DATE, 
 						outData= UpsideRisk);
 
-%local nv stat_sum stat_n vars i;
+%local nv stat_sum stat_n temp vars i;
 %let stat_sum= %ranname();
 %let stat_n= %ranname();
+%let temp= %ranname();
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &MAR);
 %put VARS IN upside_risk: (&vars);
@@ -44,13 +45,7 @@
 %let nv= %sysfunc(countw(&vars));
 %let i= %ranname();
 
-%if %upcase (&group)= FULL %then %do;
-	proc means data=&returns n noprint;
-		output out=&stat_n n=;
-	run;
-%end;
-
-data &returns(drop=&i &dateColumn);
+data &temp(drop=&i &dateColumn);
 	set &returns(firstobs=2);
 	array ret[*] &vars;
 
@@ -59,8 +54,8 @@ data &returns(drop=&i &dateColumn);
 	end;
 run;
 
-data &returns(drop=&i);
-	set &returns;
+data &temp(drop=&i);
+	set &temp;
 	array ret[*] &vars;
 
 	do &i= 1 to dim(ret);
@@ -68,17 +63,22 @@ data &returns(drop=&i);
 	end;
 run;
 
-
-%if %upcase(&group)= SUBSET %then %do;
+%if %upcase (&group)= FULL %then %do;
 	proc means data=&returns n noprint;
+		output out=&stat_n n=;
+	run;
+%end;
+
+%else %if %upcase(&group)= SUBSET %then %do;
+	proc means data=&temp n noprint;
 		output out=&stat_n n=;
 	run;
 %end;
 
 
 %if %upcase (&option)= RISK %then %do;
-	data &returns(drop=&i);
-		set &returns;
+	data &temp(drop=&i);
+		set &temp;
 		array ret[*] &vars;
 
 		do &i= 1 to dim(ret);
@@ -86,7 +86,7 @@ run;
 		end;
 	run;
 
-	proc means data=&returns sum noprint;
+	proc means data=&temp sum noprint;
 		output out=&stat_sum sum=;
 	run;
 
@@ -101,8 +101,8 @@ run;
 %end;
 
 %else %if %upcase(&option)= VARIANCE %then %do;
-	data &returns(drop=&i);
-		set &returns;
+	data &temp(drop=&i);
+		set &temp;
 		array ret[*] &vars;
 
 		do &i= 1 to dim(ret);
@@ -110,7 +110,7 @@ run;
 		end;
 	run;
 
-	proc means data=&returns sum noprint;
+	proc means data=&temp sum noprint;
 		output out=&stat_sum sum=;
 	run;
 
@@ -125,7 +125,7 @@ run;
 %end;
 
 %else %if %upcase(&option)= POTENTIAL %then %do;
-	proc means data=&returns sum noprint;
+	proc means data=&temp sum noprint;
 		output out=&stat_sum sum=;
 	run;
 
@@ -148,7 +148,7 @@ data &outData;
 run;
 
 proc datasets lib= work nolist;
-delete &stat_sum &stat_n;
+delete &stat_sum &stat_n &temp
 run;
 quit;
 							
