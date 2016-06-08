@@ -29,7 +29,7 @@
 							dateColumn= DATE,
 							outData= Kappa);
 
-%local vars nvars temp_excess means sum i nrows Rf ii;
+%local vars nvars temp_excess means sum nrows Rf ii;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
 %put VARS IN Kappa: (&vars);
@@ -37,7 +37,6 @@
 %let temp_excess=%ranname();
 %let means=%ranname();
 %let sum=%ranname();
-%let i=%ranname();
 %let nvars = %sysfunc(countw(&vars));
 %let ii=%ranname();
 
@@ -47,18 +46,16 @@ data &temp_excess;
 	set &temp_excess(firstobs=2);
 run; 
 
-%do &i=1 %to &nvars;
-	%local nrow&&&i;
+%do i=1 %to &nvars;
+	%local nrows&i;
 	proc sql noprint;
-		select count(%sysfunc(scan(&vars, &&&i)))
-		into   :nrows&&&i
+		select count(%sysfunc(scan(&vars, &i)))
+		into   :nrows&i
 		from   &temp_excess
 		%if %upcase(&group)='subset' %then %do;
-			where %sysfunc(scan(&vars, &&&i))<0;
+			where %sysfunc(scan(&vars, &i))<0;
 		%end;
 	quit;
-			%put i=&&&i;
-		%put &&&&nrows&&&i;
 %end;
 
 proc means data=&returns noprint;
@@ -87,21 +84,22 @@ proc means data=&temp_excess noprint;
 run;
 
 data &outData;
+	format _stat_ $32.;
 	set &sum &means;
 	array vars[*] &vars;
 	array kappa[&nvars] (&nvars*0);
 	array power[&nvars];
 
-	%do &ii=1 %to &nvars;
-	%put &&&ii;
-		kappa[&&&ii] = (vars[&&&ii] - &MAR)/ ((LAG(power[&&&ii])/%eval(&&&&nrows&&&ii)) ** (1/&L));
+	%do i=1 %to &nvars;
+		kappa[&i] = (vars[&i] - &MAR)/ ((LAG(power[&i])/&&nrows&i) ** (1/&L));
 	%end;
 	rename
-		%do &i=1 %to &nvars;
-			kappa&&&i=%sysfunc(scan(&vars, &&&i))
+		%do i=1 %to &nvars;
+			kappa&i=%sysfunc(scan(&vars, &i))
 		%end;
 	;
-	keep kappa1-kappa&nvars;
+	_stat_ = "Kappa";
+	keep _stat_ kappa1-kappa&nvars;
 	if _n_=2 then output;
 run;
 
