@@ -1,15 +1,23 @@
 /*---------------------------------------------------------------
 * NAME: upside_risk.sas
 *
-* PURPOSE: 
+* PURPOSE: Calculate upside risk, downside variance, or downside potential which measure the 
+*          variability of performance over a minimum target rate.
+*
+* NOTES: Option group specify divisor "n" as the number of full observations or the number of observations
+*        which over-perform the minimum acceptable return(MAC). We use the positive value of difference between returns and MAC
+*        as the measure of upside. Upside potential is the sum of the differences over n. Upside variance
+*        is the sum of square of the differences over n. Upside risk the square root of downside variance. 
 *
 * MACRO OPTIONS:
 * returns - Required. Data Set containing returns with option to include risk free rate variable.
-* MAR - 
+* MAR - Optional. Minimum Acceptable Return. Default=0
 * scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
           Default=1
-* option- Required.  
-* group - Optional. 
+* option- Required. {RISK, VARIANCE, POTENTIAL}.  Choose "RISK" to calculate the upside risk, 
+*					 "VARIANCE" to calculate upside variance, or "POTENTIAL" to calculate upside potential.
+* group - Optional. Specifies to choose full observations or subset observations as 'n' in the divisor. {FULL, SUBSET}
+*		  Default=FULL
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. output Data Set with upside risks.  Default="UpsideRisk"
 *
@@ -37,9 +45,9 @@
 %let i= %ranname();
 
 %if %upcase (&group)= FULL %then %do;
-proc means data=&returns n noprint;
-	output out=&stat_n n=;
-run;
+	proc means data=&returns n noprint;
+		output out=&stat_n n=;
+	run;
 %end;
 
 data &returns(drop=&i &dateColumn);
@@ -62,74 +70,73 @@ run;
 
 
 %if %upcase(&group)= SUBSET %then %do;
-proc means data=&returns n noprint;
-	output out=&stat_n n=;
-run;
+	proc means data=&returns n noprint;
+		output out=&stat_n n=;
+	run;
 %end;
 
 
 %if %upcase (&option)= RISK %then %do;
-data &returns(drop=&i);
-	set &returns;
-	array ret[*] &vars;
+	data &returns(drop=&i);
+		set &returns;
+		array ret[*] &vars;
 
-	do &i= 1 to dim(ret);
-		ret[&i]=ret[&i]**2;
-	end;
-run;
+		do &i= 1 to dim(ret);
+			ret[&i]=ret[&i]**2;
+		end;
+	run;
 
-proc means data=&returns sum noprint;
-	output out=&stat_sum sum=;
-run;
+	proc means data=&returns sum noprint;
+		output out=&stat_sum sum=;
+	run;
 
-data &outData(keep=_stat_ &vars);
-	set &stat_sum &stat_n;
-	array ret[*] &vars;
+	data &outData(keep=_stat_ &vars);
+		set &stat_sum &stat_n;
+		array ret[*] &vars;
 
-	do &i= 1 to dim(ret);
-		ret[&i]=sqrt(lag(ret[&i])/ret[&i]);
-	end;
-run;
+		do &i= 1 to dim(ret);
+			ret[&i]=sqrt(lag(ret[&i])/ret[&i]);
+		end;
+	run;
 %end;
 
 %else %if %upcase(&option)= VARIANCE %then %do;
-data &returns(drop=&i);
-	set &returns;
-	array ret[*] &vars;
+	data &returns(drop=&i);
+		set &returns;
+		array ret[*] &vars;
 
-	do &i= 1 to dim(ret);
-		ret[&i]=ret[&i]**2;
-	end;
-run;
+		do &i= 1 to dim(ret);
+			ret[&i]=ret[&i]**2;
+		end;
+	run;
 
-proc means data=&returns sum noprint;
-	output out=&stat_sum sum=;
-run;
+	proc means data=&returns sum noprint;
+		output out=&stat_sum sum=;
+	run;
 
-data &outData(keep=_stat_ &vars);
-	set &stat_sum &stat_n;
-	array ret[*] &vars;
+	data &outData(keep=_stat_ &vars);
+		set &stat_sum &stat_n;
+		array ret[*] &vars;
 
-	do &i= 1 to dim(ret);
-		ret[&i]=lag(ret[&i])/ret[&i];
-	end;
-run;
-
+		do &i= 1 to dim(ret);
+			ret[&i]=lag(ret[&i])/ret[&i];
+		end;
+	run;
 %end;
 
 %else %if %upcase(&option)= POTENTIAL %then %do;
-proc means data=&returns sum noprint;
-	output out=&stat_sum sum=;
-run;
+	proc means data=&returns sum noprint;
+		output out=&stat_sum sum=;
+	run;
 
-data &outData(keep=_stat_ &vars);
-	set &stat_sum &stat_n;
-	array ret[*] &vars;
+	data &outData(keep=_stat_ &vars);
+		set &stat_sum &stat_n;
+		array ret[*] &vars;
 
-	do &i= 1 to dim(ret);
-		ret[&i]=lag(ret[&i])/ret[&i];
-	end;
-run;
+		do &i= 1 to dim(ret);
+			ret[&i]=lag(ret[&i])/ret[&i];
+		end;
+	run;
 %end;
 
 
