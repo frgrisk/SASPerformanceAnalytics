@@ -1,21 +1,21 @@
 /*---------------------------------------------------------------
-* NAME: return_excess.sas
+* NAME: KellyRatio.sas
 *
-* PURPOSE: calculate simple or compound returns from prices in excess of a given "risk free" rate.
+* PURPOSE: calculate Kelly ratio of a strategy.
 *
-* NOTES: Calculates the risk premium of a desired asset returns and a risk free rate.   Option to
-* 		 input an unchanging value (0.02) or a variable risk free rate included in a return data set;
+* NOTES: The Kelly Criterion was identified by John Kelly, which can be expressed as the expected excess return
+*		 of a strategy divided by the expected variance of the excess return.
 *
 * MACRO OPTIONS:
-* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* returns - Required. Data Set containing returns.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* method - Optional. Option to use half-Kelly. Default=HALF
+* VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with risk premium.  Default="risk_premium".
+* outData - Optional. Output Data Set with Kelly ratio.  Default="KellyRatio".
 *
 * MODIFIED:
-* 5/28/2015 – CJ - Initial Creation
-* 3/05/2016 – RM - Comments modification
-* 3/09/2016 - QY - parameter consistency
+* 6/07/2016 – RM - Initial Creation
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -68,7 +68,7 @@ data &outData;
 			ret[&i] = ret[&i]/LAG(ret[&i])/2;
 		%end;
 		%else %do;
-			ret[&i] = ret[&i]/LAG(ret[&i])
+			ret[&i] = ret[&i]/LAG(ret[&i]);
 		%end;
 	end;
 	_stat_ = "KellyRatio";

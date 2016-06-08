@@ -29,7 +29,7 @@
 							dateColumn= DATE,
 							outData= Kappa);
 
-%local vars nvars temp_excess means sum nrows Rf ii;
+%local vars nvars temp_excess means sum nrows Rf ii i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
 %put VARS IN Kappa: (&vars);
@@ -52,7 +52,7 @@ run;
 		select count(%sysfunc(scan(&vars, &i)))
 		into   :nrows&i
 		from   &temp_excess
-		%if %upcase(&group)='subset' %then %do;
+		%if %upcase(&group)=SUBSET %then %do;
 			where %sysfunc(scan(&vars, &i))<0;
 		%end;
 	quit;
