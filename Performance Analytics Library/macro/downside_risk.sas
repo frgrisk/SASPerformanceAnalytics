@@ -134,7 +134,7 @@ run;
 		array ret[*] &vars;
 
 		do &i= 1 to dim(ret);
-			ret[&i]=lag(ret[&i])/ret[&i];
+			ret[&i]=-lag(ret[&i])/ret[&i];
 		end;
 	run;
 %end;
