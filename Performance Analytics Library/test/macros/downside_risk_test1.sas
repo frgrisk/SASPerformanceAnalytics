@@ -1,11 +1,11 @@
-%macro upside_risk_test1(keep=FALSE);
+%macro downside_risk_test1(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\upside_risk_test1_submit.sas";
+	filename x "&dir\downside_risk_test1_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = Return.calculate(prices, method='discrete')";
-put "returns = UpsideRisk(returns,MAR=0.01/252, method='subset',stat='potential')";
+put "returns = DownsidePotential(returns,MAR=0.01/252)";
 put "endsubmit;";
 run;
 
@@ -33,15 +33,15 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%upside_risk(prices,MAR= 0.01/252,option=potential,group=subset)
+%downside_risk(prices,MAR= 0.01/252,option=potential,group=full)
 
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from UpsideRisk;
+ select count(*) into :nv TRIMMED from DownsideRisk;
  %if ^&nv %then %do;
- 	drop table UpsideRisk;
+ 	drop table DownsideRisk;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -50,9 +50,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(UpsideRisk)) %then %do;
+%if ^%sysfunc(exist(DownsideRisk)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data UpsideRisk;
+data DownsideRisk;
 	date = -1;
 	IBM = -999;
 	GE = IBM;
@@ -75,7 +75,7 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=UpsideRisk
+			 compare=DownsideRisk
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY))
@@ -91,19 +91,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST UPSIDE_RISK_TEST1;
+	%put NOTE: NO ERROR IN TEST DOWNSIDE_RISK_TEST1;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST UPSIDE_RISK_TEST1;
+	%put ERROR: PROBLEM IN TEST DOWNSIDE_RISK_TEST1;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff prices returns_from_r UpsideRisk;
+	delete diff prices returns_from_r DownsideRisk;
 	quit;
 %end;
 
