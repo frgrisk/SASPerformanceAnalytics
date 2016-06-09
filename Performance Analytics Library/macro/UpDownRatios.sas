@@ -28,7 +28,7 @@
 							dateColumn= DATE,
 							outData= UpDownRatios);
 
-%local vars nvars upcapture downcapture upnumber downnumber uppercent downpercent i;
+%local vars nvars upcapture downcapture upnumber downnumber uppercent downpercent up down all i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN UpDownRatios: (&vars);
