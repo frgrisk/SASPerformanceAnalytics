@@ -12,8 +12,6 @@
 * MACRO OPTIONS:
 * returns - Required. Data Set containing returns with option to include risk free rate variable.
 * MAR - Optional. Minimum Acceptable Return. Default=0
-* scale - Optional. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
-          Default=1
 * option- Required. {RISK, VARIANCE, POTENTIAL}.  Choose "RISK" to calculate the downside risk, 
 *					 "VARIANCE" to calculate downside variance, or "POTENTIAL" to calculate downside potential.
 * group - Optional. Specifies to choose full observations or subset observations as 'n' in the divisor. {FULL, SUBSET}
@@ -34,7 +32,7 @@
 						dateColumn= DATE, 
 						outData= DownsideRisk);
 
-%local nv stat_sum stat_n temp vars i;
+%local stat_sum stat_n temp vars i;
 %let stat_sum= %ranname();
 %let stat_n= %ranname();
 %let temp= %ranname();
@@ -42,7 +40,6 @@
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &MAR);
 %put VARS IN upside_risk: (&vars);
 
-%let nv= %sysfunc(countw(&vars));
 %let i= %ranname();
 
 data &temp(drop=&i &dateColumn);
