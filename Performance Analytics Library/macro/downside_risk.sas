@@ -38,7 +38,7 @@
 %let temp= %ranname();
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &MAR);
-%put VARS IN upside_risk: (&vars);
+%put VARS IN downside_risk: (&vars);
 
 %let i= %ranname();
 
