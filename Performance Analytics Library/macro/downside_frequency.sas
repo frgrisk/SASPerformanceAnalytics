@@ -3,11 +3,11 @@
 *
 * PURPOSE: Calculate downside frequency of retuns
 *
-* NOTES: Divide the length of subset of returns which are less than the target(MAC) by the total
+* NOTES: Divide the length of subset of returns which are less than the target(MAR) by the total
 *        number of returns
 *
 * MACRO OPTIONS:
-* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* returns - Required. Data Set containing returns.
 * MAR - Optional. Minimum Acceptable Return. Default=0
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. output Data Set with downside frequency.  Default="DownsideFrequency"

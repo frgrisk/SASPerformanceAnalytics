@@ -5,12 +5,12 @@
 *          variability of under-performance below a minimum target rate.
 *
 * NOTES: Option group specify divisor "n" as the number of full observations or the number of observations
-*        which under-perform the minimum acceptable return(MAC). We use the negative value of difference between returns and MAC
+*        which under-perform the minimum acceptable return(MAR). We use the negative value of difference between returns and MAC
 *        as the measure of downside. Downside potential is the sum of the differences over n. Downside variance
 *        is the sum of square of the differences over n. Downside risk the square root of downside variance. 
 *
 * MACRO OPTIONS:
-* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* returns - Required. Data Set containing returns.
 * MAR - Optional. Minimum Acceptable Return. Default=0
 * option- Required. {RISK, VARIANCE, POTENTIAL}.  Choose "RISK" to calculate the downside risk, 
 *					 "VARIANCE" to calculate downside variance, or "POTENTIAL" to calculate downside potential.
