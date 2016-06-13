@@ -1,11 +1,11 @@
-%macro BernadoLedoit_Ratio_test(keep=FALSE);
+%macro BernardoLedoit_Ratio_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\BernadoLedoit_Ratio_test_submit.sas";
+	filename x "&dir\BernardoLedoit_Ratio_test_submit.sas";
 %end;
 
 data _null_;
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%BernadoLedoit_Ratio(prices)
+%BernardoLedoit_Ratio(prices)
 
 
 /*If tables have 0 records then delete them.*/
@@ -91,12 +91,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST BernadoLedoit_Ratio_TEST;
+	%put NOTE: NO ERROR IN TEST BernardoLedoit_Ratio_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST BernadoLedoit_Ratio_TEST;
+	%put ERROR: PROBLEM IN TEST BernardoLedoit_Ratio_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
