@@ -1,16 +1,16 @@
 /*---------------------------------------------------------------
 * NAME: upside_risk.sas
 *
-* PURPOSE: Calculate upside risk, downside variance, or downside potential which measure the 
+* PURPOSE: Calculate upside risk, upside variance, or upside potential which measure the 
 *          variability of performance over a minimum target rate.
 *
 * NOTES: Option group specify divisor "n" as the number of full observations or the number of observations
-*        which over-perform the minimum acceptable return(MAC). We use the positive value of difference between returns and MAC
+*        which over-perform the minimum acceptable return(MAR). We use the positive value of difference between returns and MAC
 *        as the measure of upside. Upside potential is the sum of the differences over n. Upside variance
-*        is the sum of square of the differences over n. Upside risk the square root of downside variance. 
+*        is the sum of square of the differences over n. Upside risk the square root of upside variance. 
 *
 * MACRO OPTIONS:
-* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* returns - Required. Data Set containing returns.
 * MAR - Optional. Minimum Acceptable Return. Default=0
 * option- Required. {RISK, VARIANCE, POTENTIAL}.  Choose "RISK" to calculate the upside risk, 
 *					 "VARIANCE" to calculate upside variance, or "POTENTIAL" to calculate upside potential.
