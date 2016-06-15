@@ -10,8 +10,10 @@
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * MAR - Optional. Minimum Acceptable Return. Default=0
+* group - Optional. Specifies to choose full observations or subset observations as 'n' in the divisor. 
+*		  {FULL, SUBSET} [Default=FULL]
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with d ratio.  Default="DRatio".
+* outData - Optional. Output Data Set with upside potential ratio.  Default="UPR".
 *
 * MODIFIED:
 * 6/9/2016 – QY - Initial Creation
