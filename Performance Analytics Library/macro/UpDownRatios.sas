@@ -9,9 +9,9 @@
 * returns - Required.  Data Set containing returns and benchmark.
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * option - Optional. Specifies which ratio to be calculated. If not specified, all three ratios will be displayed.
-		   Defaulted as blank.
+		   {CAPTURE, NUMBER, PERCENT} Defaulted as blank.
 * side - Optional. Specifies up/down market statistics. If not specified, both up and down market will be calculated.
-		   Defaulted as blank.
+		 {UP, DOWN} Defaulted as blank.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with up-down ratios.  Default="UpDownRatios".
 *
@@ -219,26 +219,17 @@ run;
 /*output*/
 data &outData;
 	set 
-	%if %upcase(&option)=CAPTURE or %upcase(&side)=UP %then %do;
-		&upcapture
-	%end;
-	%if %upcase(&option)=CAPTURE or %upcase(&side)=DOWN %then %do;
-		&downcapture
-	%end;
-	%if %upcase(&option)=NUMBER or %upcase(&side)=UP %then %do;
-		&upnumber
-	%end;
-	%if %upcase(&option)=NUMBER or %upcase(&side)=DOWN %then %do;
-		&downnumber
-	%end;
-	%if %upcase(&option)=PERCENT or %upcase(&side)=UP %then %do;
-		&uppercent
-	%end;
-	%if %upcase(&option)=PERCENT or %upcase(&side)=DOWN %then %do;
-		&downpercent
-	%end;
 	%if &option= and &side= %then %do;
 		&upcapture &downcapture &upnumber &downnumber &uppercent &downpercent
+	%end;
+	%if &option^= and &side= %then %do;
+		&&up&option &&down&option
+	%end;
+	%if &option= and &side^= %then %do;
+		&&&side.capture &&&side.number &&&side.percent
+	%end;
+	%if &option^= and &side^= %then %do;
+		&&&side.&option
 	%end;
 	;
 run;

@@ -9,7 +9,7 @@
 		 Between 0 and 0.5, it suggests that the returns are mean reverting.
 *
 * MACRO OPTIONS:
-* returns - Required. Data Set containing returns with option to include risk free rate variable.
+* returns - Required. Data Set containing returns.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. output Data Set with hurst index.  Default="HurstIndex"
 *
