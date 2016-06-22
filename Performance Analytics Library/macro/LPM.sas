@@ -18,7 +18,8 @@
 *		  Default=FULL
 * threshold - Optional. A reference point to be compared. The reference point may be the mean or some
               specified threshold. Default=0.
-* about_mean - Optional. Specify whether to calculate LPM about the mean or threshold.
+* about_mean - Optional. Specify whether to calculate LPM about the mean under the threshold, the mean of all 
+               observations, or threshold. {UNDER, ALL, NULL}. Default=NULL. 
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with lower partial moments.  Default="lpm".
 *
@@ -31,7 +32,7 @@
 				  n= 2,
 				  group= FULL,
 				  threshold= 0,
-				  about_mean= FALSE,
+				  about_mean= NULL,
 				  dateColumn= DATE,
 			      outData= lpm);
 							
@@ -48,36 +49,34 @@
 %let i = %ranname();
 %let nvars = %sysfunc(countw(&vars));
 
-%put %upcase(&about_mean);
 
-/*average returns of each asset*/
 proc means data=&returns mean n noprint;
+%if %upcase(&about_mean)=ALL %then %do;
 	output out=&stat_mean(keep=&vars) mean=;
+%end;
 	output out=&stat_n(keep=&vars) n=;
 run;
 
-
-%if %upcase(&about_mean)=FALSE %then %do;
+%if %upcase(&about_mean)=NULL %then %do;
 	data &temp(keep=&vars);
 		set &returns(firstobs=2);
 		array ret[*] &vars;
 		do &i=1 to &nvars;
-			if ret[&i]>=&threshold then delete; 
+			if ret[&i]>=&threshold then ret[&i]=.; 
 			else ret[&i]=&threshold-ret[&i];
 		end;
 	run;
 %end;
 
-%else %do;
+%else %if %upcase(&about_mean)=ALL %then %do;
 	data &temp(keep=&vars);
 		set &stat_mean &returns(firstobs=2);
 		array ret[*] &vars;
-		array R_avg[&nvars];
-		retain R_avg;
+		array R_avg[&nvars] _temporary_;
 		do &i=1 to &nvars;
 			if _n_=1 then R_avg[&i]=ret[&i];
 			else do;
-				if ret[&i]>=R_avg[&i] then delete; 
+				if ret[&i]>=R_avg[&i] then ret[&i]=.; 
 				else ret[&i]=R_avg[&i]-ret[&i];
 			end;
 		end;
@@ -88,6 +87,39 @@ run;
 	run;
 %end;
 
+%else %if %upcase(&about_mean)=UNDER %then %do;
+	data &temp(keep=&vars);
+		set &returns(firstobs=2);
+		array ret[*] &vars;
+		do &i=1 to &nvars;
+			if ret[&i]>=&threshold then ret[&i]=.; 
+		end;
+	run;
+
+	proc means data=&temp mean noprint;
+		output out=&stat_mean(keep=&vars) mean=;
+	run;
+
+	data &temp(keep=&vars);
+		set &stat_mean &temp;
+		array ret[*] &vars;
+		array R_avg[&nvars] _temporary_;
+		do &i=1 to &nvars;
+			if _n_=1 then R_avg[&i]=ret[&i];
+			else do;
+				if ret[&i] ^=. and ret[&i]<R_avg[&i] then 
+					ret[&i]=R_avg[&i]-ret[&i];
+				else if ret[&i] ^=. and ret[&i]>=R_avg[&i] then
+					ret[&i]=0;
+			end;
+		end;
+	run;
+
+	data &temp;
+		set &temp(firstobs=2);
+	run;
+%end;
+	
 
 data &temp(keep=&vars);
 	set &temp;
