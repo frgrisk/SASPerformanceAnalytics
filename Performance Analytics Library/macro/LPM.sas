@@ -36,7 +36,7 @@
 				  dateColumn= DATE,
 			      outData= lpm);
 							
-%local vars temp stat_mean stat_n stat_sum i j;
+%local vars nvars temp stat_mean stat_n stat_sum i j;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN LPM: (&vars);
