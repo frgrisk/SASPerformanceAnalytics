@@ -12,7 +12,9 @@ Choose one of the following options:
 2. Include SASPerformanceAnalytics
 
     %let dir=C:\SVN\SAS_Perf_Anly;
+    
     libname input "&dir";
+    
     %include "&dir\macro\*.sas" /nosource;
 
 
@@ -45,4 +47,4 @@ any documentation you want to write about your project.
 
 ## Additional information #
 
-Please contact [info@openscoring.io] (mailto:info@openscoring.io)
+Please contact [mailto: frg] (mailto:mailto@frgrisk.com)
