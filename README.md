@@ -17,8 +17,9 @@ Follow these steps to implement the functionality.
     libname input "&dir";
     %include "&dir\macro\\*.sas" /nosource;
 ```
-3. `create SAS tables.sas` under folder setup provides an example of download stock price and return data from
-   online sources. This code is only excutable after the above steps, or SAS does not recognize `get_stocks.sas` macro.
+
+3. [`create SAS tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder setup provides an example of download stock price and return data from
+   online sources. This code is only excutable after the above steps, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
    `dir` in this file needs to be changed to your own directory as well.
 
 
@@ -29,7 +30,7 @@ Follow these steps to implement the functionality.
 
 ## Usage
 
-Below is an example of calculating Sharpe Ratio from the price data set `prices`(https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/prices.csv).
+Below is an example of calculating Sharpe Ratio from the price data set [`prices`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/prices.csv).
 ```sas
 libname input "&dir";
 %include "&dir\macro\*.sas" /nosource;
@@ -62,4 +63,4 @@ Dominic Pazzula, Carter Johnston, Qiyuan Yang, Ruicheng Ma
 
 ## Additional information #
 
-Please contact [mailto: frg] (mailto:mailto@frgrisk.com)
+Please contact [mailto: frg] (mailto:info@frgrisk.com)
