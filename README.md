@@ -57,9 +57,6 @@ any documentation you want to write about your project.
 Dominic Pazzula, Carter Johnston, Qiyuan Yang, Ruicheng Ma
 
 
-## License
-
-
 
 ## Additional information #
 
