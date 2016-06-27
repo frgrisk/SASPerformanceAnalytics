@@ -14,7 +14,7 @@
 * n - Optional. The n-th moment to return. It can be used as an indicator of risk preference. 
 				Risk averse behavior is signified by n>1, whereas risk seeking behavior is indicated
 				by n<1. Default=2.
-* group - Optional. Specifies to choose full observations or subset observations as 'n' in the divisor. {FULL, SUBSET}
+* group - Optional. Specifies to choose full observations or subset observations in the divisor. {FULL, SUBSET}
 *		  Default=FULL
 * threshold - Optional. A reference point to be compared. The reference point may be the mean or some
               specified threshold. Default=0.

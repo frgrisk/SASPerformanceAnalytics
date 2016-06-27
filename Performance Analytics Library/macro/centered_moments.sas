@@ -32,7 +32,7 @@
 
 /*Define temporary data set names with random names*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
-%put VARS IN CAPM_alpha_beta: (&vars);
+%put VARS IN centered_moments: (&vars);
 /*Name temporary data sets*/
 %let centered_returns= %ranname();
 %let cent_var= %ranname();
