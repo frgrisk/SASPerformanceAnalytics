@@ -3,6 +3,7 @@
 
 ## Installation
 
+The current version is 1.01.
 Follow these steps to implement the functionality.
 
 1. Download or clone the latest stable release
@@ -28,7 +29,7 @@ Follow these steps to implement the functionality.
 
 ## Usage
 
-Below is an example of calculating Sharpe Ratio from the price data set `prices`.
+Below is an example of calculating Sharpe Ratio from the price data set `prices`(https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/prices.csv).
 ```sas
 libname input "&dir";
 %include "&dir\macro\*.sas" /nosource;
