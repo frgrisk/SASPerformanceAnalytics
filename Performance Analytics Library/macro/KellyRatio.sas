@@ -9,7 +9,7 @@
 * MACRO OPTIONS:
 * returns - Required. Data Set containing returns.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
-* method - Optional. Option to use half-Kelly. Default=HALF
+* option - Optional. Option to use half-Kelly. Default=HALF
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with Kelly ratio.  Default="KellyRatio".
@@ -22,7 +22,7 @@
 
 %macro KellyRatio(returns,
 						Rf= 0,
-						method= HALF,
+						option= HALF,
 						VARDEF = DF, 
 						dateColumn= DATE,
 						outData= KellyRatio);
@@ -64,7 +64,7 @@ data &outData;
 	array ret[*]  &ret;
 
 	do &i=1 to dim(ret);
-		%if %upcase(&method)=HALF %then %do;
+		%if %upcase(&option)=HALF %then %do;
 			ret[&i] = ret[&i]/LAG(ret[&i])/2;
 		%end;
 		%else %do;

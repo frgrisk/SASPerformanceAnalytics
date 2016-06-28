@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices))";
-put "returns = KellyRatio(returns,method='full')";
+put "returns = KellyRatio(returns,Rf=0.01/252, method='full')";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%KellyRatio(prices,method=FULL)
+%KellyRatio(prices,Rf=0.01/252, option=FULL)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices))";
-put "returns = SortinoRatio(returns,method='subset')";
+put "returns = SortinoRatio(returns,MAR=0.01/252, method='subset')";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SortinoRatio(prices, group=SUBSET)
+%SortinoRatio(prices, MAR=0.01/252, group=SUBSET)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

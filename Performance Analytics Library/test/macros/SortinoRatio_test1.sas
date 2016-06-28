@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices))";
-put "returns = SortinoRatio(returns,method='full')";
+put "returns = SortinoRatio(returns,MAR=0.01/252,method='full')";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SortinoRatio(prices, group=FULL)
+%SortinoRatio(prices, MAR=0.01/252, group=FULL)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

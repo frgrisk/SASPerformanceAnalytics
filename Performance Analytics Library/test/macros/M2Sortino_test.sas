@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices))";
-put "returns = M2Sortino(returns,returns[,5])";
+put "returns = M2Sortino(returns,returns[,5],MAR=0.01/252)";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%M2Sortino(prices, BM=SPY,scale=252)
+%M2Sortino(prices, MAR=0.01/252,BM=SPY,scale=252)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
