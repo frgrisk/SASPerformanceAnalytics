@@ -29,7 +29,7 @@ Follow these steps to implement the functionality.
     %include "&dir\macro\\*.sas" /nosource;
 ```
 
- [`create SAS tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder setup provides an example of download stock price and return data from
+ [`create SAS tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of download stock price and return data from
    online sources. This code is only excutable after the above steps, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
    `dir` in this file needs to be changed to your own directory as well.
 
