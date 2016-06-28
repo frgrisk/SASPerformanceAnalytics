@@ -1,5 +1,16 @@
 # SAS-Performance-Analytics
-`PerformanceAnalytics` provides a package of macro functions on SAS for portfolio performance analysis and risk evaluation. This library incorporates academic researches for its users to implement functionalities that exist in R Performance Analytics package, but had no equivalent in SAS. This package aims to recreate R equivalent in SAS with a few minor tweaks to improve functionality, but otherwise adhering very closely to `R Performance Analytics`. Most of the macros require a return data set as input, rather than prices (prices data can be transformed into returns data with return_calculate.sas though). Users will have the flexibility to select needed time frequencies, compounding methods along with other customizable options. 
+`PerformanceAnalytics` provides a package of macro functions on SAS for portfolio performance analysis and risk evaluation. This library incorporates academic researches for its users to implement functionalities that exist in R Performance Analytics package, but had no equivalent in SAS. This package aims to recreate R equivalent in SAS with a few minor tweaks to improve functionality, but otherwise adhering very closely to `R Performance Analytics`. 
+
+The package consists of more than 100 macros to conduct portfolio performance analysis and investment risk analysis, create summary table and chart of related statistics, and facilitate the implementation with a handful of helper macros.
+
+Most of the macros require a return data set as input, rather than prices (prices data can be transformed into returns data with return_calculate.sas though). Various calculation in regards to return data is available. For example, accumulate asset daily return in either log or discrete compounding mehtods, calculate annual return give the return data for the past years. Also, common metrics used in industrial and acadamic field can be calculated. Those metrics include Sharpe Ratio, Information Ratio, coefficients from CAPM and FF3 model, upside and downside risk, Pain Ratio, Ulcer Index, etc. 
+
+Not only does the package calculates numbers as needed, it also contains macros to visualized the result in forms of table, graph and chart. Macros with the prefix of `chart_` and `table_` help the users to generate report. Based on user preference, the graph color, title, legend position and other features can be adjusted. User needs to refer to SAS reference documents to find available argument values for those options, which is detailed in each of the macros.
+
+As literature of the subject of performance and risk keeps booming and changing, new thoughts exist to be incorporated in this package in the future. 
+
+
+Users will have the flexibility to select needed time frequencies, compounding methods along with other customizable options. 
 
 ## Installation
 
