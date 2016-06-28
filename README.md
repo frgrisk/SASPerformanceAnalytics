@@ -13,7 +13,7 @@ Follow these steps to implement the functionality.
 2. Include SASPerformanceAnalytics
     After downloading the package, the following code needs to be run to create a temporary library `input` every time SAS is opened, unless a permanent SAS library is otherwise saved. `dir` is assigned the path of folder `Performance Analytics Library`. When the initiation is completed, the macros and the data sets under the library will be ready to be called.
 ```sas
-    %let dir=C:\SVN\SAS_Perf_Anly;
+    %let dir=<your path of library>;
     libname input "&dir";
     %include "&dir\macro\\*.sas" /nosource;
 ```
@@ -25,7 +25,7 @@ Follow these steps to implement the functionality.
 
 ## Features
 
-* Full support for SAS 9.3, 9.4 and SAS Enterprise Guide 7.1
+* The package has been tested on SAS 9.4. It shoule be compatible with other versions of SAS.
 
 
 ## Usage
@@ -52,12 +52,14 @@ available for offline reading and provides a useful starting point for
 any documentation you want to write about your project.
 
 
-## Contributors
+## Contributing
 
-Dominic Pazzula, Carter Johnston, Qiyuan Yang, Ruicheng Ma
+This package aims to be accessible by public users to meet their various needs. We've tested most of the macros and compared the results with the R equivalent, to ensure the change of every macro input arguments would generate the desired output. There still might be some aspects that have not been covered. Any feedback and contribution are welcomed to be discussed to help better calibrate this package. 
+
+## License
+
+SAS Performance Analytics is licensed under the [MIT license](https://github.com/holinus/SASPerformanceAnalytics/blob/master/LICENSE).
 
 
-
-## Additional information #
 
 Please contact [mailto: info@frgrisk.com] (mailto:info@frgrisk.com)
