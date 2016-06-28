@@ -29,8 +29,7 @@ Follow these steps to implement the functionality.
 
 
 ## Usage
-
-Below is an example of calculating Sharpe Ratio from the price data set [`prices`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/prices.csv).
+As described above, the following code needs to be executed to include all the macros. Meanwhile, the prices data set sample is created in temporary work library.
 ```sas
 libname input "&dir";
 %include "&dir\macro\*.sas" /nosource;
@@ -38,9 +37,33 @@ libname input "&dir";
 data prices;
 set input.prices;
 run;
+```
+After the package is included, the returns can be calculated by calling [return_calculate.sas](https://github.com/holinus/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/return_calculate.sas). Based on the input option, the output data set is still `prices`.
 
+```sas
 %return_calculate(prices);
-%Sharpe_Ratio(prices, Rf= 0.01/252);
+```
+
+Now that we have the returns data set `prices`, we are free to use most of the macros in the package. Below are several examples.
+
+Calculate cumulative return:
+```sas
+%Return_Cumulative(prices, method= DISCRETE, dateColumn= Date, outData= cumulative_returns);
+```
+
+Calculate asset Alpha and Beta from CAPM model:
+```sas
+%CAPM_Alpha_Beta(prices, BM= SPY, Rf= 0.01/252);
+```
+
+Create a chart of cumulative return:
+```sas
+%Chart_CumulativeReturns(prices, method=LOG, WealthIndex=TRUE);
+```
+
+Create a table of annualized return, annualized standard deviation, annualized sharpe ratio:
+```sas
+%table_Annualized_Returns(prices, Rf= 0.01/252, scale=252);
 ```
 
 
