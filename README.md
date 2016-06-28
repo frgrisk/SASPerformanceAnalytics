@@ -29,8 +29,8 @@ Follow these steps to implement the functionality.
     %include "&dir\macro\\*.sas" /nosource;
 ```
 
- [`create SAS tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of download stock price and return data from
-   online sources. This code is only excutable after the above steps, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
+ [`create SAS tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of downloading stock price and return data from
+   online sources. This code is only excutable after the above steps are finished, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
    `dir` in this file needs to be changed to your own directory as well.
 
 
@@ -40,7 +40,7 @@ Follow these steps to implement the functionality.
 
 
 ## Usage
-As described above, the following code needs to be executed to include all the macros. Meanwhile, the prices data set sample is created in temporary work library.
+As described above, the following code needs to be executed to include all the macros. Meanwhile, the prices data set sample is created in temporary `work` library.
 ```sas
 libname input "&dir";
 %include "&dir\macro\*.sas" /nosource;
@@ -62,17 +62,17 @@ Calculate cumulative return:
 %Return_Cumulative(prices, method= DISCRETE, dateColumn= Date, outData= cumulative_returns);
 ```
 
-Calculate asset Alpha and Beta from CAPM model:
+Calculate asset Alpha and Beta from CAPM model (stock `SPY` is randomly chosen as the benchmark):
 ```sas
 %CAPM_Alpha_Beta(prices, BM= SPY, Rf= 0.01/252);
 ```
 
-Create a chart of cumulative return:
+Create a chart of cumulative return. The cumulating method is log. `WealthIndex` option adds a line of returns of 1 dollar over time: 
 ```sas
 %Chart_CumulativeReturns(prices, method=LOG, WealthIndex=TRUE);
 ```
 
-Create a table of annualized return, annualized standard deviation, annualized sharpe ratio:
+Create a table of annualized return, annualized standard deviation, annualized sharpe ratio. `scale` is chosen based on data frequency.
 ```sas
 %table_Annualized_Returns(prices, Rf= 0.01/252, scale=252);
 ```
