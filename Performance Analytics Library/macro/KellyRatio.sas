@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: KellyRatio.sas
+* NAME: kellyratio.sas
 *
 * PURPOSE: calculate Kelly ratio of a strategy.
 *
@@ -20,12 +20,12 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
-%macro KellyRatio(returns,
+%macro kellyratio(returns,
 						Rf= 0,
 						option= HALF,
 						VARDEF = DF, 
 						dateColumn= DATE,
-						outData= KellyRatio);
+						outData= kellyratio);
 
 %local ret i temp_excess _tempStd means;
 
@@ -39,7 +39,7 @@
 %let i= %ranname();
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &temp_excess);
-%Standard_Deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
+%standard_deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
 
 data &temp_excess;
 	set &temp_excess(firstobs=2);

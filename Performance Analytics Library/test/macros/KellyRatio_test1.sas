@@ -1,11 +1,11 @@
-%macro KellyRatio_test1(keep=FALSE);
+%macro kellyratio_test1(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\KellyRatio_test1_submit.sas";
+	filename x "&dir\kellyratio_test1_submit.sas";
 %end;
 
 data _null_;
@@ -33,14 +33,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%KellyRatio(prices,Rf=0.01/252)
+%kellyratio(prices,Rf=0.01/252)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from KellyRatio;
+ select count(*) into :nv TRIMMED from kellyratio;
  %if ^&nv %then %do;
- 	drop table KellyRatio;
+ 	drop table kellyratio;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(KellyRatio)) %then %do;
+%if ^%sysfunc(exist(kellyratio)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data KellyRatio;
+data kellyratio;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=KellyRatio 
+			 compare=kellyratio 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
@@ -89,19 +89,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST KellyRatio_TEST1;
+	%put NOTE: NO ERROR IN TEST kellyratio_TEST1;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST KellyRatio_TEST1;
+	%put ERROR: PROBLEM IN TEST kellyratio_TEST1;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r KellyRatio;
+	delete prices diff returns_from_r kellyratio;
 	quit;
 %end;
 

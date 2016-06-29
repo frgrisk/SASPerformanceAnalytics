@@ -1,11 +1,11 @@
-%macro Kappa_test2(keep=FALSE);
+%macro kappa_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Kappa_test2_submit.sas";
+	filename x "&dir\kappa_test2_submit.sas";
 %end;
 
 data _null_;
@@ -33,14 +33,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Kappa(prices, MAR=0.01/252, L=2)
+%kappa(prices, MAR=0.01/252, L=2)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from Kappa;
+ select count(*) into :nv TRIMMED from kappa;
  %if ^&nv %then %do;
- 	drop table Kappa;
+ 	drop table kappa;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(Kappa)) %then %do;
+%if ^%sysfunc(exist(kappa)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data Kappa;
+data kappa;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=Kappa 
+			 compare=kappa 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
@@ -89,19 +89,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST Kappa_TEST2;
+	%put NOTE: NO ERROR IN TEST kappa_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST Kappa_TEST2;
+	%put ERROR: PROBLEM IN TEST kappa_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r Kappa;
+	delete prices diff returns_from_r kappa;
 	quit;
 %end;
 

@@ -1,11 +1,11 @@
-%macro Kappa_test1(keep=FALSE);
+%macro kappa_test1(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Kappa_test1_submit.sas";
+	filename x "&dir\kappa_test1_submit.sas";
 %end;
 
 data _null_;
@@ -33,12 +33,12 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Kappa(prices, MAR=0.01/252, L=1)
+%kappa(prices, MAR=0.01/252, L=1)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from Kappa;
+ select count(*) into :nv TRIMMED from kappa;
  %if ^&nv %then %do;
  	drop table Kappa;
  %end;
@@ -49,7 +49,7 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(Kappa)) %then %do;
+%if ^%sysfunc(exist(kappa)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data Kappa;
 	IBM = -999;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=Kappa 
+			 compare=kappa 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
