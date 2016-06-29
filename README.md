@@ -1,5 +1,5 @@
 # SAS-Performance-Analytics
-`PerformanceAnalytics` provides a package of SAS macros for portfolio performance analysis and risk evaluation. This library incorporates function that exist in the R Performance Analytics package, but had no equivalent in SAS. This package aims to replicate the R package with a few minor tweaks to improve functionality, but otherwise adhering very closely to `R Performance Analytics`. 
+`PerformanceAnalytics` provides a package of SAS macros for portfolio performance analysis and risk evaluation. This library incorporates function that exist in the `R Performance Analytics` package, but had no equivalent in SAS. This package aims to replicate the R package with a few minor tweaks to improve functionality, but otherwise adhering very closely to `R Performance Analytics`. 
 
 The package consists of more than 100 macros to conduct portfolio performance analysis and investment risk analysis, create summary tables and charts of related statistics. Users have the flexibility to select needed time frequencies, compounding methods along with other options. 
 
