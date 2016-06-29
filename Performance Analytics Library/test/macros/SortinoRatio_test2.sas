@@ -38,7 +38,7 @@ run;
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from sortinoratio;
+ select count(*) into :nv TRIMMED from Sortinoratio;
  %if ^&nv %then %do;
  	drop table Sortinoratio;
  %end;
@@ -49,9 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(sortinoratio)) %then %do;
+%if ^%sysfunc(exist(Sortinoratio)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data sortinoratio;
+data Sortinoratio;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=sortinoratio 
+			 compare=Sortinoratio 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
@@ -89,19 +89,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST sortinoratio_test2;
+	%put NOTE: NO ERROR IN TEST Sortinoratio_test2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST sortinoratio_test2;
+	%put ERROR: PROBLEM IN TEST Sortinoratio_test2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r sortinoratio;
+	delete prices diff returns_from_r Sortinoratio;
 	quit;
 %end;
 
