@@ -90,6 +90,6 @@ This package aims to be accessible by public users to meet their various needs. 
 
 ## License
 
-SAS Performance Analytics is licensed under the [MIT license](https://github.com/holinus/SASPerformanceAnalytics/blob/master/LICENSE).
+SAS Performance Analytics is licensed under the [MIT license](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/LICENSE).
 
 
