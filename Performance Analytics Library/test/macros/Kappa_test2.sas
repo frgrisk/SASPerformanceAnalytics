@@ -38,9 +38,9 @@ run;
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from kappa;
+ select count(*) into :nv TRIMMED from Kappa;
  %if ^&nv %then %do;
- 	drop table kappa;
+ 	drop table Kappa;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(kappa)) %then %do;
+%if ^%sysfunc(exist(Kappa)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data kappa;
+data Kappa;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=kappa 
+			 compare=Kappa 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
@@ -89,19 +89,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST kappa_TEST2;
+	%put NOTE: NO ERROR IN TEST Kappa_TEST2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST kappa_TEST2;
+	%put ERROR: PROBLEM IN TEST Kappa_TEST2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r kappa;
+	delete prices diff returns_from_r Kappa;
 	quit;
 %end;
 

@@ -38,9 +38,9 @@ run;
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from m2sortino;
+ select count(*) into :nv TRIMMED from M2sortino;
  %if ^&nv %then %do;
- 	drop table m2sortino;
+ 	drop table M2sortino;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(m2sortino)) %then %do;
+%if ^%sysfunc(exist(M2sortino)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data m2sortino;
+data M2sortino;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=m2sortino 
+			 compare=M2sortino 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
@@ -89,19 +89,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST m2sortino_test;
+	%put NOTE: NO ERROR IN TEST M2sortino_test;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST m2sortino_test;
+	%put ERROR: PROBLEM IN TEST M2sortino_test;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r m2sortino;
+	delete prices diff returns_from_r M2sortino;
 	quit;
 %end;
 

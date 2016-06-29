@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: Pain_Ratio.sas
+* NAME: pain_ratio.sas
 *
 * PURPOSE: Pain ratio of the return distribution
 *
@@ -22,12 +22,12 @@
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro Pain_Ratio(returns,
+%macro pain_ratio(returns,
 							Rf= 0,
 							scale= 1,
 							method= DISCRETE,
 							dateColumn= DATE,
-							outData= PainRatio);
+							outData= painratio);
 							
 %local vars pain_index annualized i;
 
@@ -41,7 +41,7 @@
 %return_annualized(&returns, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
 %return_excess(&annualized, Rf=&Rf, dateColumn= &dateColumn, outData= &annualized);
 
-%Pain_Index(&returns, method= &method, dateColumn= &dateColumn, outData= &pain_index)
+%pain_index(&returns, method= &method, dateColumn= &dateColumn, outData= &pain_index)
 
 
 data &outData (drop= &i);

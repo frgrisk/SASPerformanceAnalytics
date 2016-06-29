@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: Pain_Index.sas
+* NAME: pain_index.sas
 *
 * PURPOSE: Pain index of the return distribution
 *
@@ -24,10 +24,10 @@
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro Pain_Index(returns,
+%macro pain_index(returns,
 							method= DISCRETE,
 							dateColumn= DATE,
-							outData= PainIndex);
+							outData= painindex);
 							
 %local vars drawdown stat_sum stat_n i;
 
@@ -39,7 +39,7 @@
 %let stat_n= %ranname();
 %let i = %ranname();
 
-%Drawdowns(&returns, method= &method, dateColumn= &dateColumn, outData= &drawdown)
+%drawdowns(&returns, method= &method, dateColumn= &dateColumn, outData= &drawdown)
 
 data &drawdown(drop=&i);
 	set &drawdown(firstobs=2);

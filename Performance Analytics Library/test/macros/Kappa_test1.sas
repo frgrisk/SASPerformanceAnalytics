@@ -38,7 +38,7 @@ run;
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from kappa;
+ select count(*) into :nv TRIMMED from Kappa;
  %if ^&nv %then %do;
  	drop table Kappa;
  %end;
@@ -49,7 +49,7 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(kappa)) %then %do;
+%if ^%sysfunc(exist(Kappa)) %then %do;
 /*Error creating the data set, ensure compare fails*/
 data Kappa;
 	IBM = -999;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=kappa 
+			 compare=Kappa 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
