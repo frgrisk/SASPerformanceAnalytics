@@ -56,22 +56,22 @@ After the package is included, the returns can be calculated by calling [return_
 
 Now that we have the returns data set `returns`, we are free to use most of the macros in the package. Below are several examples.
 
-Calculate cumulative return:
+* Calculate cumulative return:
 ```sas
 %return_cumulative(returns, method= DISCRETE, dateColumn= Date, outData= cumulative_returns);
 ```
 
-Calculate asset Alpha and Beta from CAPM model (the ETF `SPY` is chosen as the benchmark):
+* Calculate asset Alpha and Beta from CAPM model (the ETF `SPY` is chosen as the benchmark):
 ```sas
 %capm_alpha_beta(returns, BM= SPY, Rf= 0.01/252);
 ```
 
-Create a chart of cumulative return. The cumulating method is log. `WealthIndex` option adds a line of returns of 1 dollar over time: 
+* Create a chart of cumulative return. The cumulating method is log. `WealthIndex` option adds a line of returns of 1 dollar over time: 
 ```sas
 %chart_cumulativereturns(returns, method=LOG, WealthIndex=TRUE);
 ```
 
-Create a table of annualized return, annualized standard deviation, annualized Sharpe Ratio. `scale` is chosen based on data frequency.
+* Create a table of annualized return, annualized standard deviation, annualized Sharpe Ratio. `scale` is chosen based on data frequency.
 ```sas
 %table_annualized_returns(returns, Rf= 0.01/252, scale=252);
 ```
