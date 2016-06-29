@@ -24,7 +24,7 @@ Follow these steps to implement the functionality.
     %include "&dir\macro\\*.sas" /nosource;
 ```
 
- [`create SAS tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of downloading stock price and return data from
+ [`create_sas_tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of downloading stock price and return data from
    online sources. This code is only excutable after the above steps are finished, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
    `dir` in this file needs to be changed to your own directory as well.
 
@@ -52,29 +52,29 @@ run;
 After the package is included, the returns can be calculated by calling [return_calculate.sas](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/return_calculate.sas). Based on the input option, the output data set is called `returns`.
 
 ```sas
-%return_calculate(prices, updateInPlace=FALSE, outData=returns);
+[%return_calculate(prices, updateInPlace=FALSE, outData=returns)](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/return_calculate.sas);
 ```
 
 Now that we have the returns data set `returns`, we are free to use most of the macros in the package. Below are several examples.
 
 Calculate cumulative return:
 ```sas
-%Return_Cumulative(returns, method= DISCRETE, dateColumn= Date, outData= cumulative_returns);
+[%return_cumulative(returns, method= DISCRETE, dateColumn= Date, outData= cumulative_returns)](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/return_cumulative.sas);
 ```
 
 Calculate asset Alpha and Beta from CAPM model (the ETF `SPY` is chosen as the benchmark):
 ```sas
-%CAPM_Alpha_Beta(returns, BM= SPY, Rf= 0.01/252);
+[%capm_alpha_beta(returns, BM= SPY, Rf= 0.01/252)](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/CAPM_alpha_beta.sas);
 ```
 
 Create a chart of cumulative return. The cumulating method is log. `WealthIndex` option adds a line of returns of 1 dollar over time: 
 ```sas
-%Chart_CumulativeReturns(returns, method=LOG, WealthIndex=TRUE);
+[%chart_cumulativereturns(returns, method=LOG, WealthIndex=TRUE)](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/chart_CumulativeReturns.sas);
 ```
 
 Create a table of annualized return, annualized standard deviation, annualized Sharpe Ratio. `scale` is chosen based on data frequency.
 ```sas
-%table_Annualized_Returns(returns, Rf= 0.01/252, scale=252);
+[%table_annualized_returns(returns, Rf= 0.01/252, scale=252)](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/table_Annualized_Returns.sas);
 ```
 
 
