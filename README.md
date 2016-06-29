@@ -49,12 +49,12 @@ data prices;
 set input.prices;
 run;
 ```
-After the package is included, the returns can be calculated by calling [return_calculate.sas](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/return_calculate.sas). Based on the input option, the output data set is called `returns`.
+After the package is included, the returns can be calculated by calling [return_calculate.sas](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/return_calculate.sas). Based on the input option, the output Data Set is `returns`.
 ```sas
 %return_calculate(prices, updateInPlace=FALSE, outData=returns);
 ```
 
-Now that we have the returns data set `returns`, we are free to use most of the macros in the package. Below are several examples.
+Now that we have the returns Data Set `returns`, we are free to use most of the macros in the package. Below are several examples.
 
 * Calculate cumulative return:
 ```sas
