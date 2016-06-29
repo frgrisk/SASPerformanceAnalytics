@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: KellyRatio.sas
+* NAME: kellyratio.sas
 *
 * PURPOSE: calculate Kelly ratio of a strategy.
 *
@@ -9,7 +9,7 @@
 * MACRO OPTIONS:
 * returns - Required. Data Set containing returns.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
-* method - Optional. Option to use half-Kelly. Default=HALF
+* option - Optional. Option to use half-Kelly. Default=HALF
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with Kelly ratio.  Default="KellyRatio".
@@ -20,12 +20,12 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 
-%macro KellyRatio(returns,
+%macro kellyratio(returns,
 						Rf= 0,
-						method= HALF,
+						option= HALF,
 						VARDEF = DF, 
 						dateColumn= DATE,
-						outData= KellyRatio);
+						outData= kellyratio);
 
 %local ret i temp_excess _tempStd means;
 
@@ -39,7 +39,7 @@
 %let i= %ranname();
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &temp_excess);
-%Standard_Deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
+%standard_deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
 
 data &temp_excess;
 	set &temp_excess(firstobs=2);
@@ -64,7 +64,7 @@ data &outData;
 	array ret[*]  &ret;
 
 	do &i=1 to dim(ret);
-		%if %upcase(&method)=HALF %then %do;
+		%if %upcase(&option)=HALF %then %do;
 			ret[&i] = ret[&i]/LAG(ret[&i])/2;
 		%end;
 		%else %do;

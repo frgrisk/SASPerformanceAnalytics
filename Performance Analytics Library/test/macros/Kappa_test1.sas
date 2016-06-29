@@ -1,11 +1,11 @@
-%macro Kappa_test1(keep=FALSE);
+%macro kappa_test1(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Kappa_test1_submit.sas";
+	filename x "&dir\kappa_test1_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices))";
-put "returns = Kappa(returns, MAR=0, l=1)";
+put "returns = Kappa(returns, MAR=0.01/252, l=1)";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Kappa(prices, MAR=0, L=1)
+%kappa(prices, MAR=0.01/252, L=1)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;

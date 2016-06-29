@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: M2Sortino.sas
+* NAME: m2sortino.sas
 *
 * PURPOSE: Calculate the M squared for Sortino. The downside risk is used rather than total risk.
 *
@@ -27,14 +27,14 @@
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro M2Sortino(returns,
+%macro m2sortino(returns,
 							BM=, 
 							MAR=0,
 							scale=1,
 							method=DISCRETE,
 							group=FULL,
 							dateColumn= DATE,
-							outData= M2Sortino);
+							outData= m2sortino);
 
 %local vars nvars drisk sratio areturn all i j;
 
@@ -49,7 +49,7 @@
 %let i = %ranname();
 
 %return_annualized(&returns, scale=&scale, method=&method, dateColumn=&dateColumn, outData=&areturn);
-%SortinoRatio(&returns, MAR=&MAR, group=&group, dateColumn=&dateColumn, outData=&sratio);
+%sortinoratio(&returns, MAR=&MAR, group=&group, dateColumn=&dateColumn, outData=&sratio);
 %downside_risk(&returns, MAR=&MAR, option=RISK, group=&group, dateColumn=&dateColumn, outData=&drisk);
 
 data &drisk;

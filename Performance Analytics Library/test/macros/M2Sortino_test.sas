@@ -1,11 +1,11 @@
-%macro M2Sortino_test(keep=FALSE);
+%macro m2sortino_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\M2Sortino_test_submit.sas";
+	filename x "&dir\m2sortino_test_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices))";
-put "returns = M2Sortino(returns,returns[,5])";
+put "returns = M2Sortino(returns,returns[,5],MAR=0.01/252)";
 put "endsubmit;";
 run;
 
@@ -33,14 +33,14 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%M2Sortino(prices, BM=SPY,scale=252)
+%m2sortino(prices, MAR=0.01/252,BM=SPY,scale=252)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
  %local nv;
- select count(*) into :nv TRIMMED from M2Sortino;
+ select count(*) into :nv TRIMMED from M2sortino;
  %if ^&nv %then %do;
- 	drop table M2Sortino;
+ 	drop table M2sortino;
  %end;
  
  select count(*) into :nv TRIMMED from returns_from_r;
@@ -49,9 +49,9 @@ proc sql noprint;
  %end;
 quit ;
 
-%if ^%sysfunc(exist(M2Sortino)) %then %do;
+%if ^%sysfunc(exist(M2sortino)) %then %do;
 /*Error creating the data set, ensure compare fails*/
-data M2Sortino;
+data M2sortino;
 	IBM = -999;
 	GE = IBM;
 	DOW = IBM;
@@ -73,7 +73,7 @@ run;
 
 
 proc compare base=returns_from_r 
-			 compare=M2Sortino 
+			 compare=M2sortino 
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL))
@@ -89,19 +89,19 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST M2Sortino_test;
+	%put NOTE: NO ERROR IN TEST M2sortino_test;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST M2Sortino_test;
+	%put ERROR: PROBLEM IN TEST M2sortino_test;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete prices diff returns_from_r M2Sortino;
+	delete prices diff returns_from_r M2sortino;
 	quit;
 %end;
 

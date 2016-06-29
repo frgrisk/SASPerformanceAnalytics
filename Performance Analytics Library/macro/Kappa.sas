@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: Kappa.sas
+* NAME: kappa.sas
 *
 * PURPOSE: Calculate Kappa which is a measure of downside risk-adjusted .
 *
@@ -22,12 +22,12 @@
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro Kappa(returns,
+%macro kappa(returns,
 							MAR= 0,
 							L= 1, 
 							group= FULL,
 							dateColumn= DATE,
-							outData= Kappa);
+							outData= kappa);
 
 %local vars nvars temp_excess means sum nrows Rf ii i;
 

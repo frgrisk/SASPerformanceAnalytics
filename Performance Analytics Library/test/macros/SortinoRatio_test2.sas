@@ -1,11 +1,11 @@
-%macro SortinoRatio_test2(keep=FALSE);
+%macro sortinoratio_test2(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\SortinoRatio_test2_submit.sas";
+	filename x "&dir\sortinoratio_test2_submit.sas";
 %end;
 
 data _null_;
@@ -18,7 +18,7 @@ put "                 header=TRUE";
 put "                 )";
 put "		)";
 put "returns = na.omit(Return.calculate(prices))";
-put "returns = SortinoRatio(returns,method='subset')";
+put "returns = SortinoRatio(returns,MAR=0.01/252, method='subset')";
 put "endsubmit;";
 run;
 
@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%SortinoRatio(prices, group=SUBSET)
+%sortinoratio(prices, MAR=0.01/252, group=SUBSET)
 
 /*If tables have 0 records then delete them.*/
 proc sql noprint;
@@ -89,12 +89,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST SortinoRatio_test2;
+	%put NOTE: NO ERROR IN TEST Sortinoratio_test2;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST SortinoRatio_test2;
+	%put ERROR: PROBLEM IN TEST Sortinoratio_test2;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;

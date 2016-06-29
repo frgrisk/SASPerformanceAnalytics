@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: SortinoRatio.sas
+* NAME: sortinoratio.sas
 *
 * PURPOSE: Calculate Sortino Ratio as a better measure than Sharpe Ratio.
 *
@@ -20,12 +20,12 @@
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro SortinoRatio(returns,
+%macro sortinoratio(returns,
 							MAR= 0,
 							group= FULL,
 							dateColumn= DATE,
-							outData= SortinoRatio);
+							outData= sortinoratio);
 
-%Kappa(&returns, MAR=&MAR, L=2, group=&group, dateColumn=&dateColumn, outData=&outData);
+%kappa(&returns, MAR=&MAR, L=2, group=&group, dateColumn=&dateColumn, outData=&outData);
 
 %mend;
