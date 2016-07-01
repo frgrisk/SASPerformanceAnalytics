@@ -1,29 +1,6 @@
 %macro scalar_annualized_test3(keep=FALSE);
 %global pass notes;
 
-/*generate random scalar data set for test*/
-data scalars;
-	do i=1 to 100;
-		randnum = ranuni(123);
-		date = i-1;
-		output;
-	end;
-	keep date randnum;
-run;
-
-data scalars;
-	retain date randnum;
-	set scalars;
-	format date yymmdd10.;
-run;
-
-/*generate random scalar csv file for R*/
-proc export data=scalars
-			outfile="&dir\test\scalars.csv"
-			dbms=csv
-			replace;
-run;
-
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
@@ -35,35 +12,48 @@ data _null_;
 file x;
 put "submit /r;";
 put "require(PerformanceAnalytics)";
-put "randnum = as.xts(read.zoo('&dir\\test\\scalars.csv',";
+put "prices = as.xts(read.zoo('&dir\\prices.csv',";
 put "                         sep=',',";
 put "                         header=TRUE";
 put "                 )";
 put "		)";
-put "scale_4 = randnum*sqrt(4)";
-put "scale_12 = randnum*sqrt(12)";
-put "scale_52 = randnum*sqrt(52)";
-put "scale_252 = randnum*sqrt(252)";
-put "randnum = data.frame(date=index(scale_4),randnum,scale_4,scale_12,scale_52,scale_252)";
+put "results = na.omit(Return.calculate(prices[1:101,1], method='discrete'))";
+put "scale_4 = results*sqrt(4)";
+put "scale_12 = results*sqrt(12)";
+put "scale_52 = results*sqrt(52)";
+put "scale_252 = results*sqrt(252)";
+put "results = data.frame(results,scale_4,scale_12,scale_52,scale_252)";
+put "colnames(results)<-c('ibm', 'scale_4', 'scale_12', 'scale_52', 'scale_252')";
 put "endsubmit;";
 run;
+
 
 proc iml;
 %include x;
 
-call importdatasetfromr("results_from_R","randnum");
+call importdatasetfromr("results_from_R","results");
 quit;
 
-/*results from SAS*/
+data prices;
+set input.prices;
+keep ibm;
+run;
+
+%return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
+
+data prices;
+	set prices(firstobs=2 obs=101);
+run;
+
 data _null_;
-	set scalars;
-	call symput(('obs'||left(_n_)),trim(put(randnum,12.10)));
+	set prices(keep=ibm);
+	call symput(('obs'||left(_n_)),trim(put(ibm,12.10)));
 run;
 
 %macro scalar_annualized_value(method=DISCRETE, type=VALUE);
 %local i;
 data annualized_scalar;
-	set scalars;
+	set prices;
 	%do i = 1 %to 100;
 		if _n_ = &i then do;
 		scale_4 = %scalar_annualized(&&obs&i,scale=4,method=&method,type=&type);
@@ -75,7 +65,7 @@ data annualized_scalar;
 run;
 %mend;
 
-%scalar_annualized_value(method=DISCRETE,type=STD);
+%scalar_annualized_value(type=STD);
 
 
 /*If tables have 0 records then delete them.*/
@@ -117,10 +107,9 @@ run;
 %end;
 
 proc compare base=results_from_r 
-			 compare=annualized_scalar(drop=date)
-/*			 criterion= 1e-7 */
+			 compare=annualized_scalar
 			 out=diff(where=(_type_ = "DIF"
-			            and randnum> 1e-7 or scale_4> 1e-7 or scale_12> 1e-7
+			            and ibm> 1e-7 or scale_4> 1e-7 or scale_12> 1e-7
 			              or scale_52> 1e-7 or scale_252>1e-7))
 			 noprint;
 run;
@@ -144,7 +133,7 @@ run;
 
 %if &keep=FALSE %then %do;
 	proc datasets lib=work nolist;
-	delete diff scalars annualized_scalar results_from_R;
+	delete prices diff scalars annualized_scalar results_from_R;
 	quit;
 %end;
 
