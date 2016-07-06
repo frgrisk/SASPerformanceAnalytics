@@ -68,8 +68,8 @@ quit;
 %ActivePremium(&returns,bm=&bm,scale=&scale,dateColumn=&dateColumn,outData=&ap)
 %TrackingError(&returns,bm=&bm,scale=&scale,VARDEF= &VARDEF,dateColumn=&dateColumn,outData=&te,annualized=TRUE)
 
-data &outData(drop=&dateColumn);
-	format _stat_ $32.;
+data &outData(keep=_stat_ &ret);
+	format _STAT_ $32.;
 	set &te &ap(in=&ap);
 	array vars[&nv] &ret;
 

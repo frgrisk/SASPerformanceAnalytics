@@ -39,8 +39,8 @@ data &outData(drop=&i);
 
 	do &i=1 to dim(ret);
 
-	if ret[&i] = . then 
-		ret[&i] = 0;
+/*	if ret[&i] = . then */
+/*		ret[&i] = 0;*/
 	ret[&i]= ret[&i] -&Rf;
 	end;
 run;
