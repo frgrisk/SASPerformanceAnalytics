@@ -47,9 +47,9 @@
 %put VARS IN table_SpecificRisk: (&vars);
 %let n=%sysfunc(countw(&vars));
 
-data &returns;
-	set &returns(firstobs=2);
-run;
+/*data &returns;*/
+/*	set &returns(firstobs=2);*/
+/*run;*/
 
 /*Calculate excess from benchmark*/
 %let out_excess = %ranname();

@@ -46,10 +46,10 @@
 				outData= &outData);
 
 data &outData;
-format _stat_ $32.;
-_stat_='Active Premium';
-set &outData;
-drop &BM &dateColumn;
+	format _STAT_ $32.;
+	set &outData;
+	_stat_='Active Premium';
+	drop &BM;
 run; 
 
 proc datasets lib= work nolist;
