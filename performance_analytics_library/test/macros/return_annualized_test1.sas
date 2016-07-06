@@ -80,7 +80,7 @@ data annualized_returns;
 run;
 
 proc compare base=returns_from_r 
-			 compare=annualized_returns(drop=date) 
+			 compare=annualized_returns
 			 out=diff(where=(_type_ = "DIF"
 			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
 			              or fuzz(GOOGL) or fuzz(SPY))
