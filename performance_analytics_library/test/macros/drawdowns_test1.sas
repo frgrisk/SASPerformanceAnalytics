@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Drawdown_Peak(prices)
+%Drawdowns(prices)
 
 data drawdowns;
 	set drawdowns(keep=ibm firstobs=2);
