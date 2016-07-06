@@ -52,9 +52,9 @@ run;
 						outData= &outData);
 
 data &outData;
-format _stat_ $32.;
-_stat_='Tracking Error';
-set &outData(drop=&dateColumn);
+	format _STAT_ $32.;
+	set &outData;
+	_STAT_='Tracking Error';
 run;
 
 proc datasets lib= work nolist;
