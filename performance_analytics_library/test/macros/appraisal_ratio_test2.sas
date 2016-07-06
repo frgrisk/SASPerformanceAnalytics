@@ -75,15 +75,12 @@ run;
 %end;
 
 proc compare base=returns_from_r 
-			 compare=Appraisal_Ratio 
-			 method=absolute
-			 criterion= 0.0001
+			 compare=Appraisal_Ratio
 			 out=diff(where=(_type_ = "DIF"
-			            and (abs(IBM) > 1e-5 or abs(GE) > 1e-5
-			              or abs(DOW) > 1e-5 or abs(GOOGL) > 1e-5)
-			 		))
-			noprint
-			 ;
+			            and (fuzz(IBM) or fuzz(GE) or fuzz(DOW) 
+			              or fuzz(GOOGL))
+					))
+			 noprint;
 run;
  
 data _null_;
