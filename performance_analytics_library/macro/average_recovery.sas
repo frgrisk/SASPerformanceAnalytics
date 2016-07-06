@@ -136,8 +136,8 @@ data &outData;
 	drop _type_ _freq_;
 run;
 
-/*proc datasets lib=work nolist;*/
-/*	delete &DD &DD2 &stat_DD2 $DDrow;*/
-/*run;*/
-/*quit;*/
+proc datasets lib=work nolist;
+	delete &DD &DD2 &stat_DD2 &DDrow;
+run;
+quit;
 %mend;
