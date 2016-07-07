@@ -20,8 +20,8 @@
 					outData= _geoMean);
 %local vars _geo;
 
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &BM); 
-%put VARS IN CoMoments: (&vars);
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
+%put VARS IN geo_mean: (&vars);
 
 %let _geo= %ranname();
 
