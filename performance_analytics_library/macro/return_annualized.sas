@@ -19,8 +19,9 @@
 * MODIFIED:
 * 6/02/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
-* 3/09/2016 - QY - parameter consistency
-* 5/25/2016 - QY - Edit format of output
+* 3/09/2016 - QY - Parameter consistency
+* 5/25/2016 - QY - Edited format of output
+* 7/06/2016 - QY - Edited calculation by geo_mean and arithmetric mean 
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -31,78 +32,50 @@
 								dateColumn= DATE, 
 								outData= annualized_returns);
 
-%local _tempRP nv ret i;
+%local _temp nv vars i;
+%let vars=%get_number_column_names(_table=&returns,_exclude=&dateColumn);
+%put VARS IN return_annualized: (&vars);
 
-%let ret=%get_number_column_names(_table=&returns,_exclude=&dateColumn);
-
-%let nv = %sysfunc(countw(&ret));
-
-%let _tempRAnn = %ranname();
+%let _temp=%ranname();
+%let nv = %sysfunc(countw(&vars));
 %let i = %ranname();
 
-/*Create a series for taking STDev and Calculate Mean*/
-data &_tempRAnn(drop=&i) &outData(drop=&i);
-	set &returns end= last nobs=nobs;
 
-	array ret[&nv] &ret;
-	array prod[&nv] _temporary_;
-
-	if _n_ = 1 then do;
-		do &i=1 to &nv;
-			/*DISCRETE*/
-		%if %upcase(&method) = DISCRETE %then %do;
-				prod[&i] = 1;
-		%end;
-
-				/*LOG*/
-		%else %if %upcase(&method) = LOG %then %do;
-				prod[&i] = 0;
-		%end;
-		end;
-		delete;
-	end;
-
-	do &i=1 to &nv;
 		/*DISCRETE*/
-	%if %upcase(&method) = DISCRETE %then %do;
-		prod[&i] = prod[&i] * (1+ret[&i])**(&scale);
-		
-	%end;
-		/*LOG*/
-	%else %if %upcase(&method) = LOG %then %do;
-		prod[&i] = prod[&i] + ret[&i]*sqrt(&scale);
-		ret[&i] = ret[&i] * sqrt(&scale);
-	%end;
-	end;
-	output &_tempRAnn;
+%if %upcase(&method) = DISCRETE %then %do;
+	%geo_mean(&returns,dateColumn=&dateColumn,outData= &_temp);
 
-	if last then do;
-	do &i=1 to &nv;
-	%if %upcase(&method) = DISCRETE %then %do;
-
-		ret[&i] =(prod[&i])**(1/(nobs-1)) - 1;
-	%end;
+	data &outData(keep=_stat_ &vars);
+	format _STAT_ $32.;
+		set &_temp;
+		array ret[&nv] &vars;
+		do &i=1 to &nv;
+			ret[&i]=(1+ret[&i])**&scale-1;
+		end;
+		_stat_="Annualized Return";
+	run;
+%end;
 
 		/*LOG*/
-	%else %if %upcase(&method) = LOG %then %do;
-		ret[&i] = prod[&i]/(nobs-1);
-		ret[&i] = ret[&i] *sqrt(&scale);
-	%end;
-	
-	end;
-	output &outData;
-	end;
-run;
-quit;
+%if %upcase(&method) = LOG %then %do;
+	proc means data=&returns mean noprint;
+		output out=&_temp mean=;
+	run;
 
-data &outData;
-	format _stat_ $32.;
-	set &outData(drop=&dateColumn);
-	_stat_="Ann_Return";
-run;
+	data &outData(keep=_stat_ &vars);
+	format _STAT_ $32.;
+		set &_temp;
+		array ret[&nv] &vars;
+		do &i=1 to &nv;
+			ret[&i]=ret[&i]*&scale;
+		end;
+		_stat_="Annualized Return";
+	run;
+%end;
+
 
 proc datasets lib= work nolist;
-delete &_tempRAnn;
+delete &_temp;
 run;
 quit;
 %mend;
