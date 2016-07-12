@@ -36,7 +36,7 @@
 %local ret nv j Chained_Ex_Ret Ann_StD;
 /*Find all variable names excluding the date column and risk free variable*/
 %let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
-%put RET IN Adjusted_SharpeRatio: (&ret);
+%put RET IN SharpeRatio_annualized: (&ret);
 /*Find number of columns in the data set*/
 %let nv = %sysfunc(countw(&ret));
 /*Define counters for array operations*/
@@ -58,14 +58,12 @@
 data &outData (drop= &j);
 	format _STAT_ $32.;
 	set &Chained_Ex_Ret &Ann_StD (in=s);
-	drop &dateColumn;
-	_STAT_= 'Sharpe_Ratio';
+	_STAT_= 'Sharpe Ratio';
 	array minRf[&nv] &ret;
 
 	do &j=1 to &nv;
 		minRf[&j] = lag(minRf[&j])/minRf[&j];
 	end;
-
 	if s;
 run;
 

@@ -66,7 +66,7 @@ end;
 run;
 
 data &outData;
-	format _stat_ $32.;
+	format _STAT_ $32.;
 	set &outData(drop=&dateColumn);
 	_stat_="Std_Dev";
 run;
