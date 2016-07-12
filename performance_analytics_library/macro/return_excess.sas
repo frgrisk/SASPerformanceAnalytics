@@ -34,6 +34,7 @@
 %let i= %ranname();
 
 data &outData(drop=&i);
+format _STAT_ $32.;
 	set &returns ;
 	array ret[*] &ret;
 
@@ -43,6 +44,7 @@ data &outData(drop=&i);
 /*		ret[&i] = 0;*/
 	ret[&i]= ret[&i] -&Rf;
 	end;
+	_stat_="Excess Return";
 run;
 %mend;
 
