@@ -33,7 +33,7 @@
 							dateColumn= DATE,
 							outData= BurkeRatio);
 							
-%local vars i j nvar annualized drawdown divisor;
+%local vars i j nvar annualized drawdown divisor stat_n;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Burke_Ratio: (&vars);
@@ -41,6 +41,7 @@
 %let annualized= %ranname();
 %let drawdown= %ranname();
 %let divisor= %ranname();
+%let stat_n= %ranname();
 %let i=%ranname();
 %let nvar = %sysfunc(countw(&vars));
 
@@ -120,29 +121,38 @@ data &divisor(drop=&i);
 		end;
 run;
 
+%if %upcase(&modified)=TRUE %then %do;
+	proc means data=&returns n noprint;
+		output out=&stat_n n=;
+	run;
+
+	data &divisor(keep=&vars);
+		set &stat_n &divisor(in=b);
+		array ret[*] &vars;
+		do &i=1 to dim(ret);
+			ret[&i]=ret[&i]/sqrt(lag(ret[&i]));
+		end;
+		if b;
+	run;
+%end;
+
+	
 
 data &outData (drop=&i);
-	set &annualized &divisor;
-
+format _STAT_ $32.;
+	set &annualized &divisor(in=b);
 	array ret[*] &vars;
 
 	do &i= 1 to dim(ret);
 		ret[&i]= lag(ret[&i])/ret[&i];
-		%if %upcase(&modified)=TRUE %then %do;
-			ret[&i]=sqrt(&scale)*ret[&i];
-		%end;
 	end;
+	_STAT_= 'Burke Ratio';
+	if b;
 run;
 
-data &outData;
-	format _stat_ $32.;
-	set &outData end= last;
-	_STAT_= 'Burke Ratio';
-	if last; 
-run;
 
 proc datasets lib=work nolist;
-	delete &annualized &drawdown &divisor;;
+	delete &annualized &drawdown &divisor &stat_n;
 run;
 quit;
 
