@@ -1,11 +1,9 @@
 /*---------------------------------------------------------------
 * NAME: MSquared_Excess.sas
 *
-* PURPOSE: Calculate D ratio of the return distribution
+* PURPOSE: Calculate M squared excess return measures the quantity above benchmark.
 *
-* NOTES: It has values between zero and infinity. The lower the d ratio the better the 
-*        performance, a value of zero indicating there are no returns less than zero 
-*        and a value of infinity indicating there are no returns greater than zero.
+* NOTES: As normal excess returns, there are geometric excess and arithmetic excess. 
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
@@ -16,7 +14,7 @@
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * option - Required. Specify whether report the geometric or arithmetic excess M Squared. {GEOMETRIC, ARITHMETIC}.
 * dateColumn - Optional. Date column in Data Set. Default=Date
-* outData - Optional. Output Data Set of MSquared.  Default= "MSquared".
+* outData - Optional. Output Data Set of MSquared excess return.  Default= "MSquaredExcess".
 *
 * MODIFIED:
 * 7/13/2016 – QY - Initial Creation
