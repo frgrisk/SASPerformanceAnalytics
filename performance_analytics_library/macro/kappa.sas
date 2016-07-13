@@ -31,7 +31,7 @@
 
 %local vars nvars temp_excess means sum nrows Rf ii i;
 
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &MAR);
 %put VARS IN Kappa: (&vars);
 
 %let temp_excess=%ranname();
@@ -42,9 +42,9 @@
 
 %return_excess(&returns,Rf= &MAR, dateColumn= &dateColumn,outData= &temp_excess);
 
-data &temp_excess;
-	set &temp_excess(firstobs=2);
-run; 
+/*data &temp_excess;*/
+/*	set &temp_excess(firstobs=2);*/
+/*run; */
 
 %do i=1 %to &nvars;
 	%local nrows&i;
@@ -58,7 +58,7 @@ run;
 	quit;
 %end;
 
-proc means data=&returns noprint;
+proc means data=&temp_excess noprint;
 	output out=&means;
 run;
 
@@ -91,7 +91,7 @@ data &outData;
 	array power[&nvars];
 
 	%do i=1 %to &nvars;
-		kappa[&i] = (vars[&i] - &MAR)/ ((LAG(power[&i])/&&nrows&i) ** (1/&L));
+		kappa[&i] = vars[&i]/ ((LAG(power[&i])/&&nrows&i) ** (1/&L));
 	%end;
 	rename
 		%do i=1 %to &nvars;
