@@ -24,7 +24,9 @@ and is in effect the exess return adjusted for systematic risk.
 *				   Renamed Jensen_Alpha "_STAT_".
 * 3/05/2016 – RM - Comments modification
 * 3/09/2016 - QY - parameter consistency
-* 6/06/2016 - QY - Replaced the iml process by data process 
+* 6/06/2016 - QY - Replaced the iml process by data process
+* 7/13/2016 - QY - Changed order of %return_excess and %return_annualized
+*                  Replaced macro variable by dataset to eliminate truncate error
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -38,7 +40,7 @@ and is in effect the exess return adjusted for systematic risk.
 							outData= Jensen_Alpha);
 
 
-%local _tempBeta _tempRAnn_ex i;
+%local _tempBeta _tempRAnn_ex _tempBM_ex i;
 /*Find number of variables in data set excluding the date column, benchmark, and risk free variables*/
 /*Define temporary data set names with random names*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf &BM); 
@@ -46,28 +48,27 @@ and is in effect the exess return adjusted for systematic risk.
 /*Name temporary data sets*/
 %let _tempBeta= %ranname();
 %let _tempRAnn_ex= %ranname();
+%let _tempBM_ex= %ranname();
 %let i= %ranname();
 
+%return_excess(&returns, 
+						Rf= &Rf, 
+						dateColumn= &dateColumn,
+						outData= &_tempRAnn_ex);
 
-%return_annualized(&returns, 
+
+%return_annualized(&_tempRAnn_ex, 
 							scale=&scale,
 							method= &method,
 							dateColumn= &dateColumn, 
 							outData= &_tempRAnn_ex);
 
-%return_excess(&_tempRAnn_ex, 
-								Rf= &Rf, 
-								dateColumn= &dateColumn,
-								outData= &_tempRAnn_ex);
-
-data _null_;
+data &_tempBM_ex(drop=&i);
 	set &_tempRAnn_ex;
-	call symputx("rb",put(&Bm,best32.),"l");
-run;
-%put &rb;
-
-data &returns;
-	set &returns(firstobs=2);
+	array ret[*] &vars;
+	do &i=1 to dim(ret);
+		ret[&i]=&BM;
+	end;
 run;
 
 %CAPM_alpha_beta(&returns, 
@@ -84,13 +85,13 @@ run;
 
 data &outData(drop=&i &bm);
 	format _STAT_ $32.;
-	set &_tempBeta &_tempRAnn_ex end=last;
+	set &_tempBeta &_tempRAnn_ex &_tempBM_ex end=last;
 	array ret[*] &vars;
 	do &i=1 to dim(ret);
-		ret[&i]=ret[&i]-lag(ret[&i])*&rb;
+		ret[&i]=lag(ret[&i])-ret[&i]*lag2(ret[&i]);
 	end;
 	if last;
-	_stat_='Jensen_Alpha';
+	_stat_='Jensen Alpha';
 run;
 
 /*proc iml;*/
@@ -126,7 +127,7 @@ run;
 /*run;*/
 
 proc datasets lib= work nolist;
-delete &_tempBeta &_tempRAnn_ex;
+delete &_tempBeta &_tempRAnn_ex &_tempBM_ex;
 run;
 quit;
 %mend;

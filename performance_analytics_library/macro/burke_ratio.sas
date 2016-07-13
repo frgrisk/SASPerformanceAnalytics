@@ -22,6 +22,7 @@
 *
 * MODIFIED:
 * 5/27/2016 – QY - Initial Creation
+* 7/13/2016 - QY - Changed order of %return_excess and %return_annualized
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -35,7 +36,7 @@
 							
 %local vars i j nvar annualized drawdown divisor stat_n;
 
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
 %put VARS IN Burke_Ratio: (&vars);
 
 %let annualized= %ranname();
@@ -45,9 +46,8 @@
 %let i=%ranname();
 %let nvar = %sysfunc(countw(&vars));
 
-
-%return_annualized(&returns, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
-%return_excess(&annualized, Rf=&Rf, dateColumn= &dateColumn, outData= &annualized);
+%return_excess(&returns, Rf=&Rf, dateColumn= &dateColumn, outData= &annualized);
+%return_annualized(&annualized, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
 
 
 data &drawdown(drop=&i);
