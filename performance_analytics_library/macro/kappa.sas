@@ -42,9 +42,9 @@
 
 %return_excess(&returns,Rf= &MAR, dateColumn= &dateColumn,outData= &temp_excess);
 
-data &temp_excess;
-	set &temp_excess(firstobs=2);
-run; 
+/*data &temp_excess;*/
+/*	set &temp_excess(firstobs=2);*/
+/*run; */
 
 %do i=1 %to &nvars;
 	%local nrows&i;
