@@ -24,8 +24,9 @@
 *				   Replaced code returning DISCRETE chained returns with %return_annualized
 *				   Inserted parameter method= to allow user to choose LOG or DISCRETEaly chained returns.
 * 3/05/2016 – RM - Comments modification 
-* 3/09/2016 - QY - parameter consistency
+* 3/09/2016 - QY - Parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 7/13/2016 - QY - Replaced calculation of annualized Sharpe ratio by %SharpeRatio_annualized
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -39,7 +40,7 @@
 								outData= adjusted_SharpeRatio);
 
 
-%local ret nv i Skew_Kurt_Table Ann_StD SR;
+%local ret nv i Skew_Kurt_Table SR;
 /*Find all variable names excluding the date column and risk free variable*/
 %let ret= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
 %put RET IN Adjusted_SharpeRatio: (&ret);
@@ -49,29 +50,9 @@
 %let i= %ranname();
 /*Define temporary data set names with random names*/
 %let Skew_Kurt_Table= %ranname();
-%let Ann_StD= %ranname();
 %let SR= %ranname();
 
-
-%return_annualized(&returns, scale= &scale, method= &method, outData= &SR);
-%return_excess(&SR, Rf= &Rf, dateColumn= &dateColumn, outData= &SR);
-%Standard_Deviation(&returns,annualized= TRUE, scale= &scale, VARDEF = &VARDEF, dateColumn= &dateColumn,outData= &Ann_StD);
-
-data &SR (drop= &i);
-	format _stat_ $32.;
-	set &SR &Ann_StD (in=s);
-	drop Date;
-	array minRf[&nv] &ret;
-
-	do &i=1 to &nv;
-		minRf[&i] = lag(minRf[&i])/minRf[&i];
-	end;
-
-	_stat_ = "Sharpe Ratio";
-
-	if s;
-run;
-
+%SharpeRatio_annualized(&returns, Rf= &Rf, scale= &scale, method= &method, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &SR);
 
 proc transpose data=&returns out=&Skew_Kurt_Table;
 by &dateColumn;
@@ -119,7 +100,7 @@ data &outData(drop= &i _name_);
 run;
 
 proc datasets lib=work nolist;
-delete &Skew_Kurt_Table &SR &Ann_StD;
+delete &Skew_Kurt_Table &SR;
 run;
 quit;
 

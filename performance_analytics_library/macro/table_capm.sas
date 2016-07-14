@@ -50,14 +50,14 @@
 
 
 %return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &RP);
-data &RP(drop= &i);
-	set &RP;
-	array excess[*] &vars;
-	if _n_=1 then
-	do &i= 1 to dim(excess);
-		excess[&i]= .;
-	end;
-run;
+/*data &RP(drop= &i);*/
+/*	set &RP;*/
+/*	array excess[*] &vars;*/
+/*	if _n_=1 then*/
+/*	do &i= 1 to dim(excess);*/
+/*		excess[&i]= .;*/
+/*	end;*/
+/*run;*/
 
 /*calculate alpha and beta*/
 %CAPM_alpha_beta(&returns, BM=&BM, Rf= &Rf, dateColumn= &dateColumn, outData= &alphaBeta);

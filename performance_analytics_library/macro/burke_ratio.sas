@@ -22,6 +22,7 @@
 *
 * MODIFIED:
 * 5/27/2016 – QY - Initial Creation
+* 7/13/2016 - QY - Changed order of %return_excess and %return_annualized
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -33,20 +34,20 @@
 							dateColumn= DATE,
 							outData= BurkeRatio);
 							
-%local vars i j nvar annualized drawdown divisor;
+%local vars i j nvar annualized drawdown divisor stat_n;
 
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
 %put VARS IN Burke_Ratio: (&vars);
 
 %let annualized= %ranname();
 %let drawdown= %ranname();
 %let divisor= %ranname();
+%let stat_n= %ranname();
 %let i=%ranname();
 %let nvar = %sysfunc(countw(&vars));
 
-
-%return_annualized(&returns, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
-%return_excess(&annualized, Rf=&Rf, dateColumn= &dateColumn, outData= &annualized);
+%return_excess(&returns, Rf=&Rf, dateColumn= &dateColumn, outData= &annualized);
+%return_annualized(&annualized, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
 
 
 data &drawdown(drop=&i);
@@ -120,29 +121,38 @@ data &divisor(drop=&i);
 		end;
 run;
 
+%if %upcase(&modified)=TRUE %then %do;
+	proc means data=&returns n noprint;
+		output out=&stat_n n=;
+	run;
+
+	data &divisor(keep=&vars);
+		set &stat_n &divisor(in=b);
+		array ret[*] &vars;
+		do &i=1 to dim(ret);
+			ret[&i]=ret[&i]/sqrt(lag(ret[&i]));
+		end;
+		if b;
+	run;
+%end;
+
+	
 
 data &outData (drop=&i);
-	set &annualized &divisor;
-
+format _STAT_ $32.;
+	set &annualized &divisor(in=b);
 	array ret[*] &vars;
 
 	do &i= 1 to dim(ret);
 		ret[&i]= lag(ret[&i])/ret[&i];
-		%if %upcase(&modified)=TRUE %then %do;
-			ret[&i]=sqrt(&scale)*ret[&i];
-		%end;
 	end;
+	_STAT_= 'Burke Ratio';
+	if b;
 run;
 
-data &outData;
-	format _stat_ $32.;
-	set &outData end= last;
-	_STAT_= 'Burke Ratio';
-	if last; 
-run;
 
 proc datasets lib=work nolist;
-	delete &annualized &drawdown &divisor;;
+	delete &annualized &drawdown &divisor &stat_n;
 run;
 quit;
 

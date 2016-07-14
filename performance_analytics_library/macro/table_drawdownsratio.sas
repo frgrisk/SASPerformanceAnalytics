@@ -60,6 +60,7 @@ run;
 proc datasets lib= work nolist;
 delete &Sterling &Calmar &Burke &PI &Ulcer &PR &Martin;
 run;
+quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
 proc print data= &outData noobs;

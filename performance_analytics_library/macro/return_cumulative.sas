@@ -16,7 +16,7 @@
 * MODIFIED:
 * 5/22/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification
-* 3/09/2016 - QY - parameter consistency
+* 3/09/2016 - QY - Parameter consistency
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/

@@ -31,55 +31,39 @@
 							dateColumn= DATE,
 							outData= SharpeRatio);
 							
-%local vars _tempRP _tempStd _tempSharpe i;
+%local vars _tempRP _tempStd i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &Rf);
-%put VARS IN Adjusted_SharpeRatio: (&vars);
+%put VARS IN Sharpe_Ratio: (&vars);
 
 %let _tempRP= %ranname();
 %let _tempStd= %ranname();
-%let _tempSharpe= %ranname();
 
 %let i= %ranname();
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &_tempRP);
 
-proc means data= &_tempRP VARDEF= &VARDEF noprint;
-output out= &_tempRP;
+proc means data= &_tempRP noprint;
+	output out= &_tempRP(keep=&vars) mean=;
 run;
 
-data &_tempRP;
-set &_tempRP;
-drop _freq_ _stat_ _type_ date;
-where _stat_= 'MEAN';
+%Standard_Deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
+
+data &outData (keep= _stat_ &vars);
+format _STAT_ $32.;
+	set &_tempRP &_tempStd(in=b);
+
+	array Sharpe[*] &vars;
+	do &i= 1 to dim(Sharpe);
+		Sharpe[&i]= lag(Sharpe[&i])/Sharpe[&i];
+	end;
+
+	_STAT_= 'Sharpe Ratio';
+	if b;
 run;
-
-
-%Standard_Deviation(&returns,
-							VARDEF = &VARDEF,
-							dateColumn= &dateColumn, 
-							outData= &_tempStd);
-
-data &_tempSharpe (drop= &i);
-set &_tempRP &_tempStd;
-
-array Sharpe[*] &vars;
-
-do &i= 1 to dim(Sharpe);
-Sharpe[&i]= lag(Sharpe[&i])/Sharpe[&i];
-end;
-run;
-
-data &outData;
-retain _STAT_;
-set &_tempSharpe end= last;
-_STAT_= 'Sharpe_Ratio';
-if last; 
-run;
-
 
 proc datasets lib=work nolist;
-	delete &_tempRP &_tempStd &_tempSharpe;
+	delete &_tempRP &_tempStd;
 run;
 quit;
 
