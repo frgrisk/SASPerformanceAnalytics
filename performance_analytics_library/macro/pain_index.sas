@@ -29,7 +29,7 @@
 							dateColumn= DATE,
 							outData= painindex);
 							
-%local vars drawdown stat_sum stat_n i;
+%local vars drawdown stat_mean i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Pain_Index: (&vars);
@@ -50,30 +50,18 @@ data &drawdown(drop=&i);
 	end;
 run;
 
-proc means data= &drawdown sum n noprint;
-output out= &stat_sum sum=;
-output out= &stat_n n=;
+proc means data= &drawdown mean noprint;
+output out= &stat_mean mean=;
 run;
 
-data &outData (drop= &i _type_ _freq_);
-	set &stat_sum &stat_n;
-
-	array Pain[*] &vars;
-
-	do &i= 1 to dim(Pain);
-		Pain[&i]= lag(Pain[&i])/Pain[&i];
-	end;
-run;
-
-data &outData;
-	format _stat_ $32.;
-	set &outData end= last;
+data &outData (keep=_stat_ &vars);
+format _STAT_ $32.;
+	set &stat_mean;
 	_STAT_= 'Pain Index';
-	if last; 
 run;
 
 proc datasets lib=work nolist;
-	delete &drawdown &stat_sum &stat_n;
+	delete &drawdown &stat_mean;
 run;
 quit;
 

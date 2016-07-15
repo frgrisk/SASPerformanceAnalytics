@@ -27,14 +27,13 @@
 							dateColumn= DATE,
 							outData= UlcerIndex);
 							
-%local vars drawdown stat_sum stat_n i;
+%local vars drawdown stat_mean i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Ulcer_Index: (&vars);
 
 %let drawdown= %ranname();
-%let stat_sum= %ranname();
-%let stat_n= %ranname();
+%let stat_mean= %ranname();
 %let i = %ranname();
 
 %Drawdowns(&returns, method= &method, dateColumn= &dateColumn, outData= &drawdown)
@@ -48,49 +47,22 @@ data &drawdown(drop=&i);
 	end;
 run;
 
-proc means data= &drawdown sum n noprint;
-	output out= &stat_sum sum=;
-	output out= &stat_n n=;
+proc means data= &drawdown mean noprint;
+	output out= &stat_mean mean=;
 run;
 
-data &stat_sum(drop=&i);
-	set &stat_sum;
-	drop _freq_  _type_;
+data &outData(keep=_stat_ &vars);
+format _STAT_ $32.;
+	set &stat_mean;
 	array ret[*] &vars;
 		do &i=1 to dim(ret);
 			ret[&i]=sqrt(ret[&i]);
 		end;
-run;
-
-data &stat_n(drop=&i);
-	set &stat_n;
-	drop _freq_  _type_;
-	array ret[*] &vars;
-		do &i=1 to dim(ret);
-			ret[&i]=sqrt(ret[&i]);
-		end;
-run;
-
-
-data &outData (drop= &i);
-	set &stat_sum &stat_n;
-
-	array Ulcer[*] &vars;
-
-	do &i= 1 to dim(Ulcer);
-		Ulcer[&i]= lag(Ulcer[&i])/Ulcer[&i];
-	end;
-run;
-
-data &outData;
-	format _stat_ $32.;
-	set &outData end= last;
 	_STAT_= 'Ulcer Index';
-	if last; 
 run;
 
 proc datasets lib=work nolist;
-	delete &drawdown &stat_sum &stat_n;
+	delete &drawdown &stat_mean;
 run;
 quit;
 

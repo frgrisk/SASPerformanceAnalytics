@@ -38,8 +38,8 @@
 %let annualized= %ranname();
 %let i = %ranname();
 
-%return_annualized(&returns, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
-%return_excess(&annualized, Rf=&Rf, dateColumn= &dateColumn, outData= &annualized);
+%return_excess(&returns, Rf=&Rf, dateColumn= &dateColumn, outData= &annualized);
+%return_annualized(&annualized, scale= &scale, method= &method, dateColumn= &dateColumn, outData= &annualized)
 
 %pain_index(&returns, method= &method, dateColumn= &dateColumn, outData= &pain_index)
 
