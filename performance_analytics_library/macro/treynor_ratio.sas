@@ -54,15 +54,6 @@
 %let i= %ranname();
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &_tempRP);
-data &_tempRP(drop= &i &BM);
-	set &_tempRP;
-	array excess[*] &vars;
-	if _n_=1 then
-	do &i= 1 to dim(excess);
-	excess[&i]= .;
-	end;
-run;
-
 %return_annualized(&_tempRP,scale= &scale, method= &method, dateColumn= &dateColumn, outData= &_tempRP);
 
 %if %upcase(&modified) = FALSE %then %do;

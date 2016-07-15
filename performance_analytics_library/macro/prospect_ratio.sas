@@ -36,7 +36,7 @@
 %let i = %ranname();
 
 data &temp(drop=&i &dateColumn);
-	set &returns(firstobs=2);
+	set &returns;
 	array ret[*] &vars;
 
 	do &i= 1 to dim(ret);
