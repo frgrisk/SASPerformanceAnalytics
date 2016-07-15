@@ -41,9 +41,9 @@
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &temp_excess);
 %standard_deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
 
-data &temp_excess;
-	set &temp_excess(firstobs=2);
-run; 
+/*data &temp_excess;*/
+/*	set &temp_excess(firstobs=2);*/
+/*run; */
 
 proc means data=&temp_excess noprint;
 	output out=&means mean=;
