@@ -10,6 +10,7 @@
 * returns - Required. Data Set containing returns.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * option - Optional. Option to use half-Kelly. Default=HALF
+* excess - Optional. Option to set divisor as variance of excess returns, or variance of returns. {TRUE, FALSE} Default=FALSE
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with Kelly ratio.  Default="KellyRatio".
@@ -23,6 +24,7 @@
 %macro kellyratio(returns,
 						Rf= 0,
 						option= HALF,
+						excess= FALSE,
 						VARDEF = DF, 
 						dateColumn= DATE,
 						outData= kellyratio);
@@ -39,7 +41,12 @@
 %let i= %ranname();
 
 %return_excess(&returns,Rf= &Rf, dateColumn= &dateColumn,outData= &temp_excess);
-%standard_deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
+%if %upcase(&excess=FALSE) %then %do;
+	%standard_deviation(&returns, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
+%end;
+%if %upcase(&excess=TRUE) %then %do;
+	%standard_deviation(&temp_excess, VARDEF = &VARDEF, dateColumn= &dateColumn, outData= &_tempStd);
+%end;
 
 /*data &temp_excess;*/
 /*	set &temp_excess(firstobs=2);*/
@@ -60,7 +67,7 @@ run;
 
 data &outData;
 	format _stat_ $32.;
-	set &_tempStd(keep=&ret) &&means(keep=&ret);
+	set &_tempStd(keep=&ret) &means(keep=&ret);
 	array ret[*]  &ret;
 
 	do &i=1 to dim(ret);
