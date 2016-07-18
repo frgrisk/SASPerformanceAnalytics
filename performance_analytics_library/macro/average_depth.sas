@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: Average_Drawdown.sas
+* NAME: Average_Depth.sas
 *
 * PURPOSE: Calculates the average depth of the observed drawdowns.
 *
@@ -17,7 +17,7 @@
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
-%macro Average_Drawdown(returns,
+%macro Average_Depth(returns,
 							method= DISCRETE,
 							dateColumn= DATE,
 							outData= Avg_DD);

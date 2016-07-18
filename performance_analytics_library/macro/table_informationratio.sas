@@ -67,7 +67,7 @@
 						outData= &ir);
 
 data &tea;
-format _stat_ $32.;
+format _STAT_ $32.;
 set &tea;
 _stat_= 'Annualized_TE';
 run;

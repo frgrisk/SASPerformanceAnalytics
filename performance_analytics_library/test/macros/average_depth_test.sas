@@ -1,11 +1,11 @@
-%macro Average_Drawdown_test(keep=FALSE);
+%macro Average_Depth_test(keep=FALSE);
 %global pass notes;
 
 %if &keep=FALSE %then %do;
 	filename x temp;
 %end;
 %else %do;
-	filename x "&dir\Average_Drawdown_test_submit.sas";
+	filename x "&dir\Average_Depth_test_submit.sas";
 %end;
 
 data _null_;
@@ -34,7 +34,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Average_Drawdown(prices)
+%Average_Depth(prices)
 
 
 /*If tables have 0 records then delete them.*/
@@ -92,12 +92,12 @@ stop;
 run;
 
 %if &n = 0 %then %do;
-	%put NOTE: NO ERROR IN TEST AVERAGE_DRAWDOWN_TEST;
+	%put NOTE: NO ERROR IN TEST AVERAGE_DEPTH_TEST;
 	%let pass=TRUE;
 	%let notes=Passed;
 %end;
 %else %do;
-	%put ERROR: PROBLEM IN TEST AVERAGE_DRAWDOWN_TEST;
+	%put ERROR: PROBLEM IN TEST AVERAGE_DEPTH_TEST;
 	%let pass=FALSE;
 	%let notes=Differences detected in outputs.;
 %end;
