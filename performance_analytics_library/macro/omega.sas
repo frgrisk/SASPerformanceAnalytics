@@ -12,9 +12,8 @@
 *
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
-* threshold - Optional. A reference point to be compared. The reference point may be the mean or some
-              specified threshold. Default=0.
-               observations, or threshold. {UNDER, ALL, NULL}. Default=NULL. 
+* MAR - Optional. Minimum Acceptable Return. A reference point to be compared. The reference 
+*       point may be the mean or some specified threshold.Default=0
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with Omega ratios.  Default="omega".
 *
@@ -24,7 +23,7 @@
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
 %macro Omega(returns,
-				  threshold= 0,
+				  MAR= 0,
 				  dateColumn= DATE,
 			      outData= omega);
 							
@@ -43,8 +42,8 @@ data &upside(drop=&i &dateColumn);
 	array ret[*] &vars;
 
 	do &i= 1 to dim(ret);
-		if ret[&i]<=&threshold then ret[&i]=.; 
-		else ret[&i]=ret[&i]-&threshold;
+		if ret[&i]<=&MAR then ret[&i]=.; 
+		else ret[&i]=ret[&i]-&MAR;
 	end;
 run;
 
@@ -58,8 +57,8 @@ data &downside(drop=&i &dateColumn);
 	array ret[*] &vars;
 
 	do &i= 1 to dim(ret);
-		if ret[&i]>=&threshold then ret[&i]=.; 
-		else ret[&i]=&threshold-ret[&i];
+		if ret[&i]>=&MAR then ret[&i]=.; 
+		else ret[&i]=&MAR-ret[&i];
 	end;
 run;
 
@@ -68,7 +67,7 @@ proc means data=&downside sum noprint;
 run;
 
 data &outData (keep=_stat_ &vars);
-format _stat_ $32.;
+format _STAT_ $32.;
 
 	set &upside &downside end=last;
 

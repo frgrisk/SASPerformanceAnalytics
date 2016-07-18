@@ -16,10 +16,10 @@
 				by n<1. Default=2.
 * group - Optional. Specifies to choose full observations or subset observations in the divisor. {FULL, SUBSET}
 *		  Default=FULL
-* threshold - Optional. A reference point to be compared. The reference point may be the mean or some
-              specified threshold. Default=0.
+* MAR - Optional. Minimum Acceptable Return. A reference point to be compared. The reference 
+*       point may be the mean or some specified threshold.Default=0
 * about_mean - Optional. Specify whether to calculate LPM about the mean under the threshold, the mean of all 
-               observations, or threshold. {UNDER, ALL, NULL}. Default=NULL. 
+*              observations, or threshold. {UNDER, ALL, NULL}. Default=NULL. 
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set with lower partial moments.  Default="lpm".
 *
@@ -31,7 +31,7 @@
 %macro LPM(returns,
 				  n= 2,
 				  group= FULL,
-				  threshold= 0,
+				  MAR= 0,
 				  about_mean= NULL,
 				  dateColumn= DATE,
 			      outData= lpm);
@@ -62,8 +62,8 @@ run;
 		set &returns(firstobs=2);
 		array ret[*] &vars;
 		do &i=1 to &nvars;
-			if ret[&i]>=&threshold then ret[&i]=.; 
-			else ret[&i]=&threshold-ret[&i];
+			if ret[&i]>=&MAR then ret[&i]=.; 
+			else ret[&i]=&MRA-ret[&i];
 		end;
 	run;
 %end;
@@ -92,7 +92,7 @@ run;
 		set &returns(firstobs=2);
 		array ret[*] &vars;
 		do &i=1 to &nvars;
-			if ret[&i]>=&threshold then ret[&i]=.; 
+			if ret[&i]>=&MAR then ret[&i]=.; 
 		end;
 	run;
 

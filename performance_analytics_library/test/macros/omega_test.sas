@@ -33,7 +33,7 @@ set input.prices;
 run;
 
 %return_calculate(prices,updateInPlace=TRUE,method=DISCRETE)
-%Omega(prices,threshold= 0.01/252)
+%Omega(prices,MAR= 0.01/252)
 
 
 /*If tables have 0 records then delete them.*/
@@ -101,10 +101,10 @@ run;
 	%let notes=Differences detected in outputs.;
 %end;
 
-/*%if &keep=FALSE %then %do;*/
-/*	proc datasets lib=work nolist;*/
-/*	delete diff prices Omega returns_from_r;*/
-/*	quit;*/
-/*%end;*/
+%if &keep=FALSE %then %do;
+	proc datasets lib=work nolist;
+	delete diff prices Omega returns_from_r;
+	quit;
+%end;
 
 %mend;
