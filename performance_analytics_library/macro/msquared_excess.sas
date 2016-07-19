@@ -9,6 +9,7 @@
 * returns - Required.  Data Set containing returns with option to include risk free rate variable.
 * BM - Required.  Specifies the variable name of benchmark asset or index in the returns data set.
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
+* scale - Required. Number of periods in a year {any positive integer, ie daily scale= 252, monthly scale= 12, quarterly scale= 4}.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
