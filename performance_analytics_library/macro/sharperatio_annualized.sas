@@ -46,7 +46,7 @@
 %let Ann_StD= %ranname();
 
 %return_excess(&returns, Rf= &Rf, dateColumn= &dateColumn, outData= &Chained_Ex_Ret);
-%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, outData= &Chained_Ex_Ret);
+%return_annualized(&Chained_Ex_Ret, scale= &scale, method= &method, dateColumn=&dateColumn, outData= &Chained_Ex_Ret);
 
 %Standard_Deviation(&returns, 
 							annualized= TRUE, 
