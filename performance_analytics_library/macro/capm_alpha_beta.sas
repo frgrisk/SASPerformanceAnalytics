@@ -12,6 +12,7 @@
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * dateColumn - Optional. Date column in Data Set. Default=DATE
 * outData - Optional. Output Data Set of asset Alphas and Betas. Default= "alphas_and_betas"
+*
 * MODIFIED:
 * 6/17/2015 – DP - Initial Creation
 * 9/25/2015 - CJ - Assigned random names to temporary variables and data sets.

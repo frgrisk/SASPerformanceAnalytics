@@ -20,7 +20,7 @@
 * Rf - Optional. The value or variable representing the risk free rate of return. Default=0
 * option- Required. Specify the model between Treynor-Mazuy and Henriksson-Merton models. {TM, HM}. Default="TM".
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set of asset Alphas and Betas. Default= "alphas_and_betas"
+* outData - Optional. Output Data Set of asset market timing. Default= "market_timing"
 *
 * MODIFIED:
 * 7/19/2016 – QY - Initial Creation
