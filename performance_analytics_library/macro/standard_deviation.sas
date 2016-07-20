@@ -20,8 +20,8 @@
 * 6/3/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
-* 5/23/2016 - QY - Add VARDEF parameter
-* 5/25/2016 - QY - Edit format of output
+* 5/23/2016 - QY - Added VARDEF parameter
+* 5/25/2016 - QY - Edited format of output
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
