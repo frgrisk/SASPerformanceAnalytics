@@ -49,6 +49,7 @@
 proc reg data= &RP OUTEST= &Betas noprint;
 model &vars = &BM;
 run;
+quit;
  
 data &Betas;
 set &Betas;
