@@ -25,7 +25,7 @@
 %local vars drawdown stat_sum stat_n i j;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
-%put VARS IN Average_Drawdown: (&vars);
+%put VARS IN Average_Depth: (&vars);
 
 %let drawdown= %ranname();
 %let stat_sum= %ranname();

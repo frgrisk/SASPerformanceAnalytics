@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------
-* NAME: kappa.sas
+* NAME: Kappa.sas
 *
 * PURPOSE: Calculate Kappa which is a measure of downside risk-adjusted .
 *
@@ -18,7 +18,7 @@
 *
 *
 * MODIFIED:
-* 6/7/2015 – RM - Initial Creation
+* 6/7/2016 – RM - Initial Creation
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -29,82 +29,44 @@
 							dateColumn= DATE,
 							outData= kappa);
 
-%local vars nvars temp_excess means sum nrows Rf ii i;
+%local vars nvars temp_excess _LPM _means nrows Rf ii i;
 
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &MAR);
 %put VARS IN Kappa: (&vars);
 
 %let temp_excess=%ranname();
-%let means=%ranname();
-%let sum=%ranname();
+%let _means=%ranname();
 %let nvars = %sysfunc(countw(&vars));
-%let ii=%ranname();
+%let i=%ranname();
+%let _LPM=%ranname();
 
 %return_excess(&returns,Rf= &MAR, dateColumn= &dateColumn,outData= &temp_excess);
+%LPM(&returns, n=&L, group=&group, MAR=&MAR, about_mean=NULL, dateColumn=&dateColumn, outData=&_LPM);
 
-/*data &temp_excess;*/
-/*	set &temp_excess(firstobs=2);*/
-/*run; */
 
-%do i=1 %to &nvars;
-	%local nrows&i;
-	proc sql noprint;
-		select count(%sysfunc(scan(&vars, &i)))
-		into   :nrows&i
-		from   &temp_excess
-		%if %upcase(&group)=SUBSET %then %do;
-			where %sysfunc(scan(&vars, &i))<0;
-		%end;
-	quit;
-%end;
-
-proc means data=&temp_excess noprint;
-	output out=&means;
-run;
-
-data &means;
-	set &means;
-	where _stat_ = 'MEAN';
-	drop _type_ _freq_ &dateColumn;
-run;
-
-data &temp_excess;
-	set &temp_excess;
-	array vars[*] &vars;
-	array power[&nvars];
-
-	do &ii=1 to &nvars;
-		power[&ii] = max(-vars[&ii],0) ** &L;
-	end;
-	keep power1-power&nvars;
-run;
-
-proc means data=&temp_excess noprint;
-	output out=&sum sum=;
+proc means data=&temp_excess mean noprint;
+	output out=&_means(keep=&vars) mean=; 
 run;
 
 data &outData;
-	format _stat_ $32.;
-	set &sum &means;
+	set &_LPM(drop=_stat_) &_means;
 	array vars[*] &vars;
-	array kappa[&nvars] (&nvars*0);
-	array power[&nvars];
 
-	%do i=1 %to &nvars;
-		kappa[&i] = vars[&i]/ ((LAG(power[&i])/&&nrows&i) ** (1/&L));
-	%end;
-	rename
-		%do i=1 %to &nvars;
-			kappa&i=%sysfunc(scan(&vars, &i))
-		%end;
-	;
-	_stat_ = "Kappa";
-	keep _stat_ kappa1-kappa&nvars;
+	do &i=1 to &nvars;
+		vars[&i]=vars[&i]/lag(vars[&i])**(1/&L);
+	end;
 	if _n_=2 then output;
+	drop &i;
+run;
+
+data &outData;
+	format _STAT_ $32.;
+	set &outData;
+	_STAT_="Kappa";
 run;
 
 proc datasets lib = work nolist;
-	delete &temp_excess &means &sum;
+	delete &temp_excess &_means &_LPM;
 run;
 quit;
 %mend;
