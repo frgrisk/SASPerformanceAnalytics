@@ -2,10 +2,12 @@
 * NAME: CDD.sas
 *
 * PURPOSE: Calculate the conditional drawdown-at-risk (similar to conditional value-at-risk).
-*		   It is the arthimatic mean of the worst p% drawdowns.
+*		   It is the arthimatic mean of the worst (1-p)% drawdowns.
 *
 * NOTES: The weight option needs to be added in the future for portfolio calculation.
-*
+*		 R code calculates only the pth percentile, it's not consistent with the R documentation.
+*		 This macro follows the definition of CDaR.
+*		 See reference "Portfolio Optimization With Drawdown Constraints".
 * MACRO OPTIONS:
 * returns - Required.  Data Set containing returns.
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.    
