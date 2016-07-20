@@ -72,7 +72,7 @@
 
 
 
-data &outData (drop= &dateColumn n);
+data &outData;
 	format _stat_ $32. &vars %eval(&digits + 4).&digits;
 	set &Ann_Return &Std_Dev &Sharpe_Ratio;
 run;
@@ -81,7 +81,7 @@ run;
 proc transpose data= &outData out= &_tempTable(rename= (col1= Ann_Return) rename= (col2= Std_Dev) rename= (col3= Sharpe_Ratio));
 run;
 
-%to_character(datain= &_tempTable, dataout= &_tempTable, vars= Ann_Return Std_Dev Sharpe_Ratio, formats= percent12.4 percent8.2 8.4, n= 3);
+%to_character(datain= &_tempTable, dataout= &_tempTable, vars= Ann_Return Std_Dev Sharpe_Ratio, formats= percent12.&digits percent8.&digits 8.&digits, n= 3);
 run;
 
 proc transpose data= &_tempTable out= &_tempTable name= _STAT_;
@@ -92,7 +92,7 @@ data &charTable;
 	set &_tempTable;
 	if _STAT_= '_NAME_' then delete;
 
-	drop _label_ &dateColumn;
+	drop _label_;
 run;
 
 %if %upcase(&printTable)= PRINT %then %do;
