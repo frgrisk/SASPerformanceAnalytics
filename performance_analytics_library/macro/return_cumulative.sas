@@ -12,7 +12,7 @@
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
 * dateColumn - Optional. Date column in Data Set. Default=DATE
-* outData - Optional. Output Data Set with  cumulative returns. Default="cumulative_returns" 
+* outData - Optional. Output Data Set with cumulative returns. Default="cumulative_returns" 
 * MODIFIED:
 * 5/22/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification
