@@ -7,16 +7,18 @@
 * title - Optional.  Title for chart. Default= Cumulative Returns
 * method - Optional. Specifies either DISCRETE or LOG chaining method {DISCRETE, LOG}.  
            Default=DISCRETE
-* WealthIndex - Optional.  Specifies that the value of a dollar in the first sample is $1, therefore charting the value of the returns per dollar over time.
+* WealthIndex - Optional.  Specify whether to chart the cumulative returns over time or value of principal cumulatived over time. 
 						[Default= FALSE] {TRUE, FALSE}
+* principal - Optional. Specify the principal value to cumulate, only works when WealthIndex=TRUE. [Default=1]
 * grid - Optional. Overlay grid lines on the returns axis. [Default= TRUE] 
-* Interval - Optional.  Specifies the frequency of grid lines overlayed on the returns axis. [Default= 1 (100%)]
+* Interval - Optional.  Specifies the frequency of grid lines overlayed on the returns axis, only works when grid=TRUE. [Default= 1 (100%)]
 * dateColumn - Optional. Specifies the date column for returns in the data set. [Default= Date]
 *
 * MODIFIED:
 * 2/3/2016 – CJ - Initial Creation
 * 3/05/2016 – RM - Comments modification 
-* 3/09/2016 - QY - parameter consistency
+* 3/09/2016 - QY - Parameter consistency
+* 7/27/2016 - QY - Added parameter principal, option to specify the principal dollars. 
 *
 * Copyright (c) 2016 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -24,11 +26,12 @@
 										title= Cumulative Returns, 
 										method= DISCRETE, 
 										WealthIndex= FALSE,
+										principal=1,
 										grid= TRUE,
 										Interval= 1,  
 										dateColumn= DATE);
 
-%local vars nv i;
+%local vars nv i temp_return;
 /*Find all variable names excluding the date column*/
 %let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn); 
 %put VARS IN Chart_CumulativeReturns: (&vars);
@@ -36,39 +39,45 @@
 %let nv = %sysfunc(countw(&vars));
 /*Assign a random name to i*/
 %let i= %ranname();
+%let temp_return= %ranname();
 
 /*Calculate cumulative returns*/
 %return_cumulative(&returns, 
 							method= &method,
-							outData= &returns);
+							outData= &temp_return);
 
 /*Calculate the Value of $1 over time if WealthIndex=TRUE*/
-%if &WealthIndex = TRUE %then %do;
-data &returns(drop= &i);
-set &returns;
+%if %upcase(&WealthIndex) = TRUE %then %do;
+data &temp_return(drop= &i);
+set &temp_return;
 
 array vars[&nv] &vars;
 	do &i= 1 to &nv;
-		vars[&i]= vars[&i] + 1;
+		vars[&i]= (vars[&i] + 1)*&principal;
 	end;
 %end; 
 
 /*Arrange data into one column by date*/
-proc transpose data= &returns out= &returns;
+proc transpose data= &temp_return out= &temp_return;
 by &dateColumn;
 run;
 
 /*Chart using by groups*/
-proc sgplot data= &returns;
+proc sgplot data= &temp_return;
 series x= &dateColumn y= col1/ group= _NAME_;
 title "&title";
 xaxis label= 'Date' type= time;
 yaxis label= 'Cumulative Return' 
-	%if &grid= TRUE %then %do;
-		grid values= (0 to 10 by &interval) valueshint valuesformat= best12.
+	%if %upcase(&grid)= TRUE %then %do;
+		grid values= (0 to %sysevalf(10*&principal) by &interval) valueshint valuesformat= best12.
 	%end;
 ;
 keylegend/ border position= bottomright title= "Asset Name";
 run;
+
+proc datasets lib= work nolist;
+	delete &temp_return;
+run;
+quit;
 
 %mend chart_CumulativeReturns;
