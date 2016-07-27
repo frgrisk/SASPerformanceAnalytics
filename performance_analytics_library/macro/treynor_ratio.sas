@@ -61,7 +61,7 @@
 
 	data &_tempBeta;
 	set &_tempBeta;
-	where _stat_='betas';
+	where _stat_='Betas';
 	run;
 %end;
 %else %do;
@@ -79,9 +79,9 @@ end;
 run;
 
 data &outData;
-retain _STAT_;
+format _STAT_ $32.;
 set &_tempTreynor end= last;
-_STAT_= 'Treynor_Ratio';
+_STAT_= 'Treynor Ratio';
 if last; 
 run;
 
