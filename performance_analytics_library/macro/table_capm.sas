@@ -83,13 +83,13 @@ run;
 data &AnnuAlpha(drop=&i);
 format _stat_ $32.;
 set &alphaBeta;
-where _STAT_='alphas';
+where _STAT_='Alphas';
 array alpha[*] &vars;
 retain alpha;
 do &i=1 to dim(alpha);
 	alpha[&i]=(1+alpha[&i])**(&scale) - 1;
 end;
-if _stat_='alphas' then 
+if _stat_='Alphas' then 
 	_stat_='Annualized Alphas';
 run;
 
@@ -118,13 +118,14 @@ run;
 %Treynor_Ratio(&returns, BM=&BM, Rf= &Rf, scale = &scale, VARDEF= &VARDEF, modified = FALSE, dateColumn= &dateColumn, outData= &treynor_ratio)
 
 data &outData;
-format _stat_ $32. &vars %eval(&digits + 4).&digits;
+format _STAT_ $32. &vars %eval(&digits + 4).&digits;
 set &alphaBeta &bullBear &R_square &AnnuAlpha &Corr &tracking_error &active_premium &information_ratio &treynor_ratio;
 run;
 
 proc datasets lib= work nolist;
 delete &RP &alphaBeta &bullBear &R_square &AnnuAlpha &Corr &tracking_error &active_premium &information_ratio &treynor_ratio;
 run;
+quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
 proc print data= &outData noobs;

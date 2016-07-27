@@ -92,7 +92,10 @@ run;
 ****************************************/
 
 data &outData(drop= _label_);
-set &bull_beta &bear_beta;
+format _STAT_ $32.;
+	set &bull_beta &bear_beta;
+	if _stat_="bull_betas" then _stat_="Bull Betas";
+	if _stat_="bear_betas" then _stat_="Bear Betas";
 run;
 
 proc datasets lib= work nolist;

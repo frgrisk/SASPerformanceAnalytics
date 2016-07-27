@@ -55,8 +55,8 @@ quit;
 data &Betas;
 set &Betas;
 drop &vars _model_ _type_ _rmse_;
-rename Intercept= alphas;
-rename &BM= betas;
+rename Intercept= Alphas;
+rename &BM= Betas;
 run;
 
 proc transpose data= &Betas out=&outData  name= _STAT_;
