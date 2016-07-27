@@ -73,7 +73,7 @@ data &outData(keep=_stat_ &ret);
 	set &te &ap(in=&ap);
 	array vars[&nv] &ret;
 
-	_stat_ = "Information_Ratio";
+	_stat_ = "Information Ratio";
 
 	do &i=1 to dim(vars);
 		vars[&i] = vars[&i]/lag(vars[&i]);
