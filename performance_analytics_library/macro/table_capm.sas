@@ -125,6 +125,7 @@ run;
 proc datasets lib= work nolist;
 delete &RP &alphaBeta &bullBear &R_square &AnnuAlpha &Corr &tracking_error &active_premium &information_ratio &treynor_ratio;
 run;
+quit;
 
 %if %upcase(&printTable)= PRINT %then %do;
 proc print data= &outData noobs;

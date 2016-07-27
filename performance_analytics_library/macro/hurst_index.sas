@@ -26,7 +26,7 @@
 %local stat vars i;
 %let stat= %ranname();
 
-%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn &MAR);
+%let vars= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
 %put VARS IN Hurst_Index: (&vars);
 
 %let i= %ranname();
