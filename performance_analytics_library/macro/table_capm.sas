@@ -83,13 +83,13 @@ run;
 data &AnnuAlpha(drop=&i);
 format _stat_ $32.;
 set &alphaBeta;
-where _STAT_='alphas';
+where _STAT_='Alphas';
 array alpha[*] &vars;
 retain alpha;
 do &i=1 to dim(alpha);
 	alpha[&i]=(1+alpha[&i])**(&scale) - 1;
 end;
-if _stat_='alphas' then 
+if _stat_='Alphas' then 
 	_stat_='Annualized Alphas';
 run;
 
