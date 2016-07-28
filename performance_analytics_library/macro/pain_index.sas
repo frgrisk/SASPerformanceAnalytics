@@ -35,8 +35,7 @@
 %put VARS IN Pain_Index: (&vars);
 
 %let drawdown= %ranname();
-%let stat_sum= %ranname();
-%let stat_n= %ranname();
+%let stat_mean= %ranname();
 %let i = %ranname();
 
 %drawdowns(&returns, method= &method, dateColumn= &dateColumn, outData= &drawdown)

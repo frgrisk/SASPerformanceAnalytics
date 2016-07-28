@@ -58,7 +58,7 @@
 data &outData (drop= &j);
 	format _STAT_ $32.;
 	set &Chained_Ex_Ret &Ann_StD (in=s);
-	_STAT_= 'Sharpe Ratio';
+	_STAT_= 'Sharpe Ratio Annualized';
 	array minRf[&nv] &ret;
 
 	do &j=1 to &nv;

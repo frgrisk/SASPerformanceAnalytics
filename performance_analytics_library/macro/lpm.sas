@@ -63,7 +63,7 @@ run;
 		array ret[*] &vars;
 		do &i=1 to &nvars;
 			if ret[&i]>=&MAR then ret[&i]=.; 
-			else ret[&i]=&MRA-ret[&i];
+			else ret[&i]=&MAR-ret[&i];
 		end;
 	run;
 %end;
