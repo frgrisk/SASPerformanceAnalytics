@@ -96,7 +96,7 @@ data &outData(drop= &i _name_);
 
 	if _NAME_= 'adjSkew' then delete;
 	if _NAME_= 'adjKurt' then delete;
-	_stat_= 'Adj_SharpeRatio';
+	_stat_= 'Adjusted Sharpe Ratio';
 run;
 
 proc datasets lib=work nolist;

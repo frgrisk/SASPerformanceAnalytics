@@ -27,5 +27,9 @@
 							outData= sortinoratio);
 
 %kappa(&returns, MAR=&MAR, L=2, group=&group, dateColumn=&dateColumn, outData=&outData);
-
+data &outData;
+	format _stat_ $32.;
+	set &outData;
+	_STAT_= 'Sortino Ratio';
+run;
 %mend;
