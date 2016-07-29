@@ -12,13 +12,13 @@
 * alpha - Optional. Significance level.  Specifies the level of significance for the mean. Default= 0.05
 * outData - Optional. Output Data Set with related statistics. Default= Stats
 * dateColumn - Optional. Date column in Data Set. Default=Date
-* digits - Optional. Specifies the number of digits to display in the output table. Default= 4
 * VARDEF - Optional. Specify the variance divisor, DF, degree of freedom, n-1; N, number of observations, n. {N, DF} Default= DF.
 * printTable - Optional. Option to print table.  {PRINT,NOPRINT} Default= NOPRINT
+*
 * MODIFIED:
 * 6/29/2015 – DP - Initial Creation
 * 3/05/2016 – RM - Comments modification 
-* 3/09/2016 - QY - parameter consistency
+* 3/09/2016 - QY - Parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
 * 7/29/2016 - QY - Replaced sql by %get_number_column_names
 *                  Changed temp data sets with random names
