@@ -22,6 +22,7 @@
 * 5/23/2016 - QY - Add VARDEF parameter
 * 7/29/2016 - QY - Replaced sql by %get_number_column_names
 *                  Changed temp data sets with random names
+*                  Deleted parameter digits
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -29,7 +30,6 @@
 					alpha= 0.05, 
 					dateColumn= DATE,
 					outData= Stats,
-					digits= 4,
 					VARDEF = DF, 
 					printTable= NOPRINT);
 %local _tempreturn _tempOut _geomean z;
@@ -94,7 +94,7 @@ proc transpose data=&_tempOut out=&_tempOut(drop=_LABEL_);
 run;
 
 data &_tempOut;
-format _Name_ $32. &z %eval(&digits+4).&digits;
+format _Name_ $32.;
 set &_tempOut;
 
 select (_NAME_);
