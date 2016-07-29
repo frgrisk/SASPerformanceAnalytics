@@ -20,6 +20,8 @@
 * 3/05/2016 – RM - Comments modification 
 * 3/09/2016 - QY - parameter consistency
 * 5/23/2016 - QY - Add VARDEF parameter
+* 7/29/2016 - QY - Replaced sql by %get_number_column_names
+*                  Changed temp data sets with random names
 *
 * Copyright (c) 2015 by The Financial Risk Group, Cary, NC, USA.
 *-------------------------------------------------------------*/
@@ -30,46 +32,28 @@
 					digits= 4,
 					VARDEF = DF, 
 					printTable= NOPRINT);
-%local lib ds z;
+%local _tempreturn _tempOut _geomean z;
 
-/***********************************
-*Figure out 2 level ds name of returns
-************************************/
-%let lib = %scan(&returns,1,%str(.));
-%let ds = %scan(&returns,2,%str(.));
-%if "&ds" = "" %then %do;
-	%let ds=&lib;
-	%let lib=work;
-%end;
-%put lib:&lib ds:&ds;
+%let z= %get_number_column_names(_table= &returns, _exclude= &dateColumn);
+%put VARS IN table_stats: (&z);
 
+%let _tempreturn= %ranname();
+%let _tempOut= %ranname();
+%let _geomean= %ranname();
 
-/*******************************
-*Get numeric fields in data set
-*******************************/
-proc sql noprint;
-select name
-	into :z separated by ' '
-	from sashelp.vcolumn
-	where libname = upcase("&lib")
-	  and memname = upcase("&ds")
-	  and type = "num"
-	  and upcase(name) ^= upcase("&dateColumn");
-quit;
-
-proc transpose data=&returns out=_temp;
+proc transpose data=&returns out=&_tempreturn;
 by &dateColumn;
 var &z;
 run;
 
-proc sort data=_temp;
+proc sort data=&_tempreturn;
 by _name_;
 run;
 
-proc univariate data=_temp VARDEF= &VARDEF noprint ;
+proc univariate data=&_tempreturn VARDEF= &VARDEF noprint ;
 var COL1;
 by _NAME_;
-output out=_tempOut 
+output out=&_tempOut 
 	N=Observations 
 	NMISS=NAs
 	MIN=Minimum
@@ -86,31 +70,32 @@ output out=_tempOut
 
 run;
 
-data _tempOut;
-set _tempOut;
+data &_tempOut;
+set &_tempOut;
 LCL_Mean = mean - se_mean*quantile('t',1-&alpha/2,Observations-1);
 UCL_Mean = mean + se_mean*quantile('t',1-&alpha/2,Observations-1);
 run;
 
 proc sql noprint;
-create table _geoMean as
+create table &_geoMean as
 select exp(mean(log(1+col1)))-1 as GeoMean,
 	   _name_
-	from _temp
+	from &_tempreturn
 	where col1^=.
 	group by _name_;
+quit;
 
-data _tempOut;
-merge _tempOut _geoMean;
+data &_tempOut;
+merge &_tempOut &_geoMean;
 by _name_;
 run;
 
-proc transpose data=_tempOut out=_tempOut(drop=_LABEL_);
+proc transpose data=&_tempOut out=&_tempOut(drop=_LABEL_);
 run;
 
-data _tempOut;
+data &_tempOut;
 format _Name_ $32. &z %eval(&digits+4).&digits;
-set _tempOut;
+set &_tempOut;
 
 select (_NAME_);
 	when ("Observations") do;
@@ -172,13 +157,13 @@ select (_NAME_);
 end;
 run;
 
-proc sort data=_tempOut out=&outData(drop=so rename=(_NAME_=_STAT_));
+proc sort data=&_tempOut out=&outData(drop=so rename=(_NAME_=_STAT_));
 by so;
 run;
 
 
 proc datasets lib=work nolist;
-delete _temp _tempOut _geoMean;
+delete &_tempreturn &_tempOut &_geoMean;
 run;
 quit;
 
