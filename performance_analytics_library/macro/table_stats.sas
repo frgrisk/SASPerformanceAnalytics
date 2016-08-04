@@ -161,6 +161,11 @@ proc sort data=&_tempOut out=&outData(drop=so rename=(_NAME_=_STAT_));
 by so;
 run;
 
+data &outData;
+format _STAT_ $32. &z;
+	set &outData;
+run;
+
 
 proc datasets lib=work nolist;
 delete &_tempreturn &_tempOut &_geoMean;
