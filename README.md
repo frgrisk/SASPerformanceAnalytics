@@ -33,7 +33,6 @@ Follow these steps to implement the functionality.
    Please make sure you have Python 3.5.0 or any version greater than 3.5.0 installed, package `requests`, `re`, and `datetime` are required, and Python must be on PATH to be executed through SAS. 
  
    This code is only excutable after the above steps are finished, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
-   
    `dir` in this file needs to be changed to your own directory as well.
 
 
