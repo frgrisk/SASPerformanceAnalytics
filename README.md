@@ -26,7 +26,7 @@ Follow these steps to implement the functionality.
     %include "&dir\macro\\*.sas" /nosource;
 ```
 
-3. Create stock return data set
+3. Download stock price and return data
 
    [`create_sas_tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of downloading stock price and return data from online sources. 
  
