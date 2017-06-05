@@ -13,10 +13,12 @@ The current version is 1.01.
 Follow these steps to implement the functionality.
 
 1. Download or clone the latest stable release
+
    `git clone
     https://github.com/FinancialRiskGroup/SASPerformanceAnalytics`
 
 2. Include SASPerformanceAnalytics
+    
     After downloading the package, the following code needs to be run to create a temporary library `input` every time SAS is opened, unless a permanent SAS library is otherwise saved. `dir` is assigned the path of folder `Performance Analytics Library`. When the initiation is completed, the macros and the data sets under the library will be ready to be called.
 ```sas
     %let dir=<your path of library>;
@@ -24,8 +26,13 @@ Follow these steps to implement the functionality.
     %include "&dir\macro\\*.sas" /nosource;
 ```
 
- [`create_sas_tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of downloading stock price and return data from
-   online sources. This code is only excutable after the above steps are finished, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
+3. Download stock price and return data
+
+   [`create_sas_tables.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/setup/create%20SAS%20tables.sas) under folder `setup` provides an example of downloading stock price and return data from online sources. 
+ 
+   Please make sure you have Python 3.5.0 or any version greater than 3.5.0 installed, package `requests`, `re`, and `datetime` are required, and Python must be on PATH to be executed through SAS. 
+ 
+   This code is only excutable after the above steps are finished, or SAS does not recognize [`get_stocks.sas`](https://github.com/FinancialRiskGroup/SASPerformanceAnalytics/blob/master/Performance%20Analytics%20Library/macro/get_stocks.sas) macro.
    `dir` in this file needs to be changed to your own directory as well.
 
 
